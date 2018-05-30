@@ -1,15 +1,14 @@
-import { Example, TrainingSet, XmmProcessor } from 'mano-js/common';
-import { ProcessedSensors } from 'mano-js/client';
+import { Example, TrainingSet, XmmProcessor } from "mano-js/common";
+import { ProcessedSensors } from "mano-js/client";
 
-const $error = document.querySelector('#error');
-const $label = document.querySelector('#label');
-const $result = document.querySelector('#result');
-const $recordBtn = document.querySelector('#recording-control');
+const $error = document.querySelector("#error");
+const $label = document.querySelector("#label");
+const $result = document.querySelector("#result");
+const $recordBtn = document.querySelector("#recording-control");
 
 // globals
-let state = 'idle';
+let state = "idle";
 let example = null;
-
 
 const processedSensors = new ProcessedSensors();
 const trainingSet = new TrainingSet();
@@ -21,19 +20,17 @@ const xmmProcessor = new XmmProcessor({
  * Change default configuration
  */
 xmmProcessor.setConfig({
-  modelType: 'hhmm',
+  modelType: "hhmm",
   gaussians: 1,
-  covarianceMode: 'diagonal',
+  covarianceMode: "diagonal",
   likelihoodWindow: 12,
-  states: 5,
+  states: 5
 });
 
 /**
  * Initialize and start sensors
  */
-processedSensors
-  .init()
-  .then(() => processedSensors.start());
+processedSensors.init().then(() => processedSensors.start());
 
 /**
  * Function that creates a new `mano.Example` and add its `addElement` method
@@ -70,7 +67,7 @@ function train() {
   const promise = xmmProcessor.train(rapidMixJSONTrainingSet);
 
   promise
-    .then((res) => {
+    .then(res => {
       // (re)enable decoding
       processedSensors.addListener(decode);
     })
@@ -90,36 +87,35 @@ function decode(data) {
   $result.textContent = likeliest;
 }
 
-
 /**
  * Handle application logic
  */
-$recordBtn.addEventListener('click', () => {
-  $error.textContent = '';
+$recordBtn.addEventListener("click", () => {
+  $error.textContent = "";
 
   switch (state) {
-    case 'idle':
+    case "idle":
       const label = $label.value;
 
-      if (label === '') {
-        const error = 'Invalid label';
+      if (label === "") {
+        const error = "Invalid label";
         $error.textContent = error;
       } else {
-        state = 'recording';
-        $recordBtn.textContent = 'Stop';
+        state = "recording";
+        $recordBtn.textContent = "Stop";
 
         record(label);
       }
       break;
-    case 'recording':
-      state = 'training';
-      $recordBtn.textContent = 'Training';
+    case "recording":
+      state = "training";
+      $recordBtn.textContent = "Training";
 
       train().then(() => {
-        state = 'idle';
+        state = "idle";
 
-        $label.value = '';
-        $recordBtn.textContent = 'Record';
+        $label.value = "";
+        $recordBtn.textContent = "Record";
       });
       break;
   }
