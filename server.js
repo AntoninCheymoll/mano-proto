@@ -46,8 +46,6 @@ function train(req, res) {
   const xmmConfig = rapidMixAdapters.rapidMixToXmmConfig(payload.configuration);
   const xmmTrainingSet = rapidMixAdapters.rapidMixToXmmTrainingSet(payload.trainingSet);
 
-  // console.log('training set', xmmTrainingSet);
-
   // find which instance of XMM should be used ('gmm' or  'hhmm')
   // const target = req.body.configuration.target.name;
   const xmm = xmms[xmmConfig.modelType];
