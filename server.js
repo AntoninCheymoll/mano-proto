@@ -1,9 +1,10 @@
-import express from 'express';
-import cors from 'cors';
-import bodyParser from 'body-parser';
-import rapidMixAdapters from 'rapid-mix-adapters';
-import xmm from 'xmm-node';
-import { writeFileSync } from 'fs';
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import rapidMixAdapters from "rapid-mix-adapters";
+import xmm from "xmm-node";
+import { HhmmDecoder } from "xmm-client";
+import { writeFileSync } from "fs";
 
 const app = express();
 
@@ -11,21 +12,19 @@ const app = express();
  * instanciate a `xmm` instance for each alogrithm
  */
 const xmms = {
-  'gmm': new xmm('gmm'),
-  'hhmm': new xmm('hhmm'),
+  gmm: new xmm("gmm"),
+  hhmm: new xmm("hhmm")
 };
 
-function estimateLikelihoods(xmmProcessor, phrase) {
-  console.log('phrase.length', phrase.length);
-  console.log('xmmProcessor', xmmProcessor);
-  const order = xmmProcessor.getModel().models.map(x => x.label);
-  console.log('order', order);
+function estimateLikelihoods(xmmDecoder, phrase) {
+  const order = xmmDecoder.getModel().models.map(x => x.label);
   const likelihoods = [];
-  console.log('xmmProcessor.classes', xmmProcessor.classes);
+  xmmDecoder.reset();
   for (let i = 0; i < phrase.length; i++) {
     const frame = phrase.data.slice(i * 8, (i + 1) * 8);
-    const res = xmmProcessor.filter(frame);
-    const likbyClass = res.smoothed_normalized_likelihoods.map((x, i) => ({ [order[i]]: x }))
+    const res = xmmDecoder.filter(frame);
+    const likbyClass = res.likelihoods
+      .map((x, i) => ({ [order[i]]: x }))
       .reduce((x, y) => Object.assign({}, x, y), {});
     likelihoods.push(likbyClass);
   }
@@ -44,7 +43,9 @@ function train(req, res) {
   // convert configuration and `TrainingSet` from RAPID-MIX to XMM formalisms
   const payload = req.body.payload;
   const xmmConfig = rapidMixAdapters.rapidMixToXmmConfig(payload.configuration);
-  const xmmTrainingSet = rapidMixAdapters.rapidMixToXmmTrainingSet(payload.trainingSet);
+  const xmmTrainingSet = rapidMixAdapters.rapidMixToXmmTrainingSet(
+    payload.trainingSet
+  );
 
   // console.log('training set', xmmTrainingSet);
 
@@ -55,26 +56,35 @@ function train(req, res) {
   xmm.setConfig(xmmConfig);
   xmm.setTrainingSet(xmmTrainingSet);
   xmm.train((err, model) => {
-    if (err)
-      console.error(err.stack);
+    if (err) console.error(err.stack);
 
+    const decoder = new HhmmDecoder();
     xmmTrainingSet.phrases.forEach((phrase, i) => {
-      xmmTrainingSet.phrases[i].likelihoods = estimateLikelihoods(xmm, phrase);
-    })
+      decoder.setModel(model);
+      xmmTrainingSet.phrases[i].likelihoods = estimateLikelihoods(
+        decoder,
+        phrase
+      );
+      console.log(
+        xmmTrainingSet.phrases[i].likelihoods[
+          xmmTrainingSet.phrases[i].likelihoods.length - 1
+        ]
+      );
+    });
 
     const fileObj = {
       model,
       trainingSet: xmmTrainingSet
     };
-    writeFileSync('./dist/au_boulot_antonin.json', JSON.stringify(fileObj));
+    writeFileSync("./dist/au_boulot_antonin.json", JSON.stringify(fileObj));
 
     // create a RAPID-MIX JSON compliant response
     const rapidMixHttpResponse = rapidMixAdapters.createComoHttpResponse(
       req.body.configuration,
-      rapidMixAdapters.xmmToRapidMixModel(model),
+      rapidMixAdapters.xmmToRapidMixModel(model)
     );
 
-    res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify(rapidMixHttpResponse));
   });
 }
@@ -82,8 +92,8 @@ function train(req, res) {
 app.use(cors());
 app.use(bodyParser.json());
 
-app.get('/', (req, res) => res.send('Hello World!'));
+app.get("/", (req, res) => res.send("Hello World!"));
 
-app.post('/train', train);
+app.post("/train", train);
 
-app.listen(3000, () => console.log('Example app listening on port 3000!'));
+app.listen(3000, () => console.log("Example app listening on port 3000!"));
