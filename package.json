@@ -2,7 +2,7 @@
   "name": "mano-proto",
   "version": "1.0.0",
   "description": "Visualisation prototype for mano-js",
-  "main": "index.js",
+  "main": "dist/visu.bundle.js",
   "scripts": {
     "server": "babel-node server.js",
     "build": "webpack",
@@ -14,11 +14,17 @@
     "body-parser": "^1.18.3",
     "chartist": "^0.11.0",
     "cors": "^2.8.4",
+    "css-loader": "^0.28.11",
     "d3": "^5.4.0",
     "express": "^4.16.3",
+    "i": "^0.3.6",
     "jquery": "^3.3.1",
+    "jquery-ui": "^1.12.1",
+    "jquery-ui-bundle": "^1.12.1-migrate",
     "mano-js": "github:ircam-rnd/mano-js",
+    "npm": "^6.1.0",
     "rapid-mix-adapters": "github:Ircam-RnD/rapid-mix-adapters",
+    "style-loader": "^0.21.0",
     "xmm-node": "github:ircam-rnd/xmm-node"
   },
   "devDependencies": {

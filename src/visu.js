@@ -1,34 +1,74 @@
-import $ from 'jquery';
+import  $ from 'jquery';
+import jquery from 'jquery';
+//import 'jquery-ui';
+import 'jquery-ui-bundle';
+//import 'jquery-ui-bundle/jquery-ui.css';
+
+
 import * as d3 from "d3";
 
+var can = document.createElement('canvas');
+var ctx = can.getContext("2d")
+
+//fichier json
 var res;
-var index = 0;
+
+//numero de la visu a afficher
 var numVis = 1;
 
+//variables de la visu1
+var index = 0;
 var meanb = true;
 var covb = false;
 
-var can = document.createElement('canvas');
+// variable de la visu3
+var tps3  = 50;
 
-var ctx = can.getContext("2d")
+// variable de la visu4
+var tps4  = 50;
+
 
 function init(){
+
 
   document.body.appendChild(can);
 
 
-  // $("#canvasvisu").css('background','rgba(0,255,128,0.4)')
 
-
+  $("#canvasvisu").css('background','rgba(0,255,128,0.4)')
 
   $.ajax({
-    url: "/au_boulot_antonin.json",
+    url: "/dist/au_boulot_antonin.json",
     dataType:"json",
     context: document.body
   }).done(function(json) {
     res = json;
     draw();
+
+    let timeMax = calculMaxTime();
+    console.log('timeMax:'+ timeMax);
+
+  $( "#pasDeTemps " ).text(0);
+
+   $( "#sliderVisu3 " ).slider({
+         range: "min",
+         min: 0,
+         max: timeMax,
+         value:  0,
+         slide: function( event, ui ) {
+           $( "#amount" ).val( "$" + ui.value );
+           $( "#pasDeTemps " ).text(ui.value);
+           tps3= ui.value;
+           draw();
+         }
+       })
+
   });
+
+
+
+
+
 
   $("#btt").click(function() {
 
@@ -37,11 +77,13 @@ function init(){
     draw();
   });
 
+
   $("#mean").click(function() {
 
     meanb = !meanb;
     draw();
   });
+
 
   $("#cov").click(function() {
 
@@ -58,6 +100,8 @@ function init(){
     draw();
   });
 
+
+
   $(".visu").click(function() {
 
 
@@ -69,12 +113,6 @@ function init(){
 
   });
 
-
-
-
-
-
-
 }
 
 
@@ -84,11 +122,33 @@ function AffVis(i){
 
   if(i==1){
     $("#Visu1").show();
-    // $("#visu1").hide();
+    $("#Visu3").hide();
+    $("#Visu4").hide();
+
 
   }else if (i==2){
-      // console.log($("#Visu1"));
-      $("#Visu1").hide();
+
+    $("#Visu1").hide();
+    $("#Visu3").hide();
+    $("#Visu4").hide();
+
+  }else if (i==3){
+    $("#Visu1").hide();
+    $("#Visu3").show();
+    $("#Visu4").hide();
+
+
+  }else if (i==4){
+    $("#Visu1").hide();
+    $("#Visu3").hide();
+    $("#Visu4").show();
+
+
+  }else if (i==5){
+    $("#Visu1").hide();
+    $("#Visu3").hide();
+    $("#Visu4").hide();
+
 
   }
 
@@ -133,6 +193,18 @@ function red() {
   draw();
 }
 
+
+
+
+function calculMaxTime(){
+  let max = 0;
+  for(let ph of res.trainingSet.phrases){
+      max = Math.max(max,ph.length);
+  }
+
+  return max;
+}
+
 function draw(){
   console.log(res);
 
@@ -141,7 +213,8 @@ function draw(){
     if(numVis == 1 ){
       // let can = document.createElement('canvas');
       can.width = '600';
-      can.height = '150';
+      can.height = res.model.models.length*60 +20;
+
       // can.backgroundColor = "rgb(0,0,200)";
       // document.body.appendChild(can);
 
@@ -256,8 +329,8 @@ function draw(){
 
       for(let ph of res.trainingSet.phrases){
         for(let labelNum of res.model.models){
-          let label= labelNum.label
-          console.log(label);
+          let classeName= labelNum.label
+          console.log(classeName);
 
 
 
@@ -265,7 +338,7 @@ function draw(){
           let data =  []
 
           for(let i=0; i<ph.likelihoods.length;i++){
-            data.push(ph.likelihoods[i][label]);
+            data.push(ph.likelihoods[i][classeName]);
 
           }
 
@@ -299,7 +372,251 @@ function draw(){
 
       ctx.stroke();
 
+
+
+
+    }else if (numVis == 3 ){
+
+
+      let recoMean = 0;
+
+
+
+      can.width = '800';
+      can.height = 430*res.model.models.length;
+
+
+      ctx.fillStyle = "rgba(255,128,0,0.2)";
+      ctx.fillRect(0, 0 , can.width,can.height);
+
+      ctx.textBaseline='Top'
+      ctx.fillStyle = "rgb(0,0,0)";
+      let i = 0;//numéro de la classe étudiée
+
+
+
+
+
+      //recherche de la phrase la plus longue pour les proportions
+      let dictProp = {};
+      let maxTime =0;
+      for( let ph of res.trainingSet.phrases){
+            dictProp[ph.label]=ph.length;
+            maxTime = Math.max(maxTime, ph.length)
+      }
+
+      for( let ph of res.trainingSet.phrases){
+            dictProp[ph.label]=dictProp[ph.label]/maxTime;
+
+      }
+
+
+      //pour chaque classe
+      for(let labelNum of res.model.models){
+
+
+          let classeName= labelNum.label
+          let proportion = dictProp[classeName];
+
+          console.log('classGraphe: '+ classeName);
+          ctx.font = "15px Arial";
+          ctx.fillText('Class name: ' + classeName , 100,25 + i*430);
+
+
+
+          ctx.strokeStyle="rgb(0,0,0)"
+
+          //ligne verticale
+          ctx.beginPath();
+          ctx.moveTo(10,30+ i*430);
+          ctx.lineTo(10, 30+ 400 +  i*430);
+          ctx.stroke();
+
+          //ligne horizontale
+          ctx.beginPath();
+          ctx.moveTo(0,30 + 400 + i*430 -10 );
+          ctx.lineTo((can.width-10)*proportion +10 ,30 + 400 + i*430 -10)
+          ctx.stroke();
+
+          ctx.beginPath();
+
+          //on associe chaue classe à son index dans le training set
+          let classIndex = 0;
+          for(let phs of res.trainingSet.phrases ){
+            if(phs.label == classeName){
+                classIndex = phs.index;
+                break;
+            }
+          }
+
+          //tracé de la ligne indiquant le te;ps etudie
+          if(tps3<= res.trainingSet.phrases[classIndex].length){
+
+            ctx.moveTo(10 + 790*tps3/maxTime,30+ i*430);
+            ctx.lineTo(10 + 790*tps3/maxTime, 30+ 400 +  i*430);
+
+            ctx.lineWidth=2;
+            ctx.stroke();
+            ctx.lineWidth=1;
+
+            recoMean += res.trainingSet.phrases[classIndex].likelihoods[tps3][classeName]
+          }
+
+
+          let stckClassSym;
+          //parcour de chaque classe dans le graphe
+          for(let classe of res.model.models){
+            console.log('classeInGraphe ' +classe.label);
+            //si on a afaire a la classe correspondante a celle du graphe on la dessinera plus tard en rouge
+            if(classe.label == classeName){
+
+                stckClassSym = classe;
+
+
+              }else{
+                ctx.strokeStyle="rgb(0,0,0)"
+
+
+                let data =  []
+
+                for(let x=0; x<res.trainingSet.phrases[classIndex].length;x++){
+                  data.push(res.trainingSet.phrases[classIndex].likelihoods[x][classe.label]);
+
+                }
+                console.log('taille' + data.length);
+                console.log(data);
+
+
+
+
+                //trace de la courbe
+                ctx.beginPath();
+                ctx.moveTo(10, i*430 + 430 -10 - data[0]*(400-10));
+
+
+                  for (let j=1; j<data.length; j++){
+
+                    ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)), i*430 + 430 -10 - data[j]*(400-10));
+                  }
+
+                  console.log(ctx.strokeStyle);
+                ctx.stroke();
+              }
+
+          }
+//dessin de la ligne rouge en dernier pour la faire ressortir
+          ctx.strokeStyle="rgb(255,0,0)"
+
+
+          let data =  []
+
+          for(let x=0; x<res.trainingSet.phrases[classIndex].length;x++){
+            data.push(res.trainingSet.phrases[classIndex].likelihoods[x][stckClassSym.label]);
+
+          }
+          console.log('taille' + data.length);
+          console.log(data);
+
+
+
+
+
+          ctx.beginPath();
+          ctx.moveTo(10, i*430 + 430 -10 - data[0]*(400-10));
+
+
+            for (let j=1; j<data.length; j++){
+
+              ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)), i*430 + 430 -10 - data[j]*(400-10));
+            }
+
+            console.log(ctx.strokeStyle);
+          ctx.stroke();
+
+
+
+            i++;
+      }
+
+
+      // console.log("recomean: " + recoMean);
+      recoMean = recoMean/res.model.models.length
+      $("#recoMean").text(recoMean);
+
+
+
+    }else if(numVis==4){
+      can.width =  150 + 150*res.model.models.length;
+      can.height = 150 + 150*res.model.models.length;
+
+
+
+      ctx.fillStyle = "rgba(255,128,0,0.2)";
+      ctx.fillRect(0, 0 , can.width,can.height);
+
+
+
+      let i = 0;
+      for(let model of res.model.models){
+
+        ctx.beginPath()
+        ctx.moveTo(150 + i*150, 0)
+        ctx.lineTo(150 + i*150, can.height)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(0, 150 + i*150)
+        ctx.lineTo(can.width, 150 + i*150)
+        ctx.stroke()
+
+        ctx.fillStyle = "rgb(0,0,0)"
+        ctx.fillText(model.label, 10, 150 + i*150 + 50)
+        ctx.fillText(model.label, 150 + i*150 + 10  , 50)
+
+        i++;
+      }
+      let numligne = 0;
+      for(let model1 of res.model.models){ //ligne
+        numligne++;
+        let phrase;
+        for(let ph of res.trainingSet.phrases){
+            if (ph.label == model1.label){
+              phrase = ph;
+              break;
+            }
+
+        }
+
+        console.log('phrase: '+phrase.label);
+
+        let numcol =0;
+        for(let model2 of res.model.models){ //colonne
+              numcol++;
+              let meanMod1Mod2 = 0;
+              console.log('model2:'+model2.label);
+              for(let i =0; i<phrase.length;i++){
+                  meanMod1Mod2 += phrase.likelihoods[i][model2.label]
+              }
+              meanMod1Mod2 = meanMod1Mod2/phrase.length;
+              console.log('mean '+meanMod1Mod2);
+
+
+              ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
+              console.log(255 - meanMod1Mod2*255);
+              ctx.fillRect(numcol*150, numligne*150,150 , 150)
+        }
+
+
+      }
+
+
+
+    }else if(numVis==5){
+
+
     }
+
+
 
 }
 

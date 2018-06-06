@@ -4,10 +4,13 @@
   <meta charset="utf-8">
   <title>Visu Chaines de Markov</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css"/>
   <script src="visu.bundle.js">
 
   </script>
+
+  <link rel="stylesheet" href="../node_modules/jquery-ui-bundle/jquery-ui.css"/>
+
 </head>
 <br>
 <font size="6">visualisation des données :</font>
@@ -22,6 +25,12 @@
   1
   <input type="checkbox" id="vis2" class = "visu" value = "2"  >
   2
+  <input type="checkbox" id="vis3" class = "visu" value = "3"  >
+  3
+  <input type="checkbox" id="vis4" class = "visu" value = "4"  >
+  4
+  <input type="checkbox" id="vis5" class = "visu" value = "5"  >
+  5
 
   <br>
   <br>
@@ -49,14 +58,20 @@
 
   </div>
 
+  <div id="Visu3" hidden >
+    Moyenne de reconnaissance:
+    <label id= "recoMean"></label>
+    <br>
+      Temps étudié:  &nbsp;   <div id="sliderVisu3" style="display:inline-block;width:200px;"></div>
+      &nbsp;
+    <label id= "pasDeTemps"></label>
 
+  <div>
 
-
-
-
-
-
-
+  <div id="Visu4" hidden  >
+        <br>
+    Temps étudié: <div id="sliderVisu4"></div>
+  <div>
 
 </body>
 </html>

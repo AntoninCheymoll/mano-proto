@@ -7,17 +7,30 @@ module.exports = {
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: '/dist/'
   },
   module: {
     rules: [
-      { test: /\.js$/, exclude: /node_modules/, loader: "babel-loader" }
-    ]
+      {
+          test: /\.js$/,
+          exclude: /node_modules/,
+          loader: "babel-loader" },
+      {
+          test:/\.css$/,
+          use:['style-loader','css-loader']
+      }
+      ]
   },
   devServer: {
-    contentBase: './dist'
+    contentBase: './'
   },
   externals: [{
     xmlhttprequest: '{XMLHttpRequest:XMLHttpRequest}'
-  }]
+  }],
+  resolve: {
+  alias: {
+    'jquery-ui': 'jquery-ui-dist/jquery-ui.js'
+  }
+}
 };
