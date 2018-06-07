@@ -25,7 +25,10 @@ var covb = false;
 var tps3  = 50;
 
 // variable de la visu4
-var tps4  = 50;
+var val4  = 0;
+
+// variable de la visu4
+var tps5  = 0;
 
 
 function init(){
@@ -57,14 +60,43 @@ function init(){
          value:  0,
          slide: function( event, ui ) {
            $( "#amount" ).val( "$" + ui.value );
-           $( "#pasDeTemps " ).text(ui.value);
+           $( "#pasDeTemps3" ).text(ui.value);
            tps3= ui.value;
            draw();
          }
        })
 
+
+   $( "#sliderVisu5 " ).slider({
+         range: "min",
+         min: 0,
+         max: timeMax,
+         value:  0,
+         slide: function( event, ui ) {
+           $( "#amount" ).val( "$" + ui.value );
+           $( "#pasDeTemps5" ).text(ui.value);
+           tps5= ui.value
+           draw();
+         }
+       })
+
+
+
+
   });
 
+  $( "#sliderVisu4 " ).slider({
+        range: "min",
+        min: 0,
+        max: 100,
+        value:  0,
+        slide: function( event, ui ) {
+          $( "#amount" ).val( "$" + ui.value );
+          $( "#valeur4" ).text(ui.value/100);
+          val4= ui.value
+          draw();
+        }
+      })
 
 
 
@@ -124,6 +156,7 @@ function AffVis(i){
     $("#Visu1").show();
     $("#Visu3").hide();
     $("#Visu4").hide();
+    $("#Visu5").hide();
 
 
   }else if (i==2){
@@ -131,23 +164,29 @@ function AffVis(i){
     $("#Visu1").hide();
     $("#Visu3").hide();
     $("#Visu4").hide();
+    $("#Visu5").hide();
+
 
   }else if (i==3){
     $("#Visu1").hide();
     $("#Visu3").show();
     $("#Visu4").hide();
+    $("#Visu5").hide();
 
 
   }else if (i==4){
     $("#Visu1").hide();
     $("#Visu3").hide();
     $("#Visu4").show();
+    $("#Visu5").hide();
+
 
 
   }else if (i==5){
     $("#Visu1").hide();
     $("#Visu3").hide();
     $("#Visu4").hide();
+    $("#Visu5").show();
 
 
   }
@@ -202,12 +241,12 @@ function calculMaxTime(){
       max = Math.max(max,ph.length);
   }
 
-  return max;
+  return max-1;
 }
 
 function draw(){
   console.log(res);
-
+  ctx.textBaseline="Top";
 
 
     if(numVis == 1 ){
@@ -222,7 +261,7 @@ function draw(){
 
       // ctx.clearRect(0, 0, $("#canvasvisu")[0].width, $("#canvasvisu")[0].height);
 
-      ctx.textBaseline="top";
+
 
 
       ctx.fillStyle = "rgba(255,128,0,0.2)";
@@ -437,7 +476,6 @@ function draw(){
           ctx.moveTo(0,30 + 400 + i*430 -10 );
           ctx.lineTo((can.width-10)*proportion +10 ,30 + 400 + i*430 -10)
           ctx.stroke();
-
           ctx.beginPath();
 
           //on associe chaue classe à son index dans le training set
@@ -541,6 +579,9 @@ function draw(){
 
       // console.log("recomean: " + recoMean);
       recoMean = recoMean/res.model.models.length
+      recoMean = recoMean*100;
+      recoMean = Math.round(recoMean);
+      recoMean /=100
       $("#recoMean").text(recoMean);
 
 
@@ -600,10 +641,23 @@ function draw(){
               meanMod1Mod2 = meanMod1Mod2/phrase.length;
               console.log('mean '+meanMod1Mod2);
 
+              if(meanMod1Mod2*100>val4){
+                ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
+                console.log(255 - meanMod1Mod2*255);
+                ctx.fillRect(numcol*150, numligne*150,150 , 150)
+                if(meanMod1Mod2>0.5){
+                  ctx.fillStyle = "rgb(255,255,255)";
+                }else{
+                  ctx.fillStyle = "rgb(0,0,0)";
+                }
+                meanMod1Mod2 *= 100;
+                meanMod1Mod2 = Math.round(meanMod1Mod2);
+                meanMod1Mod2 /=100
 
-              ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
-              console.log(255 - meanMod1Mod2*255);
-              ctx.fillRect(numcol*150, numligne*150,150 , 150)
+
+                ctx.font ="15px Arial";
+                ctx.fillText(meanMod1Mod2, numcol*150 + 70, 70 +numligne*150);
+              }
         }
 
 
@@ -612,12 +666,105 @@ function draw(){
 
 
     }else if(numVis==5){
+      can.width = '800';
+      can.height = 430*res.model.models.length;
 
+
+      ctx.fillStyle = "rgba(255,128,0,0.2)";
+      ctx.fillRect(0, 0 , can.width,can.height);
+
+      let index =0;
+
+      for(let ph of res.trainingSet.phrases){
+
+
+        //ligne horizontale
+        ctx.beginPath();
+        ctx.moveTo(0,360+15+ index*430  );
+        ctx.lineTo(can.width ,360+15+ index*430);
+        ctx.stroke();
+        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.font ="15px Arial";
+
+        ctx.fillText("Nom de la classe: " + ph.label, 15, 15 + index*430);
+
+        ctx.beginPath();
+
+        ctx.moveTo(15, 45 + index*430 );
+        ctx.lineTo(31, 45 + index*430);
+
+        ctx.moveTo(15+8, 45 + index*430 );
+        ctx.lineTo(15+8, 345 + index*430);
+
+        ctx.moveTo(15, 345 + index*430 );
+        ctx.lineTo(31, 345 + index*430);
+
+        ctx.stroke();
+
+        ctx.fillText(0,35, 50 + index*430);
+        ctx.fillText(ph.length-1,35, 350 + index*430);
+
+
+        if(ph.length>tps5){
+          ctx.beginPath();
+          ctx.strokeStyle = "rgb(200,0,0)";
+          ctx.lineWidth=2;
+          ctx.moveTo(15, 45 + index*430  + 300*tps5/ph.length );
+          ctx.lineTo(31, 45 + index*430 + 300*tps5/ph.length );
+          ctx.stroke();
+
+          ctx.lineWidth=1;
+          ctx.strokeStyle = "rgb(0,0,0)";
+        }
+
+
+        for(let i = 0; i<res.model.models.length;i++){
+          let classLabel = res.model.models[i].label;
+          console.log(classLabel);
+          ctx.fillStyle = "rgb(0,0,0)";
+          ctx.fillText(classLabel, (i+1)*800/(res.model.models.length+1)-50, 390 + 430*index)
+
+
+
+          //calcul du likelihood moyen
+          //
+          // let meanLikelihood = 0;
+          //
+          // for(let i =0; i<ph.length;i++){
+          //     meanLikelihood += ph.likelihoods[i][classLabel]
+          // }
+          // meanLikelihood = meanLikelihood/ph.length;
+          // meanLikelihood = meanLikelihood*100;
+          // meanLikelihood = Math.round(meanLikelihood)
+          // meanLikelihood = meanLikelihood/100
+
+
+
+          if(ph.length>tps5){
+            let likelihood = ph.likelihoods[tps5][classLabel]
+
+            likelihood = likelihood*100;
+            likelihood = Math.round(likelihood)
+            likelihood = likelihood/100
+
+            if(classLabel == ph.label){
+              ctx.fillStyle = "rgb(150,0,0)";
+            }else{
+              ctx.fillStyle = "rgb(0,0,0)";
+            }
+            ctx.fillRect((i+1)*800/(res.model.models.length+1)-30, 15 + index*430 + (1-likelihood)*360, 60, likelihood*360)
+
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.fillText(likelihood ,(i+1)*800/(res.model.models.length+1)-10,  10 +index*430 + (1-likelihood)*360);
+
+          }
+        }
+
+
+        index++;
+      }
 
     }
-
-
-
 }
 
 
