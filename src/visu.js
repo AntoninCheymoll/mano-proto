@@ -27,9 +27,13 @@ var tps3  = 50;
 // variable de la visu4
 var val4  = 0;
 
+
 // variable de la visu4
 var tps5  = 0;
 
+// variable de la visu4
+var val6  = 0;
+var tps6 = 0;
 
 function init(){
 
@@ -81,11 +85,22 @@ function init(){
        })
 
 
-
+   $( "#sliderVisu6tps" ).slider({
+         range: "min",
+         min: 0,
+         max: timeMax,
+         value:  0,
+         slide: function( event, ui ) {
+           $( "#amount" ).val( "$" + ui.value );
+           $( "#pasDetemps6" ).text(ui.value/100);
+           tps6= ui.value
+           draw();
+         }
+       })
 
   });
 
-  $( "#sliderVisu4 " ).slider({
+  $( "#sliderVisu4" ).slider({
         range: "min",
         min: 0,
         max: 100,
@@ -98,16 +113,29 @@ function init(){
         }
       })
 
+  $( "#sliderVisu6meanMin" ).slider({
+        range: "min",
+        min: 0,
+        max: 100,
+        value:  0,
+        slide: function( event, ui ) {
+          $( "#amount" ).val( "$" + ui.value );
+          $( "#valeur6" ).text(ui.value/100);
+          val6= ui.value
+          draw();
+        }
+      })
 
 
 
 
-  $("#btt").click(function() {
+  //
+  // $( ".radioVisu").on('change', function (event) {
+  //           $( ".radioVisu").checked = false;
+  //
+  //           this.checked = true;
+  //           });
 
-    index = $("#index").val();
-
-    draw();
-  });
 
 
   $("#mean").click(function() {
@@ -157,6 +185,7 @@ function AffVis(i){
     $("#Visu3").hide();
     $("#Visu4").hide();
     $("#Visu5").hide();
+    $("#Visu6").hide();
 
 
   }else if (i==2){
@@ -165,21 +194,21 @@ function AffVis(i){
     $("#Visu3").hide();
     $("#Visu4").hide();
     $("#Visu5").hide();
-
+    $("#Visu6").hide();
 
   }else if (i==3){
     $("#Visu1").hide();
     $("#Visu3").show();
     $("#Visu4").hide();
     $("#Visu5").hide();
-
+    $("#Visu6").hide();
 
   }else if (i==4){
     $("#Visu1").hide();
     $("#Visu3").hide();
     $("#Visu4").show();
     $("#Visu5").hide();
-
+    $("#Visu6").hide();
 
 
   }else if (i==5){
@@ -187,10 +216,16 @@ function AffVis(i){
     $("#Visu3").hide();
     $("#Visu4").hide();
     $("#Visu5").show();
+    $("#Visu6").hide();
 
-
-  }
-
+  }else if (i==6){
+  
+      $("#Visu1").hide();
+      $("#Visu3").hide();
+      $("#Visu4").hide();
+      $("#Visu5").hide();
+      $("#Visu6").show();
+    }
 
 }
 
@@ -416,13 +451,13 @@ function draw(){
 
     }else if (numVis == 3 ){
 
+      //taille d un graphe proportionnel
+      let graphSize = 800/res.trainingSet.phrases.length;
 
       let recoMean = 0;
 
-
-
       can.width = '800';
-      can.height = 430*res.model.models.length;
+      can.height = '800';
 
 
       ctx.fillStyle = "rgba(255,128,0,0.2)";
@@ -459,7 +494,8 @@ function draw(){
 
           console.log('classGraphe: '+ classeName);
           ctx.font = "15px Arial";
-          ctx.fillText('Class name: ' + classeName , 100,25 + i*430);
+          ctx.fillStyle="rgb(0,0,100)"
+          ctx.fillText(classeName , 15,graphSize*5/100 + 15 + i*graphSize);
 
 
 
@@ -467,14 +503,14 @@ function draw(){
 
           //ligne verticale
           ctx.beginPath();
-          ctx.moveTo(10,30+ i*430);
-          ctx.lineTo(10, 30+ 400 +  i*430);
+          ctx.moveTo(10,graphSize*15/100+ i*graphSize);
+          ctx.lineTo(10,graphSize +  i*graphSize);
           ctx.stroke();
 
           //ligne horizontale
           ctx.beginPath();
-          ctx.moveTo(0,30 + 400 + i*430 -10 );
-          ctx.lineTo((can.width-10)*proportion +10 ,30 + 400 + i*430 -10)
+          ctx.moveTo(0,i*graphSize + graphSize*97/100);
+          ctx.lineTo(can.width ,graphSize*97/100+ i*graphSize)
           ctx.stroke();
           ctx.beginPath();
 
@@ -485,19 +521,19 @@ function draw(){
                 classIndex = phs.index;
                 break;
             }
-          }
+            }
 
-          //tracé de la ligne indiquant le te;ps etudie
-          if(tps3<= res.trainingSet.phrases[classIndex].length){
+          //tracé de la ligne indiquant le temps etudie
+          if(tps3< res.trainingSet.phrases[classIndex].length){
 
-            ctx.moveTo(10 + 790*tps3/maxTime,30+ i*430);
-            ctx.lineTo(10 + 790*tps3/maxTime, 30+ 400 +  i*430);
+            ctx.moveTo(10 + 790*tps3/maxTime,graphSize*15/100+ i*graphSize);
+            ctx.lineTo(10 + 790*tps3/maxTime, graphSize +  i*graphSize);
 
             ctx.lineWidth=2;
             ctx.stroke();
             ctx.lineWidth=1;
 
-            recoMean += res.trainingSet.phrases[classIndex].likelihoods[tps3][classeName]
+             recoMean += res.trainingSet.phrases[classIndex].likelihoods[tps3][classeName]
           }
 
 
@@ -529,12 +565,12 @@ function draw(){
 
                 //trace de la courbe
                 ctx.beginPath();
-                ctx.moveTo(10, i*430 + 430 -10 - data[0]*(400-10));
+                ctx.moveTo(10, i*graphSize + graphSize*97/100 - data[0]*graphSize*82/100);
 
 
                   for (let j=1; j<data.length; j++){
 
-                    ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)), i*430 + 430 -10 - data[j]*(400-10));
+                    ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
                   }
 
                   console.log(ctx.strokeStyle);
@@ -560,12 +596,12 @@ function draw(){
 
 
           ctx.beginPath();
-          ctx.moveTo(10, i*430 + 430 -10 - data[0]*(400-10));
+          ctx.moveTo(10, i*graphSize + graphSize*97/100 - data[0]*graphSize*82/100);
 
 
             for (let j=1; j<data.length; j++){
 
-              ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)), i*430 + 430 -10 - data[j]*(400-10));
+              ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)),i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
             }
 
             console.log(ctx.strokeStyle);
@@ -577,7 +613,7 @@ function draw(){
       }
 
 
-      // console.log("recomean: " + recoMean);
+      console.log("recomean: " + recoMean);
       recoMean = recoMean/res.model.models.length
       recoMean = recoMean*100;
       recoMean = Math.round(recoMean);
@@ -587,10 +623,10 @@ function draw(){
 
 
     }else if(numVis==4){
-      can.width =  150 + 150*res.model.models.length;
-      can.height = 150 + 150*res.model.models.length;
+      can.width =  800;
+      can.height = 800;
 
-
+      let squaresize = 800/(res.model.models.length+1);
 
       ctx.fillStyle = "rgba(255,128,0,0.2)";
       ctx.fillRect(0, 0 , can.width,can.height);
@@ -598,24 +634,46 @@ function draw(){
 
 
       let i = 0;
+
       for(let model of res.model.models){
 
         ctx.beginPath()
-        ctx.moveTo(150 + i*150, 0)
-        ctx.lineTo(150 + i*150, can.height)
+        ctx.moveTo(squaresize + i*squaresize, 0)
+        ctx.lineTo(squaresize + i*squaresize, can.height)
         ctx.stroke()
 
         ctx.beginPath()
-        ctx.moveTo(0, 150 + i*150)
-        ctx.lineTo(can.width, 150 + i*150)
+        ctx.moveTo(0, squaresize + i*squaresize)
+        ctx.lineTo(can.width, squaresize + i*squaresize)
         ctx.stroke()
 
         ctx.fillStyle = "rgb(0,0,0)"
-        ctx.fillText(model.label, 10, 150 + i*150 + 50)
-        ctx.fillText(model.label, 150 + i*150 + 10  , 50)
+
+        // let s = "";
+        // let snum = 0;
+        // for(let x = 0; x<model.label.length; x++){
+        //   //if(model.label[i]==/ /g){
+        //       console.log("qqqqqqqqaaaaaaaaaaqqqq" + "/g" + "aaaaaaaaa");
+        // //  }
+        //   s.concat(model.label.charAt(i));
+        // }
+
+        var labelList = model.label.split(" ");
+
+        let labelWordNum =0;
+
+        ctx.font ="15px Arial";
+        for(let mot of labelList){
+          ctx.fillText(mot, 10, 17*labelWordNum+ squaresize + i*squaresize + 50)
+          ctx.fillText(mot, squaresize + i*squaresize + 10 , 17*labelWordNum+  50)
+          labelWordNum++;
+        }
+
+
 
         i++;
       }
+
       let numligne = 0;
       for(let model1 of res.model.models){ //ligne
         numligne++;
@@ -625,7 +683,6 @@ function draw(){
               phrase = ph;
               break;
             }
-
         }
 
         console.log('phrase: '+phrase.label);
@@ -644,7 +701,7 @@ function draw(){
               if(meanMod1Mod2*100>val4){
                 ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
                 console.log(255 - meanMod1Mod2*255);
-                ctx.fillRect(numcol*150, numligne*150,150 , 150)
+                ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
                 if(meanMod1Mod2>0.5){
                   ctx.fillStyle = "rgb(255,255,255)";
                 }else{
@@ -656,7 +713,17 @@ function draw(){
 
 
                 ctx.font ="15px Arial";
-                ctx.fillText(meanMod1Mod2, numcol*150 + 70, 70 +numligne*150);
+                ctx.fillText(meanMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
+              }else{
+
+                var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
+                grd.addColorStop(0,"rgb(255,255,255,0)");
+                grd.addColorStop(1,"rgb(255,125,0,0.4)");
+
+
+                ctx.fillStyle = grd;
+                ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
+
               }
         }
 
@@ -667,7 +734,10 @@ function draw(){
 
     }else if(numVis==5){
       can.width = '800';
-      can.height = 430*res.model.models.length;
+      can.height = '800';
+
+
+      let histoSize = 800/res.trainingSet.phrases.length;
 
 
       ctx.fillStyle = "rgba(255,128,0,0.2)";
@@ -679,50 +749,68 @@ function draw(){
 
 
         //ligne horizontale
+        ctx.strokeStyle = "rgb(0,0,0)";
+        ctx.lineWidth=1;
         ctx.beginPath();
-        ctx.moveTo(0,360+15+ index*430  );
-        ctx.lineTo(can.width ,360+15+ index*430);
+        ctx.moveTo(0,histoSize*91/100+ index*histoSize  );
+        ctx.lineTo(can.width ,histoSize*91/100+ index*histoSize );
         ctx.stroke();
-        ctx.fillStyle = "rgb(0,0,0)";
+
+
+        //nom de la classe
+        ctx.fillStyle = "rgb(0,0,100)";
         ctx.font ="15px Arial";
+        ctx.fillText(ph.label, 15, 15 + index*histoSize);
 
-        ctx.fillText("Nom de la classe: " + ph.label, 15, 15 + index*430);
 
+        ctx.fillStyle = "rgb(0,0,0)";
+        //barre verticale (curseur)
         ctx.beginPath();
 
-        ctx.moveTo(15, 45 + index*430 );
-        ctx.lineTo(31, 45 + index*430);
+        ctx.moveTo(15, histoSize*13/100 + index*histoSize );
+        ctx.lineTo(31, histoSize*13/100 + index*histoSize);
 
-        ctx.moveTo(15+8, 45 + index*430 );
-        ctx.lineTo(15+8, 345 + index*430);
+        ctx.moveTo(15+8, histoSize*13/100 + index*histoSize );
+        ctx.lineTo(15+8, histoSize*85/100 + index*histoSize);
 
-        ctx.moveTo(15, 345 + index*430 );
-        ctx.lineTo(31, 345 + index*430);
+        ctx.moveTo(15, histoSize*85/100 + index*histoSize );
+        ctx.lineTo(31, histoSize*85/100 + index*histoSize);
 
         ctx.stroke();
 
-        ctx.fillText(0,35, 50 + index*430);
-        ctx.fillText(ph.length-1,35, 350 + index*430);
+        ctx.fillText(0 ,35, histoSize*16/100 + index*histoSize);
+        ctx.fillText(ph.length-1,35, histoSize*88/100 + index*histoSize);
 
+        //dessin de la barre de pas de temps sur le curseur
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(200,0,0)";
+        ctx.lineWidth=2;
 
         if(ph.length>tps5){
-          ctx.beginPath();
-          ctx.strokeStyle = "rgb(200,0,0)";
-          ctx.lineWidth=2;
-          ctx.moveTo(15, 45 + index*430  + 300*tps5/ph.length );
-          ctx.lineTo(31, 45 + index*430 + 300*tps5/ph.length );
-          ctx.stroke();
 
-          ctx.lineWidth=1;
-          ctx.strokeStyle = "rgb(0,0,0)";
+          ctx.moveTo(15, histoSize*13/100 + index*histoSize  + histoSize*73/100*tps5/ph.length );
+          ctx.lineTo(31, histoSize*13/100 + index*histoSize  + histoSize*73/100*tps5/ph.length );
+
+        }else{
+          console.log("play");
+          ctx.moveTo(15, histoSize*85/100 + index*histoSize );
+          ctx.lineTo(31, histoSize*85/100 + index*histoSize);
+
         }
+
+        ctx.stroke();
+
+        ctx.lineWidth=1;
+        ctx.strokeStyle = "rgb(0,0,0)";
 
 
         for(let i = 0; i<res.model.models.length;i++){
           let classLabel = res.model.models[i].label;
           console.log(classLabel);
           ctx.fillStyle = "rgb(0,0,0)";
-          ctx.fillText(classLabel, (i+1)*800/(res.model.models.length+1)-50, 390 + 430*index)
+          ctx.font ="13px Arial";
+          ctx.fillText(classLabel, (i+1)*800/(res.model.models.length+1)-30, histoSize*98/100 + histoSize*index)
 
 
 
@@ -752,10 +840,10 @@ function draw(){
             }else{
               ctx.fillStyle = "rgb(0,0,0)";
             }
-            ctx.fillRect((i+1)*800/(res.model.models.length+1)-30, 15 + index*430 + (1-likelihood)*360, 60, likelihood*360)
+            ctx.fillRect((i+1)*800/(res.model.models.length+1)-30, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100, 60, likelihood*histoSize*75/100)
 
             ctx.fillStyle = "rgb(0,0,0)";
-            ctx.fillText(likelihood ,(i+1)*800/(res.model.models.length+1)-10,  10 +index*430 + (1-likelihood)*360);
+            ctx.fillText(likelihood ,(i+1)*800/(res.model.models.length+1) - 10, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100);
 
           }
         }
@@ -763,6 +851,125 @@ function draw(){
 
         index++;
       }
+
+    }else if(numVis==6){
+      can.width =  800;
+      can.height = 800;
+
+
+      let phrasesAEtudier = [];
+
+      for(let ph of res.trainingSet.phrases){
+        if(tps6 < ph.length ){
+          phrasesAEtudier.push(ph);
+
+        }
+      }
+      let squaresize = 800/(phrasesAEtudier.length);
+
+      ctx.fillStyle = "rgba(255,128,0,0.2)";
+      ctx.fillRect(0, 0 , can.width,can.height);
+
+
+
+      let i = 0;
+
+      for(let model of res.model.models){
+
+        ctx.beginPath()
+        ctx.moveTo(squaresize + i*squaresize, 0)
+        ctx.lineTo(squaresize + i*squaresize, can.height)
+        ctx.stroke()
+
+        ctx.beginPath()
+        ctx.moveTo(0, squaresize + i*squaresize)
+        ctx.lineTo(can.width, squaresize + i*squaresize)
+        ctx.stroke()
+
+        ctx.fillStyle = "rgb(0,0,0)"
+
+        // let s = "";
+        // let snum = 0;
+        // for(let x = 0; x<model.label.length; x++){
+        //   //if(model.label[i]==/ /g){
+        //       console.log("qqqqqqqqaaaaaaaaaaqqqq" + "/g" + "aaaaaaaaa");
+        // //  }
+        //   s.concat(model.label.charAt(i));
+        // }
+
+        var labelList = model.label.split(" ");
+
+        let labelWordNum =0;
+
+        ctx.font ="15px Arial";
+        for(let mot of labelList){
+          ctx.fillText(mot, 10, 17*labelWordNum+ squaresize + i*squaresize + 50)
+          ctx.fillText(mot, squaresize + i*squaresize + 10 , 17*labelWordNum+  50)
+          labelWordNum++;
+        }
+
+
+
+        i++;
+      }
+
+      let numligne = 0;
+      for(let model1 of res.model.models){ //ligne
+        numligne++;
+        let phrase;
+        for(let ph of res.trainingSet.phrases){
+            if (ph.label == model1.label){
+              phrase = ph;
+              break;
+            }
+        }
+
+        console.log('phrase: '+phrase.label);
+
+        let numcol =0;
+        for(let model2 of res.model.models){ //colonne
+              numcol++;
+              let meanMod1Mod2 = 0;
+              console.log('model2:'+model2.label);
+              for(let i =0; i<phrase.length;i++){
+                  meanMod1Mod2 += phrase.likelihoods[i][model2.label]
+              }
+              meanMod1Mod2 = meanMod1Mod2/phrase.length;
+              console.log('mean '+meanMod1Mod2);
+
+              if(meanMod1Mod2*100>val4){
+                ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
+                console.log(255 - meanMod1Mod2*255);
+                ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
+                if(meanMod1Mod2>0.5){
+                  ctx.fillStyle = "rgb(255,255,255)";
+                }else{
+                  ctx.fillStyle = "rgb(0,0,0)";
+                }
+                meanMod1Mod2 *= 100;
+                meanMod1Mod2 = Math.round(meanMod1Mod2);
+                meanMod1Mod2 /=100
+
+
+                ctx.font ="15px Arial";
+                ctx.fillText(meanMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
+              }else{
+
+                var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
+                grd.addColorStop(0,"rgb(255,255,255,0)");
+                grd.addColorStop(1,"rgb(255,125,0,0.4)");
+
+
+                ctx.fillStyle = grd;
+                ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
+
+              }
+        }
+
+
+      }
+
+
 
     }
 }
