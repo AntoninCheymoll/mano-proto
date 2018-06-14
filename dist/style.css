@@ -1,3 +1,29 @@
 .titi {
   border :1px solid green;
 }
+
+.tooltipable {
+  border :1px solid rgba(255,0,0,0.2);
+  position:relative;
+}
+
+.tooltip {
+/*  display: none;*/
+  visibility: hidden;
+  position:absolute;
+  bottom:100%;
+  left:25%;
+  background:#EEE;
+  border :1px solid #BBB;
+  z-index:5;
+  opacity: 0.0;
+  transition: opacity 0.8s;
+  width: 200px;
+
+}
+
+.tooltipable:hover .tooltip {
+  /*display: block;*/
+  visibility: visible;
+  opacity: 1.0;
+}

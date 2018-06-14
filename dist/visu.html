@@ -10,6 +10,9 @@
 
   <link rel="stylesheet" href="../node_modules/jquery-ui-bundle/jquery-ui.css"/>
 
+
+
+
 </head>
 <br>
 <font size="6">visualisation des données :</font>
@@ -19,22 +22,24 @@
 <body>
 
 
-
-  <!-- <fieldset>
+<!-- <div class="widget"> -->
+  <fieldset style="width:200px">
     <legend> Numéro de la visualisation: </legend>
-    <label for="radio-1">1</label>
-    <input type="radio"  id="vis1" value = "1" class = "radioVisu" >
-    <label for="radio-1">2</label>
-    <input type="radio"  id="vis2" value = "2" class = "radioVisu">
-    <label for="radio-1">3</label>
-    <input type="radio"  id="vis3" value = "3" class = "radioVisu">
-    <label for="radio-1">4</label>
-    <input type="radio"  id="vis4" value = "4" class = "radioVisu">
-    <label for="radio-1">5</label>
-    <input type="radio"  id="vis5" value = "5" class = "radioVisu">
-  </fieldset> -->
-
-  Visualisation:
+    <label for="vis1">1</label>
+    <input type="radio"  name="visu" id="vis1" value = "1" class = "radioVisu" >
+    <label for="vis2">2</label>
+    <input type="radio"  name="visu" id="vis2" value = "2" class = "radioVisu">
+    <label for="vis3">3</label>
+    <input type="radio"  name="visu" id="vis3" value = "3" class = "radioVisu">
+    <label for="vis4">4</label>
+    <input type="radio"  name="visu" id="vis4" value = "4" class = "radioVisu">
+    <label for="vis5">5</label>
+    <input type="radio"  name="visu" id="vis5" value = "5" class = "radioVisu">
+    <label for="vis6">6</label>
+    <input type="radio"  name="visu" id="vis6" value = "6" class = "radioVisu">
+  </fieldset>
+<!-- </div> -->
+  <!-- Visualisation:
   <input type="checkbox" id="vis1" class = "visu" value = "1" checked >
   1
   <input type="checkbox" id="vis2" class = "visu" value = "2"  >
@@ -46,7 +51,7 @@
   <input type="checkbox" id="vis5" class = "visu" value = "5"  >
   5
   <input type="checkbox" id="vis6" class = "visu" value = "6"  >
-  6
+  6 -->
 
   <br>
   <br>
@@ -89,7 +94,7 @@
         <br>
 
 
-    Moyenne en dessous de laquelle on ignore les valeurs: &nbsp; &nbsp;<div id="sliderVisu4"  style="display:inline-block;width:200px;"></div> &nbsp;
+    <span class="tooltipable">Seuil :<div class="tooltip">Seuil en dessous duquel on ignore les valeures</div></span> &nbsp; &nbsp;<div id="sliderVisu4"  style="display:inline-block;width:200px;"></div> &nbsp;
     <label id= "valeur4">0.00</label>
     <br>
   </div>
@@ -99,18 +104,19 @@
       Temps étudié:  &nbsp;   <div id="sliderVisu5" style="display:inline-block;width:200px;"></div>
       &nbsp;
     <label id= "pasDeTemps5">0</label>
+  </div>
 
 
 <div id="Visu6" hidden >
 
         Temps étudié:  &nbsp;   <div id="sliderVisu6tps" style="display:inline-block;width:200px;"></div>
-        &nbsp;
+        &nbsp;      <label id= "pasDeTemps6">0</label>
         <br><br>
-        Moyenne en dessous de laquelle on ignore les valeurs: &nbsp; &nbsp;<div id="sliderVisu6meanMin"  style="display:inline-block;width:200px;"></div> &nbsp;
-        <label id= "pasDetemps6">0.00</label>
+        <span class="tooltipable">Seuil :<div class="tooltip" >Seuil en dessous duquel on ignore les valeures</div></span>&nbsp; &nbsp;<div id="sliderVisu6meanMin"  style="display:inline-block;width:200px;"></div> &nbsp;
+        <label id= "meanMin6">0.00</label>
 
 
-      <label id= "pasDeTemps6">0</label>
+
 
 
   </div>

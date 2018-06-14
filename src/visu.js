@@ -5,7 +5,8 @@ import 'jquery-ui-bundle';
 //import 'jquery-ui-bundle/jquery-ui.css';
 
 
-import * as d3 from "d3";
+
+//import * as d3 from "d3";
 
 var can = document.createElement('canvas');
 var ctx = can.getContext("2d")
@@ -35,6 +36,7 @@ var tps5  = 0;
 var val6  = 0;
 var tps6 = 0;
 
+
 function init(){
 
 
@@ -44,6 +46,7 @@ function init(){
 
   $("#canvasvisu").css('background','rgba(0,255,128,0.4)')
 
+  //recuperation du fichier
   $.ajax({
     url: "/dist/au_boulot_antonin.json",
     dataType:"json",
@@ -92,7 +95,7 @@ function init(){
          value:  0,
          slide: function( event, ui ) {
            $( "#amount" ).val( "$" + ui.value );
-           $( "#pasDetemps6" ).text(ui.value/100);
+           $( "#pasDeTemps6" ).text(ui.value);
            tps6= ui.value
            draw();
          }
@@ -120,7 +123,7 @@ function init(){
         value:  0,
         slide: function( event, ui ) {
           $( "#amount" ).val( "$" + ui.value );
-          $( "#valeur6" ).text(ui.value/100);
+          $( "#meanMin6" ).text(ui.value/100);
           val6= ui.value
           draw();
         }
@@ -152,7 +155,7 @@ function init(){
   });
 
 
-
+  //changemet de l index visu1
   $(".cb").click(function() {
 
     clearButtonInd($(this).prop("value"));
@@ -161,7 +164,7 @@ function init(){
   });
 
 
-
+  //changment de visu a afficher
   $(".visu").click(function() {
 
 
@@ -173,11 +176,23 @@ function init(){
 
   });
 
+
+
+
+    $( "[name='visu']").on( "change", aff );
+
+
 }
 
 
+function aff(e){
 
+  clearButtonVisu(e.target.value);
+  numVis = e.target.value;
 
+  draw();
+}
+//affichage de la bonne visu et suppression des autres
 function AffVis(i){
 
   if(i==1){
@@ -219,31 +234,29 @@ function AffVis(i){
     $("#Visu6").hide();
 
   }else if (i==6){
-  
+
       $("#Visu1").hide();
       $("#Visu3").hide();
       $("#Visu4").hide();
       $("#Visu5").hide();
       $("#Visu6").show();
+
+
     }
 
 }
 
+//uncheck les boutons d in dex (visu1) autres aue celui aui vient d etre selectionné
 function clearButtonInd(i){
   for(let j of $(".cb")){
-
-
-
 
     if(j.getAttribute("value")!=i){
       j.checked = false;
     }
-
   }
-
 }
 
-
+//uncheck les boutons de choix visu autres que celui aui vient d etre selectionné
 function clearButtonVisu(i){
   for(let j of $(".visu")){
     if(j.getAttribute("value")!=i){
@@ -257,18 +270,8 @@ function clearButtonVisu(i){
 }
 
 
-function red() {
 
-  $("#canvasvisu").css('background','rgba(255,0,0,0.95)');
-  let ctx = $("#canvasvisu")[0].getContext("2d");
-  ctx.fillStyle = "rgb(0,0,200)"; // définit la couleur de remplissage du rectangle
-  ctx.fillRect(10, 10, 55, 50);   // dessine le rectangle à la position 10, 10 d'une largeur de 55 et d'une hauteur de 50
-  draw();
-  draw();
-}
-
-
-
+//temps maximum des phrases, le nombre retourné est celui de la valeure de la derniere phrase (0 si la longueur est 1)
 
 function calculMaxTime(){
   let max = 0;
@@ -279,6 +282,7 @@ function calculMaxTime(){
   return max-1;
 }
 
+//dessin du canevas en fonction du numero de visu demandé
 function draw(){
   console.log(res);
   ctx.textBaseline="Top";
@@ -451,10 +455,11 @@ function draw(){
 
     }else if (numVis == 3 ){
 
-      //taille d un graphe proportionnel
+      //taille d un graphe unique
       let graphSize = 800/res.trainingSet.phrases.length;
 
       let recoMean = 0;
+
 
       can.width = '800';
       can.height = '800';
@@ -465,11 +470,9 @@ function draw(){
 
       ctx.textBaseline='Top'
       ctx.fillStyle = "rgb(0,0,0)";
+
+
       let i = 0;//numéro de la classe étudiée
-
-
-
-
 
       //recherche de la phrase la plus longue pour les proportions
       let dictProp = {};
@@ -479,6 +482,8 @@ function draw(){
             maxTime = Math.max(maxTime, ph.length)
       }
 
+
+      //assignation a chaque phrases leur longueur par rapport a la longueur max
       for( let ph of res.trainingSet.phrases){
             dictProp[ph.label]=dictProp[ph.label]/maxTime;
 
@@ -488,13 +493,16 @@ function draw(){
       //pour chaque classe
       for(let labelNum of res.model.models){
 
-
+          //assignation du nom de la classe et recuperation de la proportion de la classe etudiee
           let classeName= labelNum.label
           let proportion = dictProp[classeName];
 
           console.log('classGraphe: '+ classeName);
           ctx.font = "15px Arial";
           ctx.fillStyle="rgb(0,0,100)"
+
+
+          //affichage du nom de la classe
           ctx.fillText(classeName , 15,graphSize*5/100 + 15 + i*graphSize);
 
 
@@ -523,16 +531,19 @@ function draw(){
             }
             }
 
-          //tracé de la ligne indiquant le temps etudie
+          //tracé de la ligne indiquant le temps etudie si on ne depasse pas le temps de la phrase
           if(tps3< res.trainingSet.phrases[classIndex].length){
 
-            ctx.moveTo(10 + 790*tps3/maxTime,graphSize*15/100+ i*graphSize);
-            ctx.lineTo(10 + 790*tps3/maxTime, graphSize +  i*graphSize);
+            ctx.moveTo(10 + 790*tps3/(maxTime-1),graphSize*15/100+ i*graphSize);
+            console.log('tps3:' + tps3);
+            console.log('mt:' + (maxTime-1));
+            ctx.lineTo(10 + 790*tps3/(maxTime-1), graphSize +  i*graphSize);
 
             ctx.lineWidth=2;
             ctx.stroke();
             ctx.lineWidth=1;
 
+            //calcul utile au calcul de la reconnaissance Moyenne
              recoMean += res.trainingSet.phrases[classIndex].likelihoods[tps3][classeName]
           }
 
@@ -543,7 +554,7 @@ function draw(){
             console.log('classeInGraphe ' +classe.label);
             //si on a afaire a la classe correspondante a celle du graphe on la dessinera plus tard en rouge
             if(classe.label == classeName){
-
+                //l affichage de la classe symetriaue se fera apres dans une autre couleur et a la fin pour que le trait soit au dessus des autres
                 stckClassSym = classe;
 
 
@@ -553,6 +564,7 @@ function draw(){
 
                 let data =  []
 
+                //recuperation dans un tableau des valeurs correspondantes
                 for(let x=0; x<res.trainingSet.phrases[classIndex].length;x++){
                   data.push(res.trainingSet.phrases[classIndex].likelihoods[x][classe.label]);
 
@@ -570,7 +582,7 @@ function draw(){
 
                   for (let j=1; j<data.length; j++){
 
-                    ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+                    ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
                   }
 
                   console.log(ctx.strokeStyle);
@@ -579,9 +591,10 @@ function draw(){
 
           }
 //dessin de la ligne rouge en dernier pour la faire ressortir
+
           ctx.strokeStyle="rgb(255,0,0)"
 
-
+//meme code aue precedemment
           let data =  []
 
           for(let x=0; x<res.trainingSet.phrases[classIndex].length;x++){
@@ -601,7 +614,7 @@ function draw(){
 
             for (let j=1; j<data.length; j++){
 
-              ctx.lineTo(10+j*((can.width*proportion-10)/(data.length-1)),i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+              ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
             }
 
             console.log(ctx.strokeStyle);
@@ -612,7 +625,8 @@ function draw(){
             i++;
       }
 
-
+      //calcul de la reconnaissance moyenne
+      //troncature de la reconnaissance moyenne
       console.log("recomean: " + recoMean);
       recoMean = recoMean/res.model.models.length
       recoMean = recoMean*100;
@@ -626,6 +640,7 @@ function draw(){
       can.width =  800;
       can.height = 800;
 
+      //calcul de la taille d un carre de la heatmap (en fct du nombre de classe)
       let squaresize = 800/(res.model.models.length+1);
 
       ctx.fillStyle = "rgba(255,128,0,0.2)";
@@ -690,30 +705,30 @@ function draw(){
         let numcol =0;
         for(let model2 of res.model.models){ //colonne
               numcol++;
-              let meanMod1Mod2 = 0;
+              let valMod1Mod2 = 0;
               console.log('model2:'+model2.label);
               for(let i =0; i<phrase.length;i++){
-                  meanMod1Mod2 += phrase.likelihoods[i][model2.label]
+                  valMod1Mod2 += phrase.likelihoods[i][model2.label]
               }
-              meanMod1Mod2 = meanMod1Mod2/phrase.length;
-              console.log('mean '+meanMod1Mod2);
+              valMod1Mod2 = valMod1Mod2/phrase.length;
+              console.log('mean '+valMod1Mod2);
 
-              if(meanMod1Mod2*100>val4){
-                ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
-                console.log(255 - meanMod1Mod2*255);
+              if(valMod1Mod2*100>val4){
+                ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*255)+"," + (255 - valMod1Mod2*255)+ ","+ (255 - valMod1Mod2*255) +")";
+                console.log(255 - valMod1Mod2*255);
                 ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
-                if(meanMod1Mod2>0.5){
+                if(valMod1Mod2>0.5){
                   ctx.fillStyle = "rgb(255,255,255)";
                 }else{
                   ctx.fillStyle = "rgb(0,0,0)";
                 }
-                meanMod1Mod2 *= 100;
-                meanMod1Mod2 = Math.round(meanMod1Mod2);
-                meanMod1Mod2 /=100
+                valMod1Mod2 *= 100;
+                valMod1Mod2 = Math.round(valMod1Mod2);
+                valMod1Mod2 /=100
 
 
                 ctx.font ="15px Arial";
-                ctx.fillText(meanMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
+                ctx.fillText(valMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
               }else{
 
                 var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
@@ -736,13 +751,14 @@ function draw(){
       can.width = '800';
       can.height = '800';
 
-
+      //calcul de la classe d un histogramme en fct du nombre de classe
       let histoSize = 800/res.trainingSet.phrases.length;
 
 
       ctx.fillStyle = "rgba(255,128,0,0.2)";
       ctx.fillRect(0, 0 , can.width,can.height);
 
+      //numero de classe etudie
       let index =0;
 
       for(let ph of res.trainingSet.phrases){
@@ -781,19 +797,21 @@ function draw(){
         ctx.fillText(0 ,35, histoSize*16/100 + index*histoSize);
         ctx.fillText(ph.length-1,35, histoSize*88/100 + index*histoSize);
 
-        //dessin de la barre de pas de temps sur le curseur
+        //dessin de la barre de pas de temps sur le curseur en rouge
 
         ctx.beginPath();
         ctx.strokeStyle = "rgb(200,0,0)";
         ctx.lineWidth=2;
 
+
+
         if(ph.length>tps5){
 
-          ctx.moveTo(15, histoSize*13/100 + index*histoSize  + histoSize*73/100*tps5/ph.length );
-          ctx.lineTo(31, histoSize*13/100 + index*histoSize  + histoSize*73/100*tps5/ph.length );
+          ctx.moveTo(15, histoSize*13/100 + index*histoSize  + histoSize*72/100*tps5/(ph.length-1) );
+          ctx.lineTo(31, histoSize*13/100 + index*histoSize  + histoSize*72/100*tps5/(ph.length-1) );
 
         }else{
-          console.log("play");
+
           ctx.moveTo(15, histoSize*85/100 + index*histoSize );
           ctx.lineTo(31, histoSize*85/100 + index*histoSize);
 
@@ -804,12 +822,14 @@ function draw(){
         ctx.lineWidth=1;
         ctx.strokeStyle = "rgb(0,0,0)";
 
-
+        //pour chaque classe (/pour chaque classe)
         for(let i = 0; i<res.model.models.length;i++){
+          //recuperation du nom
           let classLabel = res.model.models[i].label;
           console.log(classLabel);
           ctx.fillStyle = "rgb(0,0,0)";
           ctx.font ="13px Arial";
+          //affichage du nom
           ctx.fillText(classLabel, (i+1)*800/(res.model.models.length+1)-30, histoSize*98/100 + histoSize*index)
 
 
@@ -827,19 +847,24 @@ function draw(){
           // meanLikelihood = meanLikelihood/100
 
 
-
+          //si on a pas atteint la fin de la phrase
           if(ph.length>tps5){
+            //la valeur correspondante
             let likelihood = ph.likelihoods[tps5][classLabel]
 
+            //troncature
             likelihood = likelihood*100;
             likelihood = Math.round(likelihood)
             likelihood = likelihood/100
 
+            //couleur differente pour la classe symetrique
             if(classLabel == ph.label){
               ctx.fillStyle = "rgb(150,0,0)";
             }else{
               ctx.fillStyle = "rgb(0,0,0)";
             }
+
+            //dessin du rectangle
             ctx.fillRect((i+1)*800/(res.model.models.length+1)-30, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100, 60, likelihood*histoSize*75/100)
 
             ctx.fillStyle = "rgb(0,0,0)";
@@ -856,26 +881,36 @@ function draw(){
       can.width =  800;
       can.height = 800;
 
+      let phrases = [];
 
-      let phrasesAEtudier = [];
-
+      //recuperation des phrases non finiess au temps tps6
       for(let ph of res.trainingSet.phrases){
-        if(tps6 < ph.length ){
-          phrasesAEtudier.push(ph);
-
-        }
+          if(ph.length > tps6){
+            phrases.push(ph);
+          }
       }
-      let squaresize = 800/(phrasesAEtudier.length);
 
-      ctx.fillStyle = "rgba(255,128,0,0.2)";
+      //dessin du fond en degradé
+      var grd=ctx.createLinearGradient(0, 0,800*3/4 ,800*3/4);
+      grd.addColorStop(0,"rgb(255,230,150,0.4)");
+      grd.addColorStop(1,"rgb(255,125,0,0.4)");
+
+
+      ctx.fillStyle = grd;
+
       ctx.fillRect(0, 0 , can.width,can.height);
 
+      //calcul de la longueur d un carré
+      let squaresize = 800/(phrases.length+1);
 
 
-      let i = 0;
+      let i = 0;//numero de la classe etudiee
+      ctx.fillStyle = "rgb(255,200,150)"
 
-      for(let model of res.model.models){
+      ctx.fillRect(0, 0, squaresize, squaresize);
+      for(let model of phrases){
 
+        //dessin de la grille
         ctx.beginPath()
         ctx.moveTo(squaresize + i*squaresize, 0)
         ctx.lineTo(squaresize + i*squaresize, can.height)
@@ -885,6 +920,10 @@ function draw(){
         ctx.moveTo(0, squaresize + i*squaresize)
         ctx.lineTo(can.width, squaresize + i*squaresize)
         ctx.stroke()
+
+        ctx.fillStyle = "rgb(255,200,150)"
+        ctx.fillRect(squaresize*i + squaresize, 0, squaresize, squaresize);
+        ctx.fillRect(0,squaresize*i + squaresize, squaresize, squaresize);
 
         ctx.fillStyle = "rgb(0,0,0)"
 
@@ -897,10 +936,13 @@ function draw(){
         //   s.concat(model.label.charAt(i));
         // }
 
+        //decoupage du label a chaue espace
         var labelList = model.label.split(" ");
 
         let labelWordNum =0;
 
+
+        //affichage chaue partie a une hauteur differente
         ctx.font ="15px Arial";
         for(let mot of labelList){
           ctx.fillText(mot, 10, 17*labelWordNum+ squaresize + i*squaresize + 50)
@@ -913,57 +955,112 @@ function draw(){
         i++;
       }
 
+      //numero de la ligne concernee
       let numligne = 0;
-      for(let model1 of res.model.models){ //ligne
+      for(let phrase of phrases){ //ligne
         numligne++;
-        let phrase;
-        for(let ph of res.trainingSet.phrases){
-            if (ph.label == model1.label){
-              phrase = ph;
-              break;
-            }
-        }
+        // let phrase;
+        // for(let ph of res.trainingSet.phrases){
+        //     if (ph.label == model1.label){
+        //       phrase = ph;
+        //       break;
+        //     }
+        // }
 
         console.log('phrase: '+phrase.label);
 
-        let numcol =0;
-        for(let model2 of res.model.models){ //colonne
-              numcol++;
-              let meanMod1Mod2 = 0;
-              console.log('model2:'+model2.label);
-              for(let i =0; i<phrase.length;i++){
-                  meanMod1Mod2 += phrase.likelihoods[i][model2.label]
-              }
-              meanMod1Mod2 = meanMod1Mod2/phrase.length;
-              console.log('mean '+meanMod1Mod2);
 
-              if(meanMod1Mod2*100>val4){
-                ctx.fillStyle = "rgb("+ (255 - meanMod1Mod2*255)+"," + (255 - meanMod1Mod2*255)+ ","+ (255 - meanMod1Mod2*255) +")";
-                console.log(255 - meanMod1Mod2*255);
+        ctx.beginPath();
+
+        //partie fixe du curseur de temps
+        ctx.moveTo( squaresize*numligne +squaresize*10/100, squaresize*89/100 );
+        ctx.lineTo( squaresize*numligne +squaresize*10/100, squaresize*95/100);
+
+
+         ctx.moveTo(squaresize*numligne +squaresize*10/100, squaresize*92/100 );
+         ctx.lineTo(squaresize*numligne +squaresize*90/100, squaresize*92/100);
+
+         ctx.moveTo(squaresize*numligne + squaresize*90/100, squaresize*89/100 );
+         ctx.lineTo(squaresize*numligne + squaresize*90/100, squaresize*95/100);
+
+        ctx.stroke();
+
+        ctx.font ="10px Arial";
+
+        ctx.fillStyle = "rgb(0,0,0)"
+        ctx.fillText(0 ,squaresize*numligne +squaresize*10/100-3 , squaresize*89/100-2);
+        ctx.fillText(phrase.length-1,squaresize*numligne + squaresize*90/100 - 3*(JSON.stringify(phrase.length)).length, squaresize*89/100-2);
+
+
+
+        //partie rouge mobile du curseur
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(200,0,0)";
+        ctx.lineWidth=2;
+
+
+
+        ctx.moveTo(squaresize*numligne +squaresize*10/100 + squaresize*80/100*tps6/(phrase.length-1), squaresize*89/100 );
+        ctx.lineTo(squaresize*numligne +squaresize*10/100 + squaresize*80/100*tps6/(phrase.length-1), squaresize*95/100 );
+
+
+
+        ctx.stroke();
+
+        ctx.lineWidth=1;
+        ctx.strokeStyle = "rgb(0,0,0)";
+
+        //num de la colonne concernee
+        let numcol =0;
+        for(let model2 of phrases){ //colonne
+              numcol++;
+              let valMod1Mod2 = phrase.likelihoods[tps6][model2.label];
+              // console.log('model2:'+model2.label);
+              // for(let i =0; i<phrase.length;i++){
+              //     meanMod1Mod2 += phrase.likelihoods[i][model2.label]
+              // }
+              // meanMod1Mod2 = meanMod1Mod2/phrase.length;
+              // console.log('mean '+meanMod1Mod2);
+
+              //affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
+              if(valMod1Mod2*100>val6){
+                ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*255)+"," + (255 - valMod1Mod2*255)+ ","+ (255 - valMod1Mod2*255) +")";
+                console.log(255 - valMod1Mod2*255);
+
+                //dessin du carre
                 ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
-                if(meanMod1Mod2>0.5){
+
+                //la couleur du texte depend de la couleur dessous pour etre la plus lisibl possible
+                if(valMod1Mod2>0.5){
                   ctx.fillStyle = "rgb(255,255,255)";
                 }else{
                   ctx.fillStyle = "rgb(0,0,0)";
                 }
-                meanMod1Mod2 *= 100;
-                meanMod1Mod2 = Math.round(meanMod1Mod2);
-                meanMod1Mod2 /=100
+
+                //affichage de la valeur apres troncature
+                valMod1Mod2 *= 100;
+                valMod1Mod2 = Math.round(valMod1Mod2);
+                valMod1Mod2 /=100
 
 
                 ctx.font ="15px Arial";
-                ctx.fillText(meanMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
-              }else{
-
-                var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
-                grd.addColorStop(0,"rgb(255,255,255,0)");
-                grd.addColorStop(1,"rgb(255,125,0,0.4)");
+                ctx.fillText(valMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
 
 
-                ctx.fillStyle = grd;
-                ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
+               }
+              //si on ne doit pas afficher la heatmap on affiche un degradé
+              //else{
+              //
+              //   var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
+              //   grd.addColorStop(0,"rgb(255,255,255,0)");
+              //   grd.addColorStop(1,"rgb(255,125,0,0.4)");
+              //
+              //
+              //   ctx.fillStyle = grd;
+              //   ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
 
-              }
+              //}
         }
 
 
