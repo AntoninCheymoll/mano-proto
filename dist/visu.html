@@ -22,8 +22,8 @@
 <body>
 
 
-<!-- <div class="widget"> -->
-  <fieldset style="width:200px">
+
+  <!-- <fieldset style="width:200px">
     <legend> Numéro de la visualisation: </legend>
     <label for="vis1">1</label>
     <input type="radio"  name="visu" id="vis1" value = "1" class = "radioVisu" >
@@ -37,8 +37,8 @@
     <input type="radio"  name="visu" id="vis5" value = "5" class = "radioVisu">
     <label for="vis6">6</label>
     <input type="radio"  name="visu" id="vis6" value = "6" class = "radioVisu">
-  </fieldset>
-<!-- </div> -->
+  </fieldset> -->
+
   <!-- Visualisation:
   <input type="checkbox" id="vis1" class = "visu" value = "1" checked >
   1
@@ -52,9 +52,23 @@
   5
   <input type="checkbox" id="vis6" class = "visu" value = "6"  >
   6 -->
+  <br>
+  <br>
 
-  <br>
-  <br>
+
+  <div id="tabs">
+  <ul>
+    <li><a href="#Visu1">Visu1 </a></li>
+    <li><a href="#Visu2">Graph global</a></li>
+    <li><a href="#Visu3">Graphs pour chaque classe</a></li>
+    <li><a href="#Visu4">Heatmap moyen</a></li>
+    <li><a href="#Visu5">Histogrammes</a></li>
+    <li><a href="#Visu6">Heatmap dynamique</a></li>
+
+  </ul>
+
+
+
   <div id="Visu1">
     numero du caractère etudié:
 
@@ -117,9 +131,15 @@
 
 
 
-
-
   </div>
+
+
+</div>
+
+<br>
+<br>
+
+
 
 </body>
 </html>

@@ -113,6 +113,7 @@ function init(){
           $( "#valeur4" ).text(ui.value/100);
           val4= ui.value
           draw();
+
         }
       })
 
@@ -126,6 +127,7 @@ function init(){
           $( "#meanMin6" ).text(ui.value/100);
           val6= ui.value
           draw();
+
         }
       })
 
@@ -165,86 +167,94 @@ function init(){
 
 
   //changment de visu a afficher
-  $(".visu").click(function() {
+  // $(".visu").click(function() {
+  //
+  //
+  //   clearButtonVisu($(this).prop("value"));
+  //   numVis = $(this).prop("value");
+  //
+  //
+  //   draw();
+  //
+  // });
 
 
-    clearButtonVisu($(this).prop("value"));
-    numVis = $(this).prop("value");
 
 
-    draw();
-
-  });
-
-
-
-
-    $( "[name='visu']").on( "change", aff );
-
-
-}
-
-
-function aff(e){
-
-  clearButtonVisu(e.target.value);
-  numVis = e.target.value;
-
-  draw();
-}
-//affichage de la bonne visu et suppression des autres
-function AffVis(i){
-
-  if(i==1){
-    $("#Visu1").show();
-    $("#Visu3").hide();
-    $("#Visu4").hide();
-    $("#Visu5").hide();
-    $("#Visu6").hide();
-
-
-  }else if (i==2){
-
-    $("#Visu1").hide();
-    $("#Visu3").hide();
-    $("#Visu4").hide();
-    $("#Visu5").hide();
-    $("#Visu6").hide();
-
-  }else if (i==3){
-    $("#Visu1").hide();
-    $("#Visu3").show();
-    $("#Visu4").hide();
-    $("#Visu5").hide();
-    $("#Visu6").hide();
-
-  }else if (i==4){
-    $("#Visu1").hide();
-    $("#Visu3").hide();
-    $("#Visu4").show();
-    $("#Visu5").hide();
-    $("#Visu6").hide();
-
-
-  }else if (i==5){
-    $("#Visu1").hide();
-    $("#Visu3").hide();
-    $("#Visu4").hide();
-    $("#Visu5").show();
-    $("#Visu6").hide();
-
-  }else if (i==6){
-
-      $("#Visu1").hide();
-      $("#Visu3").hide();
-      $("#Visu4").hide();
-      $("#Visu5").hide();
-      $("#Visu6").show();
-
-
+  $( "#tabs" ).tabs({
+    activate: function(event, ui) {
+      numVis = $("#tabs").tabs('option', 'active') +1 ;
+      console.log($("#tabs").tabs('option', 'active'));
+      draw();
     }
+});
+
+
 
 }
+
+
+// function aff(e){
+//
+//   clearButtonVisu(e.target.value);
+//   numVis = e.target.value;
+//
+//   draw();
+// }
+
+//affichage de la bonne visu et suppression des autres
+// function AffVis(i){
+//
+//   if(i==1){
+//     $("#Visu1").show();
+//     $("#Visu3").hide();
+//     $("#Visu4").hide();
+//     $("#Visu5").hide();
+//     $("#Visu6").hide();
+//
+//
+//   }else if (i==2){
+//
+//     $("#Visu1").hide();
+//     $("#Visu3").hide();
+//     $("#Visu4").hide();
+//     $("#Visu5").hide();
+//     $("#Visu6").hide();
+//
+//   }else if (i==3){
+//     $("#Visu1").hide();
+//     $("#Visu3").show();
+//     $("#Visu4").hide();
+//     $("#Visu5").hide();
+//     $("#Visu6").hide();
+//
+//   }else if (i==4){
+//     $("#Visu1").hide();
+//     $("#Visu3").hide();
+//     $("#Visu4").show();
+//     $("#Visu5").hide();
+//     $("#Visu6").hide();
+//
+//
+//   }else if (i==5){
+//     $("#Visu1").hide();
+//     $("#Visu3").hide();
+//     $("#Visu4").hide();
+//     $("#Visu5").show();
+//     $("#Visu6").hide();
+//
+//   }else if (i==6){
+//
+//       $("#Visu1").hide();
+//       $("#Visu3").hide();
+//       $("#Visu4").hide();
+//       $("#Visu5").hide();
+//       $("#Visu6").show();
+//
+//
+//     }
+//
+// }
 
 //uncheck les boutons d in dex (visu1) autres aue celui aui vient d etre selectionné
 function clearButtonInd(i){
@@ -643,15 +653,28 @@ function draw(){
       //calcul de la taille d un carre de la heatmap (en fct du nombre de classe)
       let squaresize = 800/(res.model.models.length+1);
 
-      ctx.fillStyle = "rgba(255,128,0,0.2)";
+      var grd=ctx.createLinearGradient(0, 0,800*3/4 ,800*3/4);
+      grd.addColorStop(0,"rgb(255,230,150,0.4)");
+      grd.addColorStop(1,"rgb(255,125,0,0.4)");
+
+
+      ctx.fillStyle = grd;
       ctx.fillRect(0, 0 , can.width,can.height);
 
 
 
       let i = 0;
 
+
+
+
       for(let model of res.model.models){
 
+        ctx.fillStyle = "rgb(255,200,150)"
+        ctx.fillRect(i*squaresize + squaresize, 0 , squaresize,squaresize);
+        ctx.fillRect(0, i*squaresize + squaresize , squaresize,squaresize);
+
+        ctx.fillRect(0, 0 , squaresize,squaresize);
         ctx.beginPath()
         ctx.moveTo(squaresize + i*squaresize, 0)
         ctx.lineTo(squaresize + i*squaresize, can.height)
@@ -729,17 +752,18 @@ function draw(){
 
                 ctx.font ="15px Arial";
                 ctx.fillText(valMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
-              }else{
-
-                var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
-                grd.addColorStop(0,"rgb(255,255,255,0)");
-                grd.addColorStop(1,"rgb(255,125,0,0.4)");
-
-
-                ctx.fillStyle = grd;
-                ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
-
-              }
+               }
+              //else{
+              //
+              //   var grd=ctx.createLinearGradient(numcol*squaresize, numligne*squaresize,numcol*squaresize + squaresize*3/4 , numligne*squaresize + squaresize*3/4);
+              //   grd.addColorStop(0,"rgb(255,255,255,0)");
+              //   grd.addColorStop(1,"rgb(255,125,0,0.4)");
+              //
+              //
+              //   ctx.fillStyle = grd;
+              //   ctx.fillRect(numcol*squaresize, numligne*squaresize,squaresize , squaresize)
+              //
+              // }
         }
 
 
@@ -1022,6 +1046,7 @@ function draw(){
               // }
               // meanMod1Mod2 = meanMod1Mod2/phrase.length;
               // console.log('mean '+meanMod1Mod2);
+
 
               //affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
               if(valMod1Mod2*100>val6){
