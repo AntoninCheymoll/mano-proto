@@ -702,8 +702,8 @@ function draw(){
 
         ctx.font ="15px Arial";
         for(let mot of labelList){
-          ctx.fillText(mot, 10, 17*labelWordNum+ squaresize + i*squaresize + 50)
-          ctx.fillText(mot, squaresize + i*squaresize + 10 , 17*labelWordNum+  50)
+          ctx.fillText(mot, squaresize/10, 17*labelWordNum+ squaresize + i*squaresize + squaresize/2)
+          ctx.fillText(mot, squaresize + i*squaresize + squaresize/10 , 17*labelWordNum+  squaresize/2)
           labelWordNum++;
         }
 
@@ -751,7 +751,7 @@ function draw(){
 
 
                 ctx.font ="15px Arial";
-                ctx.fillText(valMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
+                ctx.fillText(valMod1Mod2, numcol*squaresize -10 + squaresize/2 , numligne*squaresize + squaresize/2);
                }
               //else{
               //
@@ -798,19 +798,19 @@ function draw(){
 
 
         //nom de la classe
-        ctx.fillStyle = "rgb(0,0,100)";
+        ctx.fillStyle = "rgb(0,0,175)";
         ctx.font ="15px Arial";
-        ctx.fillText(ph.label, 15, 15 + index*histoSize);
+        ctx.fillText(ph.label, 5, 15 + index*histoSize);
 
 
         ctx.fillStyle = "rgb(0,0,0)";
         //barre verticale (curseur)
         ctx.beginPath();
 
-        ctx.moveTo(15, histoSize*13/100 + index*histoSize );
-        ctx.lineTo(31, histoSize*13/100 + index*histoSize);
+        ctx.moveTo(15, histoSize*16/100 + index*histoSize );
+        ctx.lineTo(31, histoSize*16/100 + index*histoSize);
 
-        ctx.moveTo(15+8, histoSize*13/100 + index*histoSize );
+        ctx.moveTo(15+8, histoSize*16/100 + index*histoSize );
         ctx.lineTo(15+8, histoSize*85/100 + index*histoSize);
 
         ctx.moveTo(15, histoSize*85/100 + index*histoSize );
@@ -818,7 +818,7 @@ function draw(){
 
         ctx.stroke();
 
-        ctx.fillText(0 ,35, histoSize*16/100 + index*histoSize);
+        ctx.fillText(0 ,35, histoSize*21/100 + index*histoSize);
         ctx.fillText(ph.length-1,35, histoSize*88/100 + index*histoSize);
 
         //dessin de la barre de pas de temps sur le curseur en rouge
@@ -831,8 +831,8 @@ function draw(){
 
         if(ph.length>tps5){
 
-          ctx.moveTo(15, histoSize*13/100 + index*histoSize  + histoSize*72/100*tps5/(ph.length-1) );
-          ctx.lineTo(31, histoSize*13/100 + index*histoSize  + histoSize*72/100*tps5/(ph.length-1) );
+          ctx.moveTo(15, histoSize*16/100 + index*histoSize  + histoSize*69/100*tps5/(ph.length-1) );
+          ctx.lineTo(31, histoSize*16/100 + index*histoSize  + histoSize*69/100*tps5/(ph.length-1) );
 
         }else{
 
@@ -886,6 +886,29 @@ function draw(){
               ctx.fillStyle = "rgb(150,0,0)";
             }else{
               ctx.fillStyle = "rgb(0,0,0)";
+            }
+
+            //dessin du rectangle
+            ctx.fillRect((i+1)*800/(res.model.models.length+1)-30, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100, 60, likelihood*histoSize*75/100)
+
+            ctx.fillStyle = "rgb(0,0,0)";
+            ctx.fillText(likelihood ,(i+1)*800/(res.model.models.length+1) - 10, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100);
+
+          }else{//si on est apres la fin de la phrase on affiche la derniere valeure
+
+            //la valeur correspondante
+            let likelihood = ph.likelihoods[ph.length-1][classLabel]
+
+            //troncature
+            likelihood = likelihood*100;
+            likelihood = Math.round(likelihood)
+            likelihood = likelihood/100
+
+            //couleur differente pour la classe symetrique
+            if(classLabel == ph.label){
+              ctx.fillStyle = "rgb(150,100,100)";
+            }else{
+              ctx.fillStyle = "rgb(70,70,70)";
             }
 
             //dessin du rectangle
@@ -969,8 +992,8 @@ function draw(){
         //affichage chaue partie a une hauteur differente
         ctx.font ="15px Arial";
         for(let mot of labelList){
-          ctx.fillText(mot, 10, 17*labelWordNum+ squaresize + i*squaresize + 50)
-          ctx.fillText(mot, squaresize + i*squaresize + 10 , 17*labelWordNum+  50)
+          ctx.fillText(mot, squaresize/10, 17*labelWordNum+ squaresize + i*squaresize + squaresize/2)
+          ctx.fillText(mot, squaresize + i*squaresize + squaresize/10 , 17*labelWordNum+  squaresize/2)
           labelWordNum++;
         }
 
@@ -1070,7 +1093,7 @@ function draw(){
 
 
                 ctx.font ="15px Arial";
-                ctx.fillText(valMod1Mod2, numcol*squaresize + 70, 70 +numligne*squaresize);
+                ctx.fillText(valMod1Mod2, numcol*squaresize - 10 + squaresize/2,  numligne*squaresize +squaresize/2);
 
 
                }
