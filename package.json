@@ -23,6 +23,7 @@
     "mano-js": "github:ircam-rnd/mano-js",
     "rapid-mix-adapters": "github:Ircam-RnD/rapid-mix-adapters",
     "style-loader": "^0.21.0",
+    "ws": "^5.2.0",
     "xmm-client": "github:Ircam-RnD/xmm-client",
     "xmm-node": "github:ircam-rnd/xmm-node"
   },

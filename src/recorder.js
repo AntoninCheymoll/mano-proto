@@ -1,10 +1,13 @@
 import { Example, TrainingSet, XmmProcessor } from "mano-js/common";
 import { ProcessedSensors } from "mano-js/client";
+import rapidMixAdapters from "rapid-mix-adapters";
 
 const $error = document.querySelector("#error");
 const $label = document.querySelector("#label");
 const $result = document.querySelector("#result");
 const $recordBtn = document.querySelector("#recording-control");
+
+const socket = new WebSocket(`ws://${window.location.hostname}:8000`);
 
 // globals
 let state = "idle";
@@ -14,17 +17,6 @@ const processedSensors = new ProcessedSensors();
 const trainingSet = new TrainingSet();
 const xmmProcessor = new XmmProcessor({
   url: `http://${window.location.hostname}:3000/train`
-});
-
-/**
- * Change default configuration
- */
-xmmProcessor.setConfig({
-  modelType: "hhmm",
-  gaussians: 1,
-  covarianceMode: "diagonal",
-  likelihoodWindow: 12,
-  states: 5
 });
 
 /**
@@ -64,17 +56,30 @@ function train() {
   trainingSet.addExample(rapidMixJSONExample);
 
   const rapidMixJSONTrainingSet = trainingSet.toJSON();
-  const promise = xmmProcessor.train(rapidMixJSONTrainingSet);
+  socket.send(JSON.stringify(rapidMixJSONTrainingSet));
+  // const promise = xmmProcessor.train(rapidMixJSONTrainingSet);
 
-  promise
-    .then(res => {
-      // (re)enable decoding
-      processedSensors.addListener(decode);
-    })
-    .catch(err => console.error(err.stack));
-
-  return promise;
+  // promise
+  //   .then(res => {
+  //     // (re)enable decoding
+  //     processedSensors.addListener(decode);
+  //   })
+  //   .catch(err => console.error(err.stack));
+  //
+  // return promise;
 }
+
+socket.onmessage = function(event) {
+  const message = JSON.parse(event.data);
+  if (message.type !== 'model') { return; }
+  const model = message.data;
+  xmmProcessor.setModel(rapidMixAdapters.xmmToRapidMixModel(model));
+  processedSensors.addListener(decode);
+
+  state = "idle";
+  $label.value = "";
+  $recordBtn.textContent = "Record";
+};
 
 /**
  * Function that decode the stream created by the `mano.ProcessedSensors`
@@ -111,12 +116,7 @@ $recordBtn.addEventListener("click", () => {
       state = "training";
       $recordBtn.textContent = "Training";
 
-      train().then(() => {
-        state = "idle";
-
-        $label.value = "";
-        $recordBtn.textContent = "Record";
-      });
+      train();
       break;
   }
 });
