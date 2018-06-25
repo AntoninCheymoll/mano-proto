@@ -3,8 +3,10 @@ import jquery from 'jquery';
 //import 'jquery-ui';
 import 'jquery-ui-bundle';
 //import 'jquery-ui-bundle/jquery-ui.css';
+import petiteFunc, { double } from './visu1.js';
 
-
+//petiteFunc('Bpnjourhscuds');
+//console.log(double(4));
 
 //import * as d3 from "d3";
 
@@ -49,25 +51,31 @@ function mainVisu(json) {
 
 $( "#pasDeTemps" ).text(0);
 
+
 $("canvas").click(function(e) {
+  if(numVis == 6){
+    let tampCol = numColClicked;
+    let tampLin = numLinClicked;
+
+    var x = event.pageX;
+    var y = event.pageY;
+
+    let rectW = can.width/(res.model.models.length+1);
+    numColClicked = Math.trunc((x- $("canvas").position().left)/rectW) ;
 
 
-  var x = event.pageX;
-  var y = event.pageY;
+    let rectH = can.height/(res.trainingSet.phrases.length+1);
+    numLinClicked = Math.trunc((y- $("canvas").position().top)/rectH) ;
 
-  let rectW = can.width/(res.model.models.length+1);
-  numColClicked = Math.round((x- $("canvas").position().left)/rectW) ;
+    if(tampLin == numLinClicked && tampCol == numColClicked){
 
-  //log(cle, affich)
+      numLinClicked =-1;
+      numColClicked =-1;
 
-  //
-  // let rectH = can.height/(res.trainingSet.phrases.length+1);
-  // numLinClicked = Math.round((y- $("canvas").position().top)/rectH) ;
-  //
-  // console.log("x:" + (x- $("canvas").position().left));
-  // console.log("y:" + (y- $("canvas").position().top));
+    }
 
-  draw()
+    draw()
+  }
   })
 
 
@@ -224,8 +232,6 @@ function init() {
   // });
 
 
-
-
   $( "#tabs" ).tabs({
     activate: function(event, ui) {
       numVis = $("#tabs").tabs('option', 'active') +1 ;
@@ -233,7 +239,6 @@ function init() {
       draw();
     }
 });
-
 
 
 }
@@ -247,59 +252,7 @@ function init() {
 //   draw();
 // }
 
-//affichage de la bonne visu et suppression des autres
-// function AffVis(i){
-//
-//   if(i==1){
-//     $("#Visu1").show();
-//     $("#Visu3").hide();
-//     $("#Visu4").hide();
-//     $("#Visu5").hide();
-//     $("#Visu6").hide();
-//
-//
-//   }else if (i==2){
-//
-//     $("#Visu1").hide();
-//     $("#Visu3").hide();
-//     $("#Visu4").hide();
-//     $("#Visu5").hide();
-//     $("#Visu6").hide();
-//
-//   }else if (i==3){
-//     $("#Visu1").hide();
-//     $("#Visu3").show();
-//     $("#Visu4").hide();
-//     $("#Visu5").hide();
-//     $("#Visu6").hide();
-//
-//   }else if (i==4){
-//     $("#Visu1").hide();
-//     $("#Visu3").hide();
-//     $("#Visu4").show();
-//     $("#Visu5").hide();
-//     $("#Visu6").hide();
-//
-//
-//   }else if (i==5){
-//     $("#Visu1").hide();
-//     $("#Visu3").hide();
-//     $("#Visu4").hide();
-//     $("#Visu5").show();
-//     $("#Visu6").hide();
-//
-//   }else if (i==6){
-//
-//       $("#Visu1").hide();
-//       $("#Visu3").hide();
-//       $("#Visu4").hide();
-//       $("#Visu5").hide();
-//       $("#Visu6").show();
-//
-//
-//     }
-//
-// }
+
 
 //uncheck les boutons d in dex (visu1) autres aue celui aui vient d etre selectionné
 function clearButtonInd(i){
@@ -316,7 +269,6 @@ function cuttingString(max, ctx, string){
 
   while(ctx.measureText(string).width>max){
      string = string.substring(0,string.length-1)
-
    }
 
  return string;
@@ -338,7 +290,7 @@ function clearButtonVisu(i){
 
 
 
-//temps maximum des phrases, le nombre retourné est celui de la valeure de la derniere phrase (0 si la longueur est 1)
+//temps maximum des phrases , le nombre retourné est celui de la valeure de la derniere phrase (0 si la longueur est 1)
 
 function calculMaxTime(){
   let max = 0;
@@ -1378,9 +1330,9 @@ function draw(){
 
                 //la couleur du texte depend de la couleur dessous pour etre la plus lisibl possible
                 if(valMod1Mod2>0.5){
-                  if(isNotFinished){ctx.fillStyle = "rgb(255,255,255)";}else{ctx.fillStyle = "rgb(125,125,125)";}
+                  if(isNotFinished){ctx.fillStyle = "rgb(255,255,255)";}else{ctx.fillStyle = "rgb(155,155,155)";}
                 }else{
-                  if(isNotFinished){ctx.fillStyle = "rgb(0,0,0)";}else{ctx.fillStyle = "rgb(125,125,125)";}
+                  if(isNotFinished){ctx.fillStyle = "rgb(0,0,0)";}else{ctx.fillStyle = "rgb(100,100,100)";}
                 }
 
                 //affichage de la valeur apres troncature
@@ -1416,9 +1368,12 @@ function draw(){
 
       }
 
-      ctx.fillStyle = "rgba(0,0,255,0.5)"
-      //console.log("col:" + numColClicked);
-      //console.log("lin:" + numLinClicked);
+      ctx.fillStyle = "rgba(0,0,255,0.4)"
+
+      //affiche la ligne et colonne cliquée
+      ctx.fillRect(numColClicked*squaresizeW, 0 ,squaresizeW, squaresizeH)
+      ctx.fillRect(0, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
+
       ctx.fillRect(numColClicked*squaresizeW, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
 
     }
