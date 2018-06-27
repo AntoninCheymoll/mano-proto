@@ -23,53 +23,25 @@
 
 
 
-  <!-- <fieldset style="width:200px">
-    <legend> Numéro de la visualisation: </legend>
-    <label for="vis1">1</label>
-    <input type="radio"  name="visu" id="vis1" value = "1" class = "radioVisu" >
-    <label for="vis2">2</label>
-    <input type="radio"  name="visu" id="vis2" value = "2" class = "radioVisu">
-    <label for="vis3">3</label>
-    <input type="radio"  name="visu" id="vis3" value = "3" class = "radioVisu">
-    <label for="vis4">4</label>
-    <input type="radio"  name="visu" id="vis4" value = "4" class = "radioVisu">
-    <label for="vis5">5</label>
-    <input type="radio"  name="visu" id="vis5" value = "5" class = "radioVisu">
-    <label for="vis6">6</label>
-    <input type="radio"  name="visu" id="vis6" value = "6" class = "radioVisu">
-  </fieldset> -->
 
-  <!-- Visualisation:
-  <input type="checkbox" id="vis1" class = "visu" value = "1" checked >
-  1
-  <input type="checkbox" id="vis2" class = "visu" value = "2"  >
-  2
-  <input type="checkbox" id="vis3" class = "visu" value = "3"  >
-  3
-  <input type="checkbox" id="vis4" class = "visu" value = "4"  >
-  4
-  <input type="checkbox" id="vis5" class = "visu" value = "5"  >
-  5
-  <input type="checkbox" id="vis6" class = "visu" value = "6"  >
-  6 -->
   <br>
   <br>
 
 
   <div id="tabs">
   <ul>
-    <li><a href="#Visu1">Visu1 </a></li>
-    <li><a href="#Visu2">Graph global</a></li>
-    <li><a href="#Visu3">Graphs pour chaque classe</a></li>
-    <li><a href="#Visu4">Heatmap moyen</a></li>
-    <li><a href="#Visu5">Histogrammes</a></li>
-    <li><a href="#Visu6">Heatmap dynamique</a></li>
+    <!-- <li><a href="#Visu1">Visu1 </a></li>
+    <li><a href="#Visu2">Graph global</a></li> -->
+    <li><a href="#Graphs">Graphs pour chaque classe</a></li>
+    <!-- <li><a href="#Visu4">Heatmap moyen</a></li> -->
+    <li><a href="#Histo">Histogrammes</a></li>
+    <li><a href="#HM">Heatmap dynamique</a></li>
 
   </ul>
 
 
 
-  <div id="Visu1">
+  <!-- <div id="Visu1">
     numero du caractère etudié:
 
     <input id="cb0" type="checkbox" checked class= "cb" value = "0"> 0
@@ -91,19 +63,19 @@
     <label for="cov">covariance</label>
     <br><br>
 
-  </div>
+  </div> -->
 
-  <div id="Visu3" hidden >
+  <div id="Graphs" hidden >
     Moyenne de reconnaissance:
     <label id= "recoMean"></label>
     <br>
-      Temps étudié:  &nbsp;   <div id="sliderVisu3" style="display:inline-block;width:200px;"></div>
+      Temps étudié:  &nbsp;   <div id="sliderGraphs" style="display:inline-block;width:200px;"></div>
       &nbsp;
-    <label id= "pasDeTemps3">0</label>
+    <label id= "pasDeTempsGraphs">0</label>
     <br>
   </div>
 
-  <div id="Visu4" hidden >
+  <!-- <div id="Visu4" hidden >
 
         <br>
 
@@ -111,23 +83,23 @@
     <span class="tooltipable">Seuil :<div class="tooltip">Seuil en dessous duquel on ignore les valeures</div></span> &nbsp; &nbsp;<div id="sliderVisu4"  style="display:inline-block;width:200px;"></div> &nbsp;
     <label id= "valeur4">0.00</label>
     <br>
-  </div>
+  </div> -->
 
-  <div id="Visu5" hidden >
+  <div id="Histo" hidden >
 
-      Temps étudié:  &nbsp;   <div id="sliderVisu5" style="display:inline-block;width:200px;"></div>
+      Temps étudié:  &nbsp;   <div id="sliderHisto" style="display:inline-block;width:200px;"></div>
       &nbsp;
-    <label id= "pasDeTemps5">0</label>
+    <label id= "pasDeTempsHisto">0</label>
   </div>
 
 
-<div id="Visu6" hidden >
+<div id="HM" hidden >
 
-        Temps étudié:  &nbsp;   <div id="sliderVisu6tps" style="display:inline-block;width:200px;"></div>
-        &nbsp;      <label id= "pasDeTemps6">0</label>
+        Temps étudié:  &nbsp;   <div id="sliderHMtps" style="display:inline-block;width:200px;"></div>
+        &nbsp;      <label id= "pasDeTempsHM">0</label>
         <br><br>
-        <span class="tooltipable">Seuil :<div class="tooltip" >Seuil en dessous duquel on ignore les valeures</div></span>&nbsp; &nbsp;<div id="sliderVisu6meanMin"  style="display:inline-block;width:200px;"></div> &nbsp;
-        <label id= "meanMin6">0.00</label>
+        <span class="tooltipable">Seuil :<div class="tooltip" >Seuil en dessous duquel on ignore les valeures</div></span>&nbsp; &nbsp;<div id="sliderHMmeanMin"  style="display:inline-block;width:200px;"></div> &nbsp;
+        <label id= "meanMinHM">0.00</label>
 
 
 
@@ -136,7 +108,7 @@
 
 </div>
 
-
+<div id= "tooltipCan" class="tooltipCan" ><label id= "labelCan">12</label></div>
 
 <br>
 <br>
