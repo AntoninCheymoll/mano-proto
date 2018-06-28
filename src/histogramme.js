@@ -3,13 +3,15 @@ import jquery from 'jquery';
 import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
 
-export default function histogramme(can, res,ctx, tps5) {
+export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
   can.width = '800';
   can.height = '800';
 
-  //calcul de la classe d un histogramme en fct du nombre de classe
+  //calcul de la taille d une serie d histogramme en fct du nombre de classe
    let histoSize = (800-30)/res.trainingSet.phrases.length;
 
+   // calcul de la largeur d'un batton
+   let histoWidth = (800-50)/(res.model.models.length)*3/4
 
   let classNameSize = 30
 
@@ -18,16 +20,36 @@ export default function histogramme(can, res,ctx, tps5) {
 
 
   ctx.fillStyle = "rgb(0,0,0)";
-  let cpt = 0;
   ctx.font ="15px Arial";
 
+  let cpt = 0;
 
   for(let modelName of res.model.models){
+
+    //ecriture des noms de classe
     let txt = cuttingString((800-50)/(res.model.models.length)-2, ctx, modelName.label)//texte coupe si trop long
+
+    if(txt != modelName.label){
+
+       tooltipHisto.push([50  + cpt*(800-50)/(res.model.models.length) +((800-50)/(res.model.models.length) -ctx.measureText(txt).width)/2,
+             20-15,ctx.measureText(txt).width,15,modelName.label])
+
+
+    }
 
     ctx.fillText(txt,
       50  + cpt*(800-50)/(res.model.models.length) +((800-50)/(res.model.models.length) -ctx.measureText(txt).width)/2,
       20)
+
+
+      //tracé des lignes de separation verticales
+      ctx.strokeStyle = "rgb(128,128,128)"
+
+      ctx.beginPath();
+      ctx.moveTo(51 + (cpt+1)*histoWidth*4/3,0);
+      ctx.lineTo( 51 + (cpt+1)*histoWidth*4/3 ,can.height)
+      ctx.stroke();
+
 
     cpt++
   }
@@ -46,9 +68,17 @@ export default function histogramme(can, res,ctx, tps5) {
     ctx.lineTo(can.width ,histoSize*91/100+ index*histoSize + classNameSize );
     ctx.stroke();
 
+    //ligne horizontale blanche
+    ctx.strokeStyle = "rgb(255,255,255)";
+    ctx.lineWidth=histoSize*8/100;
+    ctx.beginPath();
+    ctx.moveTo(0,histoSize*3/100 + (index+1)*histoSize + classNameSize  );
+    ctx.lineTo(can.width ,histoSize*3/100 + (index+1)*histoSize + classNameSize);
+    ctx.stroke();
 
     ctx.fillStyle = "rgb(0,0,0)";
-
+    ctx.strokeStyle = "rgb(0,0,0)";
+    ctx.lineWidth = 1;
     //barre verticale (curseur)
     ctx.beginPath();
 
@@ -153,8 +183,19 @@ export default function histogramme(can, res,ctx, tps5) {
         }
 
         //dessin du rectangle
-        let histoWidth = (800-50)/(res.model.models.length)*3/4
+
         ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+
+        //si on affiche pas la valeure on doit le mettre dans le tooltipHM
+        if(res.trainingSet.phrases.length>20){
+
+            tooltipHisto.push([(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+                               histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
+                               histoWidth,
+                               likelihood*histoSize*75/100,
+                               likelihood])
+        }
+
 
         ctx.fillStyle = "rgb(0,0,0)";
 
@@ -191,12 +232,26 @@ export default function histogramme(can, res,ctx, tps5) {
 
         //dessin du rectangle
         let histoWidth = (800-50)/(res.model.models.length)*3/4
-        ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 +  histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+        ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 +  histoWidth/3/2,
+                      histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
+                      histoWidth,
+                      likelihood*histoSize*75/100)
+
+        //si on affiche pas la valeure on doit le mettre dans le tooltipHM
+
+        if(res.trainingSet.phrases.length>20){
+
+            tooltipHisto.push([(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+                               histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
+                               histoWidth,
+                               likelihood*histoSize*75/100,
+                               likelihood])
+        }
+
+
 
 
         ctx.fillStyle = "rgb(0,0,0)";
-
-
         if(res.trainingSet.phrases.length<10){
           ctx.font ="15px Arial";
           ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(res.model.models.length) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);

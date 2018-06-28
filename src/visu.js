@@ -2,7 +2,7 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 //import 'jquery-ui-bundle/jquery-ui.css';
-import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
+import { getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
 
 import graphs from './graphs.js';
 import histogramme from './histogramme.js';
@@ -15,6 +15,8 @@ var can = document.createElement('canvas');
 
 var ctx = can.getContext("2d")
 
+var mouseOverCan = false;
+
 //fichier json
 var res;
 
@@ -26,12 +28,16 @@ var tpsGraph  = 0;
 
 // variable de l'histogramme
 var tpsHisto  = 0;
+var tooltipHisto = [];
 
 // variables de la heatmap
 var valHM  = 0;
 var tpsHM = 0;
 var numLinClickedHM = -1;
 var numColClickedHM = -1;
+var tooltipHM = [];
+
+
 
 
 
@@ -139,19 +145,39 @@ function init() {
         }
       })
 
-  can.onmousemove = function(e){
-    
-    tooltipCan.css('visibility', 'hidden');
+    can.onmouseenter = function(e){
+        mouseOverCan = true;
 
-    if(numVis ==3){
-        let result = onMouseOnHM(e,can,numVis,res,tooltipCan,labelCan);
+    };
+
+    can.onmouseleave = function(e){
+        mouseOverCan = false;
+
+    };
+
+
+  document.body.onmousemove = function(e) {
+      tooltipCan.css('visibility', 'hidden')
+      numColClickedHM = -1
+      numLinClickedHM = -1
+
+      if(mouseOverCan && numVis == 3){
+
+        displayTooltipOnCan(tooltipHM, e)
+
+        let result = onMouseOnHM(e,can,numVis,res);
         numColClickedHM = result[0]
         numLinClickedHM = result[1]
+
+
+      }else if(mouseOverCan && numVis == 2){
+        displayTooltipOnCan(tooltipHisto, e)
+
+      }
+
         draw()
     }
 
-
-  }
 
 
   $( "#tabs" ).tabs({
@@ -212,11 +238,14 @@ function draw(){
         graphs(can,res,ctx,tpsGraph );
 
     }else if(numVis==2){
-        histogramme(can,res,ctx, tpsHisto);
+        histogramme(can,res,ctx, tpsHisto, tooltipHisto);
+
 
     }else if(numVis==3){
-            heatmap(can,res,ctx, valHM,tpsHM,numLinClickedHM,numColClickedHM);
+            heatmap(can,res,ctx, valHM,tpsHM,numLinClickedHM,numColClickedHM,tooltipHM);
     }
+
+    // console.log(tooltipHisto);
 }
 
 

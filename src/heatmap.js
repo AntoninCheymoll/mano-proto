@@ -6,7 +6,7 @@ import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
 
 
-export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClicked) {
+export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClicked,tooltipHM) {
   can.width =  800;
   can.height = 800;
 
@@ -99,7 +99,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
     if (squaresizeH > 17*2){
       textSize2 = 15;
       gapSize2 = 2;
-    }else if (squaresizeH> 13*2){
+    }else if (squaresizeH > 13*2){
       textSize2 = 12;
       gapSize2 = 1;
     }else {
@@ -110,6 +110,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
 
     let labelWordNum =0;
+    let fullText = true;
     ctx.fillStyle = "rgb(0,0,0)"
 
     for(let mot of labelList){
@@ -119,13 +120,40 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
       labelWordNum++
 
 
-
+      //si il reste de la place pour ecrire un mot
       if(squaresizeH - (textSize2 + gapSize2)*labelWordNum >0){
 
+
+
+        //on ecrit le prochain mot
         ctx.fillText(cuttingString(squaresizeW*90/100, ctx, mot),  (cptModel)*squaresizeW + squaresizeW/10 , (textSize2 + gapSize2)*labelWordNum,squaresizeH - squaresizeH/10)
+
+        if(!(cuttingString(squaresizeW*90/100, ctx, mot) == mot)){
+           fullText = false;
+        }
+
+      }else{
+        fullText = false;
+        ctx.fillText("...",  (cptModel)*squaresizeW + squaresizeW/10 , squaresizeH/2 ,squaresizeH - squaresizeH/10);
       }
     }
+
+    //si le label n'a pas été affiché entierrement on ajoute un tooltip a la liste
+    if(!fullText){
+
+          // ctx.strokeStyle = "rgba(255,0,0,0.3)"
+          // ctx.rect(1,squaresizeH*numligne +1,squaresizeW-2, squaresizeH-2)
+          // ctx.stroke()
+
+          tooltipHM.push([squaresizeW*cptModel, 0, squaresizeW, squaresizeH,mod.label])
+    }
+
   }
+
+
+
+
+
 
 
 
@@ -263,20 +291,33 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
     //affichage chaque partie a une hauteur differente
     ctx.fillStyle = "rgb(0,0,0)"
+    let fullText = true;
+
     for(let mot of labelList){
       labelWordNum++;
 
       ctx.font = textSize + "px Arial";
 
       if(placeRestante - (textSize + gapSize)*labelWordNum >=0){
-
-
         ctx.fillText(cuttingString(squaresizeW*90/100, ctx, mot), squaresizeW/10, (textSize + gapSize)*labelWordNum  + squaresizeH + (numligne-1)*squaresizeH , squaresizeH*90/100)
+
+        if(!(cuttingString(squaresizeW*90/100, ctx, mot) == mot)){
+            fullText = false;
+        }
+      }else{
+        fullText = false;
 
       }
 
+    }
+    //si le label n'a pas été affiché entierrement on ajoute un tooltip a la liste
+    if(!fullText){
 
+          // ctx.strokeStyle = "rgba(255,0,0,0.3)"
+          // ctx.rect(1,squaresizeH*numligne +1,squaresizeW-2, squaresizeH-2)
+          // ctx.stroke()
 
+          tooltipHM.push([0,squaresizeH*numligne  , squaresizeW, squaresizeH, phrase.label])
     }
 
 
@@ -307,17 +348,30 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
           //affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
           if(valMod1Mod2*100>val6){
-            ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*255)+"," + (255 - valMod1Mod2*255)+ ","+ (255 - valMod1Mod2*255) +")";
 
+
+            //calcul de la couleur du carré, rouge ou noir, plus ou moins clair
+            if(phrase.label == model2.label){
+              ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*(255-150))+"," + (255 - valMod1Mod2*(255))+ "," +  (255 - valMod1Mod2*(255))  +")";
+              // ctx.fillStyle = "rgb(80,0,0)";
+            }else{
+              ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*255)+"," + (255 - valMod1Mod2*255)+ ","+ (255 - valMod1Mod2*255) +")";
+            }
 
             //dessin du carre
             ctx.fillRect(numcol*squaresizeW, numligne*squaresizeH ,squaresizeW, squaresizeH)
 
+
             //la couleur du texte depend de la couleur dessous pour etre la plus lisibl possible
-            if(valMod1Mod2>0.5){
-              if(isNotFinished){ctx.fillStyle = "rgb(255,255,255)";}else{ctx.fillStyle = "rgb(155,155,155)";}
+            //si on est sur fond rouge le texte est toujours clair
+            if(phrase.label==model2.label){
+                if(isNotFinished){ctx.fillStyle = "rgb(255,255,255)";}else{ctx.fillStyle = "rgb(155,155,155)";}
             }else{
-              if(isNotFinished){ctx.fillStyle = "rgb(0,0,0)";}else{ctx.fillStyle = "rgb(100,100,100)";}
+              if(valMod1Mod2>0.5){
+                if(isNotFinished){ctx.fillStyle = "rgb(255,255,255)";}else{ctx.fillStyle = "rgb(155,155,155)";}
+              }else{
+                if(isNotFinished){ctx.fillStyle = "rgb(0,0,0)";}else{ctx.fillStyle = "rgb(100,100,100)";}
+              }
             }
 
             //affichage de la valeur apres troncature
@@ -353,7 +407,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
   }
 
-  ctx.fillStyle = "rgba(0,0,255,0.4)"
+  ctx.fillStyle = "rgba(128,0,128,0.4)"
 
   //affiche la ligne et colonne cliquée
   ctx.fillRect(numColClicked*squaresizeW, 0 ,squaresizeW, squaresizeH)

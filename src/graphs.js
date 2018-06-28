@@ -73,17 +73,24 @@ export default function graphs(can, res,ctx,tps3) {
       ctx.lineTo(10,graphSize +  i*graphSize);
       ctx.stroke();
 
-      //ligne horizontale
+      //ligne horizontale de temps
       ctx.beginPath();
       ctx.moveTo(0,i*graphSize + graphSize*97/100);
       ctx.lineTo(can.width ,graphSize*97/100+ i*graphSize)
       ctx.stroke();
-      ctx.beginPath();
 
+      //ligne horizontale blanche de separation
+      ctx.beginPath();
+      ctx.strokeStyle = "rgb(255,255,255)"
+      ctx.lineWidth=graphSize*8/100;
+      ctx.moveTo(0, graphSize*7/100+ (i+1)*graphSize);
+      ctx.lineTo(can.width ,graphSize*7/100+ (i+1)*graphSize)
+      ctx.stroke();
 
       //tracé de la ligne indiquant le temps etudie
 
-
+        ctx.beginPath();
+        ctx.strokeStyle = "rgb(0,0,0)"
         ctx.moveTo(10 + 790*tps3/(maxTime-1),graphSize*15/100+ i*graphSize);
         //console.log('tps3:' + tps3);
         //console.log('mt:' + (maxTime-1));
@@ -156,7 +163,7 @@ export default function graphs(can, res,ctx,tps3) {
   //dessin de la ligne rouge en dernier pour la faire ressortir
 
     if(tps3< classe.length){
-            ctx.strokeStyle="rgb(255,0,0)"
+            ctx.strokeStyle="rgb(150,0,0)"
       }else{
               ctx.strokeStyle="rgb(150,80,80)"
       }

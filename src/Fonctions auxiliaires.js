@@ -1,3 +1,30 @@
+import  $ from 'jquery';
+import jquery from 'jquery';
+import 'jquery-ui-bundle';
+
+
+//affichage des elements tooltipable dans le can
+
+export function displayTooltipOnCan(tab,e){
+
+  let x = event.pageX- $("canvas").position().left;
+  let y = event.pageY- $("canvas").position().top;
+
+  for(let elem of tab){
+
+
+    if(x>elem[0] && x<elem[0]+elem[2] && y>elem[1] && y<elem[1]+elem[3]){
+      var mouseX = e.clientX,
+          mouseY = e.clientY;
+
+      $("#tooltipCan").css( {top: (mouseY + 20) + 'px', left: (mouseX + 20) + 'px'});
+      $("#tooltipCan").css('visibility', 'visible');
+      $("#labelCan").text(elem[4])
+    }
+  }
+}
+
+
 //parse l'url
 
 export function getAllUrlParams(url) {
@@ -62,14 +89,17 @@ export function getAllUrlParams(url) {
   return obj;
 }
 
-//permet de supprimer les lettres qui vont depasser d un string
+//permet de supprimer les lettres qui vont depasser d un string et d'ajouter des "..." a la fin si besoin
 export  function cuttingString(max, ctx, string){
+  if(ctx.measureText(string).width<=max){
+      return string;
+  }
 
-  while(ctx.measureText(string).width>max){
+  while(ctx.measureText(string).width>max -ctx.measureText("..").width ){
      string = string.substring(0,string.length-1)
    }
 
- return string;
+ return string + "..";
 }
 
 
