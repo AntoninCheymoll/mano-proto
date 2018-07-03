@@ -28,6 +28,7 @@
   <br>
 
 
+
   <div id="tabs">
   <ul>
     <!-- <li><a href="#Visu1">Visu1 </a></li>
@@ -69,9 +70,12 @@
     Moyenne de reconnaissance:
     <label id= "recoMean"></label>
     <br>
-      Temps étudié:  &nbsp;   <div id="sliderGraphs" style="display:inline-block;width:200px;"></div>
-      &nbsp;
-    <label id= "pasDeTempsGraphs">0</label>
+      Temps étudié: <id="pasDeTempsGraphs0" class = "pasDeTemps0">0</label> &nbsp;
+       <div class = "slider" id="sliderGraphs" style="display:inline-block;width:200px;">
+         <div id="handleGraphs" class="ui-slider-handle" style="width:1.6em;color:#FFF;background:#00A">0</div>
+    </div>
+      &nbsp; &nbsp;
+    <label id= "pasDeTempsGraphs" class = "pasDeTemps"></label>
     <br>
   </div>
 
@@ -87,19 +91,34 @@
 
   <div id="Histo" hidden >
 
-      Temps étudié:  &nbsp;   <div id="sliderHisto" style="display:inline-block;width:200px;"></div>
-      &nbsp;
-    <label id= "pasDeTempsHisto">0</label>
+      Temps étudié: <id="pasDeTempsHisto0" class = "pasDeTemps0">0</label> &nbsp;
+      <div class = "slider" id="sliderHisto" style="display:inline-block;width:200px;">
+        <div id="handleHisto" class="ui-slider-handle" style="width:1.6em;color:#FFF;background:#00A">0</div>
+      </div>
+      &nbsp; &nbsp;
+    <label id= "pasDeTempsHisto" class = "pasDeTemps"></label>
   </div>
 
 
 <div id="HM" hidden >
 
-        Temps étudié:  &nbsp;   <div id="sliderHMtps" style="display:inline-block;width:200px;"></div>
-        &nbsp;      <label id= "pasDeTempsHM">0</label>
+        Temps étudié: <id="pasDeTempsHM0" class = "pasDeTemps0">0</label> &nbsp;
+
+        <div class = "slider" id="sliderHMtps" style="display:inline-block;width:200px;">
+          <div id="handleHM" class="ui-slider-handle" style="width:1.6em;color:#FFF;background:#00A">0</div>
+        </div>
+
+        &nbsp;   &nbsp;   <label id= "pasDeTempsHM" class = "pasDeTemps"></label>
+
         <br><br>
-        <span class="tooltipable">Seuil :<div class="tooltip" >Seuil en dessous duquel on ignore les valeures</div></span>&nbsp; &nbsp;<div id="sliderHMmeanMin"  style="display:inline-block;width:200px;"></div> &nbsp;
-        <label id= "meanMinHM">0.00</label>
+        <span class="tooltipable">Seuil :<div class="tooltip" >Seuil en dessous duquel on ignore les valeures</div>
+        </span>&nbsp; &nbsp;
+
+        <id="seuilHM0" class = "seuil0">0</label> &nbsp;
+          <div id="sliderHMmeanMin"  style="display:inline-block;width:200px;">
+            <div id="handleSeuilHM" class="ui-slider-handle" style="width:2em;color:#FFF;background:#600">0</div>
+          </div> &nbsp; &nbsp; &nbsp;
+        <label id= "meanMinHM" class = "seuil"  >1</label>
 
 
 
@@ -112,6 +131,8 @@
 
 <br>
 <br>
+
+
 
 
 

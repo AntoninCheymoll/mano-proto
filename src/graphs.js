@@ -8,7 +8,7 @@ import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
 
 
-export default function graphs(can, res,ctx,tps3) {
+export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs,isDraging) {
 
   //taille d un graphe unique
   let graphSize = 800/res.trainingSet.phrases.length;
@@ -79,6 +79,17 @@ export default function graphs(can, res,ctx,tps3) {
       ctx.lineTo(can.width ,graphSize*97/100+ i*graphSize)
       ctx.stroke();
 
+      //battons de temps
+      ctx.lineWidth=2
+      for(let j=0;j<10;j++){
+        ctx.strokeStyle="rgb(0,"+ 128*j/9  + ","+ (160+ 95*j/9) +")"
+        ctx.beginPath();
+        ctx.moveTo(10 + j*(790/9),i*graphSize + graphSize*97/100 - graphSize*8/100);
+        ctx.lineTo(10 + j*(790/9) ,graphSize*97/100+ i*graphSize + graphSize*8/100)
+        ctx.stroke();
+
+      }
+
       //ligne horizontale blanche de separation
       ctx.beginPath();
       ctx.strokeStyle = "rgb(255,255,255)"
@@ -89,16 +100,32 @@ export default function graphs(can, res,ctx,tps3) {
 
       //tracé de la ligne indiquant le temps etudie
 
-        ctx.beginPath();
-        ctx.strokeStyle = "rgb(0,0,0)"
-        ctx.moveTo(10 + 790*tps3/(maxTime-1),graphSize*15/100+ i*graphSize);
-        //console.log('tps3:' + tps3);
-        //console.log('mt:' + (maxTime-1));
-        ctx.lineTo(10 + 790*tps3/(maxTime-1), graphSize +  i*graphSize);
+        //si le slider est en drag and drop alors on affiche un "halo" autour de la barre
+        if(isDraging){
+          ctx.lineWidth=4;
+          ctx.strokeStyle = "rgb(0,200,255)"
+
+          ctx.beginPath();
+
+          ctx.moveTo(10 + 790*tps3/(maxTime-1),graphSize*15/100+ i*graphSize);
+          ctx.lineTo(10 + 790*tps3/(maxTime-1), graphSize +  i*graphSize);
+
+          ctx.stroke();
+        }
 
         ctx.lineWidth=2;
+        ctx.strokeStyle = colorSliderGraphs
+
+        ctx.beginPath();
+
+        ctx.moveTo(10 + 790*tps3/(maxTime-1),graphSize*15/100+ i*graphSize);
+        ctx.lineTo(10 + 790*tps3/(maxTime-1), graphSize +  i*graphSize);
+
         ctx.stroke();
+
+
         ctx.lineWidth=1;
+        ctx.strokeStyle = "rgb(0,0,0)"
 
       if(tps3< classe.length){
         //calcul utile au calcul de la reconnaissance Moyenne
@@ -107,13 +134,21 @@ export default function graphs(can, res,ctx,tps3) {
 
 
       let stckClassSym;
+      let stckClassParall;
+
+
       //parcour de chaque classe dans le graphe
       for(let classe2 of res.model.models){
         //console.log('classeInGraphe ' +classe.label);
         //si on a afaire a la classe correspondante a celle du graphe on la dessinera plus tard en rouge
         if(classe2.label == classeName){
             //l affichage de la classe symetriaue se fera apres dans une autre couleur et a la fin pour que le trait soit au dessus des autres
-            stckClassSym = classe;
+            stckClassSym = classe2;
+
+
+          }else if(selectedGraph && selectedGraph[1]==classe.label && selectedGraph[0]==classe2.label) {
+            //si c est la ligne symetriaue de celle sur laquelle est la souris on la trace a la fin pour la faire ressortir
+            stckClassParall = classe2
 
 
           }else{
@@ -149,6 +184,20 @@ export default function graphs(can, res,ctx,tps3) {
             ctx.beginPath();
             ctx.moveTo(10, i*graphSize + graphSize*97/100 - data[0]*graphSize*82/100);
 
+            //si c est la ligne  sur laquelle est la souris
+             if(selectedGraph && selectedGraph[0]==classe.label && selectedGraph[1]==classe2.label){
+
+              ctx.lineWidth = 2;
+
+              if(tps3< classe.length){
+                      ctx.strokeStyle="rgb(0,160,80)"
+                }else{
+                        ctx.strokeStyle="rgb(0,100,50)"
+                }
+
+            }
+
+
 
               for (let j=1; j<data.length; j++){
 
@@ -157,9 +206,46 @@ export default function graphs(can, res,ctx,tps3) {
 
               //console.log(ctx.strokeStyle);
             ctx.stroke();
+            ctx.lineWidth = 1;
           }
 
       }
+
+
+    if(stckClassParall){
+      if(tps3< classe.length){
+              ctx.strokeStyle="rgb(0,160,80   )"
+        }else{
+                ctx.strokeStyle="rgb(0,100,50)"
+        }
+
+    //meme code aue precedemment
+        let data =  []
+
+        for(let x=0; x<classe.length;x++){
+          data.push(classe.likelihoods[x][stckClassParall.label]);
+
+        }
+
+
+        ctx.beginPath();
+        ctx.moveTo(10, i*graphSize + graphSize*97/100 - data[0]*graphSize*82/100);
+
+          ctx.lineWidth = 2;
+
+
+          for (let j=1; j<data.length; j++){
+
+            ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+          }
+
+
+        ctx.stroke();
+        ctx.lineWidth = 1;
+
+
+    }
+
   //dessin de la ligne rouge en dernier pour la faire ressortir
 
     if(tps3< classe.length){
@@ -185,6 +271,11 @@ export default function graphs(can, res,ctx,tps3) {
       ctx.beginPath();
       ctx.moveTo(10, i*graphSize + graphSize*97/100 - data[0]*graphSize*82/100);
 
+      //si c est la ligne sur laquelle est la souris
+      if(selectedGraph && selectedGraph[0]==stckClassSym.label && selectedGraph[1]==classe.label){
+
+        ctx.lineWidth = 2;
+      }
 
         for (let j=1; j<data.length; j++){
 
@@ -193,10 +284,10 @@ export default function graphs(can, res,ctx,tps3) {
 
         //console.log(ctx.strokeStyle);
       ctx.stroke();
+      ctx.lineWidth = 1;
 
+      i++;
 
-
-        i++;
   }
 
   //calcul de la reconnaissance moyenne

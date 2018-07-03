@@ -6,9 +6,7 @@ import 'jquery-ui-bundle';
 
 
 
-export default function onMouseOnHM(e,can,numVis,res) {
-
-
+export default function onMouseOnHM(e,can,res){
 
         let x = event.pageX- $("canvas").position().left;
         let y = event.pageY- $("canvas").position().top;

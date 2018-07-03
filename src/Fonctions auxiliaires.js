@@ -122,6 +122,8 @@ export function log(cle, affich){
 }
 
 
+
+
 //uncheck les boutons des in dex (visu1) autres aue celui aui vient d etre selectionné
 // function clearButtonInd(i){
 //   for(let j of $(".cb")){

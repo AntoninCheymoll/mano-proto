@@ -168,7 +168,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
     //classes finies grisées
     if (!phrases.includes(phrase)) {
-      ctx.fillStyle = "rgba(0,0,0,0.2)"
+      ctx.fillStyle = "rgba(0,128,255,0.5)"
         ctx.fillRect(0, numligne*squaresizeH,squaresizeW, squaresizeH)
     }
 
@@ -352,7 +352,9 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
             //calcul de la couleur du carré, rouge ou noir, plus ou moins clair
             if(phrase.label == model2.label){
-              ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*(255-150))+"," + (255 - valMod1Mod2*(255))+ "," +  (255 - valMod1Mod2*(255))  +")";
+              // ctx.fillStyle = "rgb(105,0,0)"
+              //ctx.fillStyle = "rgb(255,220,220)"
+              ctx.fillStyle = "rgb("+ (105 + valMod1Mod2*(255-105))+"," + (valMod1Mod2*(220))+ "," +  ( valMod1Mod2*(220))  +")";
               // ctx.fillStyle = "rgb(80,0,0)";
             }else{
               ctx.fillStyle = "rgb("+ (255 - valMod1Mod2*255)+"," + (255 - valMod1Mod2*255)+ ","+ (255 - valMod1Mod2*255) +")";
@@ -413,6 +415,10 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
   ctx.fillRect(numColClicked*squaresizeW, 0 ,squaresizeW, squaresizeH)
   ctx.fillRect(0, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
 
-  ctx.fillRect(numColClicked*squaresizeW, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
-
+  ctx.strokeStyle = "rgb(0,160,80)"
+  ctx.lineWidth = 3;
+  ctx.beginPath()
+  ctx.rect(numColClicked*squaresizeW, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
+  ctx.rect(numLinClicked*squaresizeW, numColClicked*squaresizeH ,squaresizeW, squaresizeH)
+  ctx.stroke();
 }

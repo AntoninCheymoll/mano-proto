@@ -3,9 +3,12 @@ import jquery from 'jquery';
 import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
 
-export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
+export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRectHisto) {
   can.width = '800';
   can.height = '800';
+
+  //tableau qui stockera la liste des rectangle pour la surbrillance en vert lorsqu on pqsse le curseur
+  let rectList = []
 
   //calcul de la taille d une serie d histogramme en fct du nombre de classe
    let histoSize = (800-30)/res.trainingSet.phrases.length;
@@ -98,37 +101,42 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
 
     if(res.trainingSet.phrases.length<10){
 
-      ctx.fillStyle = "rgb(0,0,175)";
+      ctx.fillStyle = "rgb(0,0,160)";
       ctx.font ="15px Arial";
 
       ctx.fillText(0 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
+
+      ctx.fillStyle = "rgb(0,128,255)";
       ctx.fillText(ph.length-1,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
     }else if(res.trainingSet.phrases.length<20){
 
-      ctx.fillStyle = "rgb(0,0,175)";
+      ctx.fillStyle = "rgb(0,0,160)";
       let tamp = (res.trainingSet.phrases.length*(-1) - 10)/10*5 + 10
       ctx.font = tamp + "px Arial";
 
       ctx.fillText(0 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
+      ctx.fillStyle = "rgb(0,128,255)";
       ctx.fillText(ph.length-1,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
 
     }
 
 
-    //dessin de la barre de pas de temps sur le curseur en rouge
+    //dessin de la barre de pas de temps sur le curseur en bleu
+
+
 
     ctx.beginPath();
-    ctx.strokeStyle = "rgb(200,0,0)";
+
     ctx.lineWidth=2;
 
-
-
     if(ph.length>tps5){
-
+      ctx.strokeStyle = "rgb(" + 0 + "," + (tps5*128)/(ph.length-1) +"," + (160+ tps5*95/(ph.length-1)) +")";
       ctx.moveTo(15, histoSize*16/100 + index*histoSize  + histoSize*69/100*tps5/(ph.length-1) + classNameSize);
       ctx.lineTo(31, histoSize*16/100 + index*histoSize  + histoSize*69/100*tps5/(ph.length-1) + classNameSize);
 
     }else{
+
+      ctx.strokeStyle = "rgb(0,128,255)";
 
       ctx.moveTo(15, histoSize*85/100 + index*histoSize + classNameSize );
       ctx.lineTo(31, histoSize*85/100 + index*histoSize + classNameSize);
@@ -137,8 +145,13 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
 
     ctx.stroke();
 
+    // ctx.beginPath
+    // ctx.moveTo(0,0)
+    // ctx.lineTo(can.)
+
     ctx.lineWidth=1;
     ctx.strokeStyle = "rgb(0,0,0)";
+
 
     //pour chaque classe (/pour chaque classe)
     for(let i = 0; i<res.model.models.length;i++){
@@ -186,6 +199,26 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
 
         ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
 
+        //recuperation des positions de tous les rectangles
+        rectList.push({x:(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+                       y:histoSize*16/100 + index*histoSize  + classNameSize,
+                       w:histoWidth,
+                       h:histoSize*75/100,
+                       class:ph.label,
+                       model:classLabel
+                     })
+
+        if(selectedRectHisto ){
+
+          if((selectedRectHisto.class == ph.label && selectedRectHisto.model == classLabel) || (selectedRectHisto.model == ph.label && selectedRectHisto.class == classLabel)){
+
+            ctx.strokeStyle="rgb(0,160,80)"
+            ctx.beginPath();
+            ctx.rect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+            ctx.lineWidth = 3
+            ctx.stroke()
+          }
+        }
         //si on affiche pas la valeure on doit le mettre dans le tooltipHM
         if(res.trainingSet.phrases.length>20){
 
@@ -231,7 +264,29 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
         }
 
         //dessin du rectangle
-        let histoWidth = (800-50)/(res.model.models.length)*3/4
+
+        ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+        rectList.push({x:(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+                       y:histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
+                       w:histoWidth,
+                       h:likelihood*histoSize*75/100,
+                       class:ph.label,
+                       model:classLabel
+                     })
+        if(selectedRectHisto  ){
+
+          if((selectedRectHisto.class == ph.label && selectedRectHisto.model == classLabel) || (selectedRectHisto.model == ph.label && selectedRectHisto.class == classLabel) ){
+
+             ctx.strokeStyle="rgb(0,100,50)"
+             ctx.rect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+             ctx.lineWidth = 3
+             ctx.stroke()
+           }
+        }
+
+
+
+
         ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 +  histoWidth/3/2,
                       histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
                       histoWidth,
@@ -273,4 +328,5 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto) {
 
     index++;
   }
+  return rectList;
 }

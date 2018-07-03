@@ -5,6 +5,7 @@
 .tooltipable {
   border :1px solid rgba(255,0,0,0.2);
   position:relative;
+  color:#000
 }
 
 .tooltip {
@@ -19,7 +20,7 @@
   opacity: 0.0;
   transition: opacity 0.8s;
   width: 200px;
-
+  color:#000
 }
 
 .tooltipable:hover .tooltip {
@@ -36,4 +37,21 @@
   /* opacity: 0.0; */
   /* transition: opacity 0.8s; */
   position: fixed;
+}
+
+.pasDeTemps0 {
+  color:#00A;
+}
+
+.pasDeTemps {
+  color:#08F;
+}
+
+
+.seuil0 {
+  color:#600;
+}
+
+.seuil {
+  color:#FAA;
 }
