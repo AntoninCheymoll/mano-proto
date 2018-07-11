@@ -4,9 +4,9 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
+import {drawSecondCan} from './drawSecondCan.js';
 
-
-export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClicked,tooltipHM) {
+export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClicked,tooltipHM,ctx2,can2) {
   can.width =  800;
   can.height = 800;
 
@@ -61,7 +61,22 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
     ctx.stroke()
 
     ctx.fillStyle = "rgb(255,200,150)"
+
+    //carre pour chaque classe et modele
+
+    // let grd=ctx.createLinearGradient(squaresizeW*i + squaresizeW, 0, squaresizeW, squaresizeH);
+    // grd.addColorStop(0,"rgb(255,230,150,0.4)");
+    // grd.addColorStop(1,"rgb(255,125,0,0.4)");
+    // ctx.fillStyle = grd;
+
     ctx.fillRect(squaresizeW*i + squaresizeW, 0, squaresizeW, squaresizeH);
+
+
+    // grd=ctx.createLinearGradient(0,squaresizeH*i + squaresizeH , squaresizeW, squaresizeH);
+    // grd.addColorStop(0,"rgb(255,230,150,0.4)");
+    // grd.addColorStop(1,"rgb(255,125,0,0.4)");
+    // ctx.fillStyle = grd;
+
     ctx.fillRect(0,squaresizeH*i + squaresizeH , squaresizeW, squaresizeH);
 
     ctx.fillStyle = "rgb(0,0,0)"
@@ -347,7 +362,8 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
 
           //affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
-          if(valMod1Mod2*100>val6){
+
+          if((valMod1Mod2*100>val6 && phrase.label != model2.label) || (valMod1Mod2*100<=(100-val6) && phrase.label == model2.label)){
 
 
             //calcul de la couleur du carré, rouge ou noir, plus ou moins clair
@@ -361,6 +377,8 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
             }
 
             //dessin du carre
+
+
             ctx.fillRect(numcol*squaresizeW, numligne*squaresizeH ,squaresizeW, squaresizeH)
 
 
@@ -388,8 +406,9 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
               ctx.font ="10px Arial";
             }
 
-            ctx.fillText(valMod1Mod2, numcol*squaresizeW - 10 + squaresizeW/2,  numligne*squaresizeH +squaresizeH/2);
-
+            ctx.textAlign="center"
+            ctx.fillText(valMod1Mod2, numcol*squaresizeW  + squaresizeW/2,  numligne*squaresizeH +squaresizeH/2);
+            ctx.textAlign="start"
 
            }
           //si on ne doit pas afficher la heatmap on affiche un degradé
@@ -409,16 +428,25 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
   }
 
-  ctx.fillStyle = "rgba(128,0,128,0.4)"
 
-  //affiche la ligne et colonne cliquée
-  ctx.fillRect(numColClicked*squaresizeW, 0 ,squaresizeW, squaresizeH)
-  ctx.fillRect(0, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
+  if ((numLinClicked != -1)  && (numColClicked !=-1)) {
 
-  ctx.strokeStyle = "rgb(0,160,80)"
-  ctx.lineWidth = 3;
-  ctx.beginPath()
-  ctx.rect(numColClicked*squaresizeW, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
-  ctx.rect(numLinClicked*squaresizeW, numColClicked*squaresizeH ,squaresizeW, squaresizeH)
-  ctx.stroke();
+    ctx.fillStyle = "rgba(128,0,128,0.4)"
+
+    //affiche la ligne et colonne cliquée
+    ctx.fillRect(numColClicked*squaresizeW, 0 ,squaresizeW, squaresizeH)
+    ctx.fillRect(0, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
+
+    ctx.strokeStyle = "rgb(0,160,80)"
+    ctx.lineWidth = 3;
+    ctx.beginPath()
+    ctx.rect(numColClicked*squaresizeW, numLinClicked*squaresizeH ,squaresizeW, squaresizeH)
+    ctx.rect(numLinClicked*squaresizeW, numColClicked*squaresizeH ,squaresizeW, squaresizeH)
+    ctx.stroke();
+
+    drawSecondCan(ctx2, can2, res, res.trainingSet.phrases[numLinClicked-1].label,res.model.models[numColClicked-1].label )
+
+
+  }
+
 }

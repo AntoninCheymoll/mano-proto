@@ -2,7 +2,9 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 //import 'jquery-ui-bundle/jquery-ui.css';
-import { getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
+import {  setCan2Param, synchronizeSlider, getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
+import {newValue,prevPressed,nextPressed} from './buttonPrevNext.js';
+import drawClassNameList from './drawClassNameList.js'
 
 import graphs from './graphs.js';
 import histogramme from './histogramme.js';
@@ -14,21 +16,32 @@ import onMouseOnHisto from './onMouseOnHisto.js';
 
 
 var can = document.createElement('canvas');
+var can2 = document.createElement('canvas');
+
+
 
 var ctx = can.getContext("2d")
+var ctx2 = can2.getContext("2d")
+
 
 var mouseOverCan = false;
 
 //fichier json
 var res;
 
+//variable de temps
+var tps=0;
+
+//stocke les precedentes valeures du slider de Temps
+var momentMemory = [0]
+var currentMoment = 0;
 
 //numero de la visu a afficher
 var numVis = 1;
 var selectedGraph = null
 
 // variable des graphs
-var tps1=0;
+
 var colorSliderGraphs = "rgb(0,0,160)";
 var isDraging = false;
 
@@ -36,7 +49,7 @@ var isDraging = false;
 var tooltipHisto = [];
 var rectList = []
 var selectedRectHisto = null;
-var tps2=0;
+
 
 
 // variables de la heatmap
@@ -44,7 +57,7 @@ var valHM  = 0;
 var numLinClickedHM = -1;
 var numColClickedHM = -1;
 var tooltipHM = [];
-var tps3=0;
+
 
 
 
@@ -77,18 +90,21 @@ function mainVisu(json) {
         },
         stop: function( event, ui ) {
           isDraging = false;
+
+          let result = newValue(ui.value, momentMemory,currentMoment)
+          momentMemory = result[0]
+          currentMoment = result[1]
+
+
           draw()
         },
         slide: function( event, ui ) {
-         $( "#amount" ).val( "$" + ui.value );
-         $( "#handleGraphs" ).text(ui.value);
+         synchronizeSlider(ui.value,timeMax)
+
          colorSliderGraphs = "rgb(" + 0 + "," + (ui.value*128)/timeMax +"," + (160+ ui.value*95/timeMax) +")"
-         $( "#handleGraphs" ).css("background",colorSliderGraphs);
-         tps1= ui.value;
 
+         tps= ui.value;
 
-         // sliderHisto.slider("value", tps)
-         // sliderHM.slider("value", tps)
          draw();
 
        }
@@ -103,11 +119,18 @@ function mainVisu(json) {
        min: 0,
        max: timeMax +1 ,
        value:  0,
+       stop: function( event, ui ) {
+         let result = newValue(ui.value, momentMemory,currentMoment)
+         momentMemory = result[0]
+         currentMoment = result[1]
+
+         draw()
+       },
        slide: function( event, ui ) {
-         $( "#amount" ).val( "$" + ui.value );
-         $( "#handleHisto" ).text(ui.value);
-         $( "#handleHisto" ).css("background","rgb(" + 0 + "," + (ui.value*128)/timeMax +"," + (160+ ui.value*95/timeMax) +")");
-         tps2= ui.value
+         synchronizeSlider(ui.value,timeMax)
+
+         colorSliderGraphs = "rgb(" + 0 + "," + (ui.value*128)/timeMax +"," + (160+ ui.value*95/timeMax) +")"
+         tps= ui.value
 
          //sliderHM.slider("value", tps)
          //sliderGraph.slider("value", tps)
@@ -122,11 +145,17 @@ function mainVisu(json) {
        min: 0,
        max: timeMax + 1,
        value:  0,
+       stop: function( event, ui ) {
+         let result = newValue(ui.value, momentMemory,currentMoment)
+         momentMemory = result[0]
+         currentMoment = result[1]
+
+         draw()
+       },
        slide: function( event, ui ) {
-        $( "#amount" ).val( "$" + ui.value );
-        $( "#handleHM" ).text(ui.value);
-        $( "#handleHM" ).css("background","rgb(" + 0 + "," + (ui.value*128)/timeMax +"," + (160+ ui.value*95/timeMax) +")");
-         tps3= ui.value
+        synchronizeSlider(ui.value,timeMax)
+        colorSliderGraphs = "rgb(" + 0 + "," + (ui.value*128)/timeMax +"," + (160+ ui.value*95/timeMax) +")"
+         tps= ui.value
 
          //sliderHisto.slider("value", tps)
          //sliderGraph.slider("value", tps)
@@ -134,13 +163,52 @@ function mainVisu(json) {
        }
      })
 
+
+     for(let bt of $(".prevButton")){
+       bt.disabled=true;
+     }
+
+     for(let bt of $(".nextButton")){
+       bt.disabled=true;
+     }
+
+
+     for(let prevBtt of $(".prevButton")){
+       prevBtt.onclick = function(){
+         let result = prevPressed(momentMemory, currentMoment , timeMax)
+         momentMemory = result[0]
+         currentMoment = result[1]
+         tps = result[2]
+         draw()
+       }
+     }
+
+     for(let nextBtt of $(".nextButton")){
+       nextBtt.onclick = function(){
+         let result = nextPressed(momentMemory, currentMoment , timeMax)
+         momentMemory = result[0]
+         currentMoment = result[1]
+         tps = result[2]
+       }
+     }
+     drawClassNameList(can,ctx,res,numVis)
+
+
 }
 
 function init() {
 
-  document.body.appendChild(can);
 
-  $("#canvasvisu").css('background','rgba(0,255,128,0.4)')
+
+  var div2 = document.createElement('div');
+  div2.appendChild(can);
+  div2.appendChild(can2);
+  div2.style="position:relative;";
+  div2.id = "divMilieu";
+  document.body.appendChild(div2);
+
+  setCan2Param(can,can2,ctx2);
+
 
   var tooltipCan = $('#tooltipCan');
   var labelCan = $('#labelCan');
@@ -178,7 +246,7 @@ function init() {
           $( "#amount" ).val( "$" + ui.value );
 
           $( "#handleSeuilHM" ).text(ui.value/100);
-          $( "#handleSeuilHM" ).css("background","rgb(" + (95 + ui.value/100*160) + "," +  (0 +ui.value*160/100) +"," + (0+ ui.value*160/100) +")");
+          $( "#handleSeuilHM" ).css("background","rgb(" + (255 - ui.value/100*160) + "," +  (160 -ui.value*160/100) +"," + (160 - ui.value*160/100) +")");
 
           valHM= ui.value
           draw();
@@ -195,7 +263,6 @@ function init() {
         mouseOverCan = false;
 
     };
-
 
 
 
@@ -219,10 +286,11 @@ function init() {
 
       }else if(mouseOverCan && numVis == 2){
         displayTooltipOnCan(tooltipHisto, e)
-        selectedRectHisto = onMouseOnHisto(e,can,ctx,rectList);
+        selectedRectHisto = onMouseOnHisto(e,can,ctx,rectList,res,can2,ctx2);
 
       }else if(mouseOverCan && numVis == 1){
-        selectedGraph = onMouseOnGraph(e,can,res);
+        selectedGraph = onMouseOnGraph(e,can,res,ctx2,can2);
+
 
       }
 
@@ -232,50 +300,17 @@ function init() {
 
 
   $( "#tabs" ).tabs({
+
     activate: function(event, ui) {
+
       numVis = $("#tabs").tabs('option', 'active') +1;
+      drawClassNameList(can,ctx,res,numVis)
       draw();
     }
 });
 
 
-// $( "#sliderVisu4" ).slider({
-//       range: "min",
-//       min: 0,
-//       max: 100,
-//       value:  0,
-//       slide: function( event, ui ) {
-//         $( "#amount" ).val( "$" + ui.value );
-//         $( "#valeur4" ).text(ui.value/100);
-//         val4= ui.value
-//         draw();
-//
-//       }
-//     })
 
-
-//changemet de l index visu1
-// $(".cb").click(function() {
-//
-//   clearButtonInd($(this).prop("value"));
-//   index = $(this).prop("value");
-//   draw();
-// });
-
-
-// $("#mean").click(function() {
-//
-//   meanb = !meanb;
-//   draw();
-// });
-//
-//
-//
-// $("#cov").click(function() {
-//
-//   covb = !covb;
-//   draw();
-// });
 
 }
 
@@ -286,15 +321,13 @@ function init() {
 function draw(){
 
     if (numVis == 1 ){
-        graphs(can,res,ctx,tps1, selectedGraph, colorSliderGraphs, isDraging );
-
-
+        graphs(can,res,ctx,tps, selectedGraph, colorSliderGraphs, isDraging );
 
     }else if(numVis==2){
-        rectList = histogramme(can,res,ctx, tps2, tooltipHisto, selectedRectHisto);
+        rectList = histogramme(can,res,ctx, tps, tooltipHisto, selectedRectHisto);
 
     }else if(numVis==3){
-        heatmap(can,res,ctx, valHM,tps3,numLinClickedHM,numColClickedHM,tooltipHM);
+        heatmap(can,res,ctx, valHM,tps,numLinClickedHM,numColClickedHM,tooltipHM,ctx2, can2);
     }
 
 
