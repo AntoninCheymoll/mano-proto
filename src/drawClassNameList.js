@@ -6,35 +6,43 @@ import 'jquery-ui-bundle';
 export default function drawClassNameList(can,ctx,res,numVis){
   let height = can.height/res.trainingSet.phrases.length;
 
-
-
-
   if (numVis==1) {
 
 
-//  div princiapale
-    let maindiv = $("<div id='drawingdiv' style='position: absolute;'></div>")
-    maindiv.css("left",can.getBoundingClientRect().left + 800)
-    maindiv.css("top",can.getBoundingClientRect().top)
-    //maindiv.css("position", "absolute")
-    maindiv.css("height", "500px")
-    maindiv.css("width", "500px")
-    maindiv.css("color","red")
+
+    let i=0;
+    for(let ph of res.trainingSet.phrases){
 
 
-    //document.body.append(maindiv)
+  $("#divMilieu").append($('<svg style="left:800px;top:'+ i*height +'px;position:absolute"><polygon points="50,'+(height/10 )+
+                                                                                          ' 150,'+(height/10 )+
+                                                                                          ' 150,'+(height*30/100 )+
 
-    //console.log(maindiv);
+                                                                                          ' 155,'+(height*30/100 )+
+                                                                                          ' 160,'+(height*50/100 )+
+                                                                                          ' 155,'+(height*70/100 )+
+                                                                                          ' 150,'+(height*70/100 )+
+                                                                                          ' 150,'+(height*90/100 )+
+                                                                                          ' 50,'+(height*90/100 )+
 
+                                                                                          ' 50,'+(height*75/100 )+
+                                                                                          ' 40,'+(height*75/100 )+
+                                                                                          ' 40,'+(height*55/100 )+
+                                                                                          ' 50,'+(height*55/100 )+
 
+                                                                                          ' 50,'+(height*45/100 )+
+                                                                                          ' 40,'+(height*45/100 )+
+                                                                                          ' 40,'+(height*25/100 )+
+                                                                                          ' 50,'+(height*25/100 )+
+                                                                                          '" style="fill:black;" /></svg>'))
 
-    //document.body.appendChild(maindiv)
-
-let i=0;
-for(let ph of res.trainingSet.phrases){
-
-  //$("#divMilieu").append($('<svg style="left:800px;position:absolute;"><polygon points="50,'+(height/10+height*i)+' 150,'+(height/10+height*i)+' 150,'+(height*90/100+height*i)+' 50,'+(height*90/10+height*i)+'" style="fill:black;" /></svg>'))
-
+  //console.log('<label style="color:red;left:860px;top:'+ (i*height + height/2)+'px;position:absolute">text</label>');
+  let x;
+  x= $('<label style="color:yellow;left:865px;top:'+ (i*height + height/2 -8)+'px;position:absolute">'+ph.label+'</label>')
+  // console.log(x[0].clientWidth,ph.label);
+  // console.log(x[0].left);
+  //if(x.clientWidth>85){console.log(ph.label);}
+  $("#divMilieu").append(x)
 
   i++;
 }

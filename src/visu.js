@@ -2,9 +2,10 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 //import 'jquery-ui-bundle/jquery-ui.css';
-import {  setCan2Param, synchronizeSlider, getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
+import {normalizedata, setCan2Param, synchronizeSlider, getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
 import {newValue,prevPressed,nextPressed} from './buttonPrevNext.js';
 import drawClassNameList from './drawClassNameList.js'
+import {drawSecondCan} from './drawSecondCan.js';
 
 import graphs from './graphs.js';
 import histogramme from './histogramme.js';
@@ -19,7 +20,6 @@ var can = document.createElement('canvas');
 var can2 = document.createElement('canvas');
 
 
-
 var ctx = can.getContext("2d")
 var ctx2 = can2.getContext("2d")
 
@@ -31,6 +31,7 @@ var res;
 
 //variable de temps
 var tps=0;
+var timeMax;
 
 //stocke les precedentes valeures du slider de Temps
 var momentMemory = [0]
@@ -62,15 +63,16 @@ var tooltipHM = [];
 
 
 
-
 function mainVisu(json) {
   res = json;
+
+  res = normalizedata(res)
   res.trainingSet.phrases.sort((a, b) => a.label.localeCompare(b.label));
 
   log("data",res)
   draw();
 
-  let timeMax = calculMaxTime(res);
+  timeMax = calculMaxTime(res);
 
   $( ".pasDeTemps" ).text(timeMax +1)
 
@@ -193,6 +195,48 @@ function mainVisu(json) {
      }
      drawClassNameList(can,ctx,res,numVis)
 
+       var tooltipCan = $('#tooltipCan');
+
+     document.body.onmousemove = function(e) {
+
+         tooltipCan.css('visibility', 'hidden')
+         numColClickedHM = -1
+         numLinClickedHM = -1
+         selectedGraph = []
+
+
+         if(mouseOverCan && numVis == 3){
+
+           displayTooltipOnCan(tooltipHM, e)
+
+           let result = onMouseOnHM(e,can,res);
+           numColClickedHM = result[0]
+           numLinClickedHM = result[1]
+
+
+         }else if(mouseOverCan && numVis == 2){
+           displayTooltipOnCan(tooltipHisto, e)
+
+           const drawRect = function(rc, rm) {
+             drawSecondCan(ctx2, can2, res, tps, rc , rm ,colorSliderGraphs,timeMax)
+           };
+
+           selectedRectHisto = onMouseOnHisto(e, rectList, drawRect);
+
+         }else if(mouseOverCan && numVis == 1){
+           const drawRect = function(rc, rm) {
+             drawSecondCan(ctx2, can2, res, tps, rc , rm ,colorSliderGraphs,timeMax)
+           };
+
+           selectedGraph = onMouseOnGraph(e,can,res,drawRect);
+
+
+         }
+
+           draw()
+
+       }
+
 
 }
 
@@ -210,7 +254,8 @@ function init() {
   setCan2Param(can,can2,ctx2);
 
 
-  var tooltipCan = $('#tooltipCan');
+
+
   var labelCan = $('#labelCan');
 
 
@@ -268,34 +313,7 @@ function init() {
 
 
 
-  document.body.onmousemove = function(e) {
-      tooltipCan.css('visibility', 'hidden')
-      numColClickedHM = -1
-      numLinClickedHM = -1
-      selectedGraph = []
 
-
-      if(mouseOverCan && numVis == 3){
-
-        displayTooltipOnCan(tooltipHM, e)
-
-        let result = onMouseOnHM(e,can,res);
-        numColClickedHM = result[0]
-        numLinClickedHM = result[1]
-
-
-      }else if(mouseOverCan && numVis == 2){
-        displayTooltipOnCan(tooltipHisto, e)
-        selectedRectHisto = onMouseOnHisto(e,can,ctx,rectList,res,can2,ctx2);
-
-      }else if(mouseOverCan && numVis == 1){
-        selectedGraph = onMouseOnGraph(e,can,res,ctx2,can2);
-
-
-      }
-
-        draw()
-    }
 
 
 
@@ -327,7 +345,9 @@ function draw(){
         rectList = histogramme(can,res,ctx, tps, tooltipHisto, selectedRectHisto);
 
     }else if(numVis==3){
-        heatmap(can,res,ctx, valHM,tps,numLinClickedHM,numColClickedHM,tooltipHM,ctx2, can2);
+
+
+        heatmap(can,res,ctx, valHM,tps,numLinClickedHM,numColClickedHM,tooltipHM,ctx2, can2,colorSliderGraphs,timeMax);
     }
 
 

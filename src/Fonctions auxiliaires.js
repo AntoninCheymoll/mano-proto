@@ -5,6 +5,40 @@ import 'jquery-ui-bundle';
 
 //affichage des elements tooltipable dans le can
 
+export function normalizedata(res){
+
+    for(let i =0; i<8;i++){
+        
+        let max = Number.MIN_SAFE_INTEGER
+        let min = Number.MAX_SAFE_INTEGER
+
+
+        for(let ph of res.trainingSet.phrases){
+          for(let y = 0;y<ph.length; y++){
+            let val = ph.data[i+y*8]
+              if(val<min){
+                min =val
+              }
+              if(val>max){
+                max =val
+              }
+          }
+
+        }
+
+
+
+        for(let nb = 0; nb<res.trainingSet.phrases.length;nb++){
+          for(let y = 0;y<res.trainingSet.phrases[nb].length; y++){
+              res.trainingSet.phrases[nb].data[i+y*8] = (res.trainingSet.phrases[nb].data[i+y*8]-min)/(max-min)
+          }
+        }
+    }
+
+    return res
+}
+
+
 export function displayTooltipOnCan(tab,e){
 
   let x = event.pageX- $("#divMilieu").position().left;

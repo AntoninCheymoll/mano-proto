@@ -4,7 +4,7 @@ import 'jquery-ui-bundle';
 
 import {drawSecondCan} from './drawSecondCan.js';
 
-export default function onMouseOnGraph(e,can,res,ctx2,can2){
+export default function onMouseOnGraph(e,can,res,drawRect){
 
 
 
@@ -123,7 +123,7 @@ export default function onMouseOnGraph(e,can,res,ctx2,can2){
       $("#labelCan").text("Modèle: " + labelMin +"; Valeur: " + (Math.round((phrase.likelihoods[tpsSouris][labelMin])*100))/100 )
 
 
-      drawSecondCan(ctx2, can2, res,phrase.label,labelMin)
+      drawRect(phrase.label,labelMin)
       return [phrase.label,labelMin]
     }
 

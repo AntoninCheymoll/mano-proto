@@ -146,7 +146,6 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
             //si c est la ligne symetriaue de celle sur laquelle est la souris on la trace a la fin pour la faire ressortir
             stckClassParall = classe2
 
-
           }else{
 
             if(tps3< classe.length){

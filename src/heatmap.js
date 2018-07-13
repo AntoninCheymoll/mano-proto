@@ -6,7 +6,7 @@ import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
 import {drawSecondCan} from './drawSecondCan.js';
 
-export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClicked,tooltipHM,ctx2,can2) {
+export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClicked,tooltipHM,ctx2,can2,colorSliderGraphs,timeMax) {
   can.width =  800;
   can.height = 800;
 
@@ -444,7 +444,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
     ctx.rect(numLinClicked*squaresizeW, numColClicked*squaresizeH ,squaresizeW, squaresizeH)
     ctx.stroke();
 
-    drawSecondCan(ctx2, can2, res, res.trainingSet.phrases[numLinClicked-1].label,res.model.models[numColClicked-1].label )
+    drawSecondCan(ctx2, can2, res, tps6, res.trainingSet.phrases[numLinClicked-1].label,res.model.models[numColClicked-1].label,colorSliderGraphs ,timeMax)
 
 
   }
