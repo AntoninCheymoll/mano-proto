@@ -256,7 +256,7 @@ function init() {
   if (urlParams.file) {
     //recuperation du fichier
     $.ajax({
-      url: `/dist/${urlParams.file}.json`,
+      url: `/${urlParams.file}.json`,
       dataType:"json",
       context: document.body
     }).done(mainVisu);

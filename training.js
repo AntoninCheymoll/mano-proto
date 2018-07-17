@@ -35,15 +35,17 @@ export default function train(phrases) {
       })
     });
 
-  const hmmParameters = trainMulticlassHMM(trainingSet, xmmConfig);
+  const model = trainMulticlassHMM(trainingSet, xmmConfig);
 
-  const predictor = HierarchicalHMMPredictor(hmmParameters, 1);
+  const predictor = HierarchicalHMMPredictor(model, 1);
   phrases.forEach((phrase) => {
     const res = estimateLikelihood(phrase, predictor);
     Object.assign(phrase, res);
   });
 
-  return { model: hmmParameters, phrases };
+  writeFileSync('./dist/current.json', JSON.stringify({ model, phrases }));
+
+  return { model, phrases };
 }
 
 /**
