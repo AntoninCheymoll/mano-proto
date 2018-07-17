@@ -218,14 +218,14 @@ function mainVisu(json) {
            displayTooltipOnCan(tooltipHisto, e)
 
            const drawRect = function(rc, rm) {
-             drawSecondCan(ctx2, can2, res, tps, rc , rm ,colorSliderGraphs,timeMax)
+             drawSecondCan(ctx2, can2, res, tps, rc , rm ,colorSliderGraphs)
            };
 
            selectedRectHisto = onMouseOnHisto(e, rectList, drawRect);
 
          }else if(mouseOverCan && numVis == 1){
            const drawRect = function(rc, rm) {
-             drawSecondCan(ctx2, can2, res, tps, rc , rm ,colorSliderGraphs,timeMax)
+             drawSecondCan(ctx2, can2, res, tps, rc , rm ,colorSliderGraphs)
            };
 
            selectedGraph = onMouseOnGraph(e,can,res,drawRect);
