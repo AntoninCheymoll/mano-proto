@@ -2,7 +2,7 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 import 'jquery-ui-bundle/jquery-ui.css';
-import {normalizedata, setCan2Param, synchronizeSlider, getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
+import { normalizedata, setCan2Param, synchronizeSlider, getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
 import {newValue,prevPressed,nextPressed} from './buttonPrevNext.js';
 import drawClassNameList from './drawClassNameList.js'
 import {drawSecondCan} from './drawSecondCan.js';
@@ -13,7 +13,6 @@ import heatmap from './heatmap.js';
 import onMouseOnHM from './onMouseOnHM.js';
 import onMouseOnGraph from './onMouseOnGraph.js';
 import onMouseOnHisto from './onMouseOnHisto.js';
-
 
 
 var can = document.createElement('canvas');
@@ -67,7 +66,7 @@ function mainVisu(json) {
   res = json;
 
   res = normalizedata(res)
-  res.trainingSet.phrases.sort((a, b) => a.label.localeCompare(b.label));
+  res.phrases.sort((a, b) => a.label.localeCompare(b.label));
 
   log("data",res)
   draw();
@@ -236,8 +235,6 @@ function mainVisu(json) {
            draw()
 
        }
-
-
 }
 
 function init() {
@@ -264,10 +261,10 @@ function init() {
 
   // Receive Model data by websocket
   const socket = new WebSocket(`ws://${window.location.hostname}:8000`);
-  const jsonData = { model: {}, trainingSet: {}};
+  const jsonData = {};
   socket.onmessage = function(event) {
     const message = JSON.parse(event.data);
-    if (['model', 'trainingSet'].includes(message.type)) {
+    if (['model', 'phrases'].includes(message.type)) {
       jsonData[message.type] = message.data;
       mainVisu(jsonData);
     }
@@ -320,13 +317,7 @@ function init() {
     }
 });
 
-
-
-
 }
-
-
-
 
 //dessin du canevas en fonction du numero de visu demandé
 function draw(){

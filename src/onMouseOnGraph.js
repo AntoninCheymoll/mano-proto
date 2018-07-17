@@ -2,21 +2,18 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 
-import {drawSecondCan} from './drawSecondCan.js';
+import { drawSecondCan } from './drawSecondCan.js';
 
 export default function onMouseOnGraph(e,can,res,drawRect){
+  let x = e.pageX- $("#divMilieu").position().left;
+  let y = e.pageY- $("#divMilieu").position().top;
 
-
-
-  let x = event.pageX- $("#divMilieu").position().left;
-  let y = event.pageY- $("#divMilieu").position().top;
-
-  let graphSize = 800/res.trainingSet.phrases.length;
+  let graphSize = 800/res.phrases.length;
 
 
   //calcul du graph concerné
   let numPhrase = Math.trunc(y/graphSize)
-  let phrase = res.trainingSet.phrases[numPhrase]
+  let phrase = res.phrases[numPhrase]
 
 
   y = y - numPhrase*graphSize
@@ -24,7 +21,7 @@ export default function onMouseOnGraph(e,can,res,drawRect){
 
   //calcul du pas de temps du curseur de la souris
   let maxTime = 0;
-  for( let ph of res.trainingSet.phrases){
+  for( let ph of res.phrases){
 
         maxTime = Math.max(maxTime, ph.length)
   }
@@ -58,44 +55,44 @@ export default function onMouseOnGraph(e,can,res,drawRect){
     //initialisation du tableau de distance
     let dict = []
 
-    for(let mod of res.model.models){
-        dict[mod.label]=100
+    for(let label of Object.keys(res.model.classes)){
+      dict[label]=100
     }
 
 
     //recherche de la courbe la plus proche
 
     for(let i = Math.max(0,tpsSouris-2); i<=Math.min(phrase.length-1,tpsSouris+2);i++){
-          for(let mod of res.model.models){
+          for(let label of Object.keys(res.model.classes)){
 
 
-              if(dict[mod.label]> Math.sqrt( (tpsSouris -i)*graphSizeW/phrase.length*(tpsSouris -i)*graphSizeW/phrase.length+  (y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*(y-(graphSize*97/100 - phrase.likelihoods[tpsSouris][mod.label]*graphSize*82/100)))) {
-                  dict[mod.label] = Math.sqrt( (tpsSouris -i)*graphSizeW/phrase.length*(tpsSouris -i)*graphSizeW/phrase.length +  (y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*(y-(graphSize*97/100 - phrase.likelihoods[tpsSouris][mod.label]*graphSize*82/100)))
+              if(dict[label]> Math.sqrt( (tpsSouris -i)*graphSizeW/phrase.length*(tpsSouris -i)*graphSizeW/phrase.length+  (y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*(y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[tpsSouris][label]*graphSize*82/100)))) {
+                  dict[label] = Math.sqrt( (tpsSouris -i)*graphSizeW/phrase.length*(tpsSouris -i)*graphSizeW/phrase.length +  (y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*(y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[tpsSouris][label]*graphSize*82/100)))
               }
 
 
                 if(i+1<phrase.length){
-                  if(dict[mod.label]> Math.sqrt( (tpsSouris -i + 1/3)*graphSizeW/phrase.length*(tpsSouris -i + 1/3)*graphSizeW/phrase.length+
-                    (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*1/3 ))*
-                    (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*1/3 )))))) {
+                  if(dict[label]> Math.sqrt( (tpsSouris -i + 1/3)*graphSizeW/phrase.length*(tpsSouris -i + 1/3)*graphSizeW/phrase.length+
+                    (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*1/3 ))*
+                    (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*1/3 )))))) {
 
 
 
-                      dict[mod.label] = Math.sqrt( (tpsSouris -i + 1/3)*graphSizeW/phrase.length*(tpsSouris -i + 1/3)*graphSizeW/phrase.length+
-                   (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*1/3 ))*
-                   (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*1/3 )))))
+                      dict[label] = Math.sqrt( (tpsSouris -i + 1/3)*graphSizeW/phrase.length*(tpsSouris -i + 1/3)*graphSizeW/phrase.length+
+                   (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*1/3 ))*
+                   (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*2/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*1/3 )))))
               }
 
 
-              if(dict[mod.label]> Math.sqrt( (tpsSouris -i + 2/3)*graphSizeW/phrase.length*(tpsSouris -i + 2/3)*graphSizeW/phrase.length+
-               (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*2/3 ))*
-               (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*2/3 )))))) {
+              if(dict[label]> Math.sqrt( (tpsSouris -i + 2/3)*graphSizeW/phrase.length*(tpsSouris -i + 2/3)*graphSizeW/phrase.length+
+               (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*2/3 ))*
+               (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*2/3 )))))) {
 
 
 
-                  dict[mod.label] = Math.sqrt( (tpsSouris -i + 2/3)*graphSizeW/phrase.length*(tpsSouris -i + 2/3)*graphSizeW/phrase.length+
-                   (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*2/3 ))*
-                   (((y-(graphSize*97/100 - phrase.likelihoods[i][mod.label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.likelihoods[i+1][mod.label]*graphSize*82/100))*2/3 )))))
+                  dict[label] = Math.sqrt( (tpsSouris -i + 2/3)*graphSizeW/phrase.length*(tpsSouris -i + 2/3)*graphSizeW/phrase.length+
+                   (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*2/3 ))*
+                   (((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i][label]*graphSize*82/100))*1/3 + ((y-(graphSize*97/100 - phrase.instantNormalizedLikelihoods[i+1][label]*graphSize*82/100))*2/3 )))))
               }}
 
 
@@ -108,10 +105,10 @@ export default function onMouseOnGraph(e,can,res,drawRect){
     let min = 16
     let labelMin = null
 
-    for(let mod of res.model.models){
-        if(min>dict[mod.label]){
-          min = dict[mod.label]
-          labelMin = mod.label
+    for(let label of Object.keys(res.model.classes)){
+        if(min>dict[label]){
+          min = dict[label]
+          labelMin = label
         }
     }
 
@@ -120,7 +117,7 @@ export default function onMouseOnGraph(e,can,res,drawRect){
     if(min <=15){
       $("#tooltipCan").css( {top: (e.clientY + 20) + 'px', left: (e.clientX + 20) + 'px'});
       $("#tooltipCan").css('visibility', 'visible');
-      $("#labelCan").text("Modèle: " + labelMin +"; Valeur: " + (Math.round((phrase.likelihoods[tpsSouris][labelMin])*100))/100 )
+      $("#labelCan").text("Modèle: " + labelMin +"; Valeur: " + (Math.round((phrase.instantNormalizedLikelihoods[tpsSouris][labelMin])*100))/100 )
 
 
       drawRect(phrase.label,labelMin)

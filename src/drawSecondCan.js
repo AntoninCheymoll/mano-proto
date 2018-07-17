@@ -10,7 +10,7 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
 
     let dictProp = {};
 
-    for(let ph of res.trainingSet.phrases){
+    for(let ph of res.phrases){
       if(ph.label==className || ph.label == modelName){
         dictProp[ph.label]=ph.length
       }
@@ -105,7 +105,7 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
       let isfilled = false;
       let stckdata = {}
 
-      for(let ph of res.trainingSet.phrases){
+      for(let ph of res.phrases){
 
         if(ph.label==className){
           ctx.strokeStyle="rgb(150,0,0)"

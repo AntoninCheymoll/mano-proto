@@ -8,12 +8,12 @@ import 'jquery-ui-bundle';
 export function normalizedata(res){
 
     for(let i =0; i<8;i++){
-        
+
         let max = Number.MIN_SAFE_INTEGER
         let min = Number.MAX_SAFE_INTEGER
 
 
-        for(let ph of res.trainingSet.phrases){
+        for(let ph of res.phrases){
           for(let y = 0;y<ph.length; y++){
             let val = ph.data[i+y*8]
               if(val<min){
@@ -28,9 +28,9 @@ export function normalizedata(res){
 
 
 
-        for(let nb = 0; nb<res.trainingSet.phrases.length;nb++){
-          for(let y = 0;y<res.trainingSet.phrases[nb].length; y++){
-              res.trainingSet.phrases[nb].data[i+y*8] = (res.trainingSet.phrases[nb].data[i+y*8]-min)/(max-min)
+        for(let nb = 0; nb<res.phrases.length;nb++){
+          for(let y = 0;y<res.phrases[nb].length; y++){
+              res.phrases[nb].data[i+y*8] = (res.phrases[nb].data[i+y*8]-min)/(max-min)
           }
         }
     }
@@ -41,8 +41,8 @@ export function normalizedata(res){
 
 export function displayTooltipOnCan(tab,e){
 
-  let x = event.pageX- $("#divMilieu").position().left;
-  let y = event.pageY- $("#divMilieu").position().top;
+  let x = e.pageX- $("#divMilieu").position().left;
+  let y = e.pageY- $("#divMilieu").position().top;
 
   for(let elem of tab){
 
@@ -141,7 +141,7 @@ export  function cuttingString(max, ctx, string){
 
 export function calculMaxTime(res){
   let max = 0;
-  for(let ph of res.trainingSet.phrases){
+  for(let ph of res.phrases){
       max = Math.max(max,ph.length);
   }
 

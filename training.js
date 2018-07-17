@@ -30,7 +30,7 @@ export default function train(phrases) {
   phrases.filter(x => x.active)
     .forEach((phrase, idx) => {
       const p = trainingSet.push(idx, phrase.label);
-      phrase.input.forEach((frame) => {
+      phrase.data.forEach((frame) => {
         p.push(frame.slice(0, 8));
       })
     });
@@ -58,7 +58,7 @@ function estimateLikelihood(phrase, predictor) {
     instantNormalizedLikelihoods: [],
   };
   predictor.reset();
-  phrase.input.forEach((frame) => {
+  phrase.data.forEach((frame) => {
     predictor.predict(frame.slice(0, 8));
     const order = predictor.results.labels;
     results.smoothedLogLikelihoods.push(predictor.results

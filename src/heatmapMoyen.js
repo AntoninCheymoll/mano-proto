@@ -70,7 +70,7 @@ let numligne = 0;
 for(let model1 of res.model.models){ //ligne
   numligne++;
   let phrase;
-  for(let ph of res.trainingSet.phrases){
+  for(let ph of res.phrases){
       if (ph.label == model1.label){
         phrase = ph;
         break;

@@ -41,10 +41,13 @@ function train() {
   processedSensors.removeListener(example.addElement);
 
   const rapidMixJSONExample = example.toJSON();
-  const phraseData = Object.assign({}, rapidMixJSONExample.payload, {
+  const phraseData = {
     type: 'example/add',
     active: $fortraining.checked,
-  });
+    length: rapidMixJSONExample.payload.input.length,
+    data: rapidMixJSONExample.payload.input,
+    label: rapidMixJSONExample.payload.label,
+  };
   socket.send(JSON.stringify(phraseData));
 }
 
