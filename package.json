@@ -19,7 +19,6 @@
     "jquery-ui": "^1.12.1",
     "jquery-ui-bundle": "^1.12.1-migrate",
     "mano-js": "github:ircam-rnd/mano-js",
-    "rapid-mix-adapters": "github:Ircam-RnD/rapid-mix-adapters",
     "style-loader": "^0.21.0",
     "ws": "^5.2.0",
     "xmm-js": "github:JulesFrancoise/xmmjs"
@@ -30,6 +29,7 @@
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
     "nodemon": "^1.18.1",
+    "url-loader": "^1.0.1",
     "webpack": "^4.9.1",
     "webpack-cli": "^2.1.4",
     "webpack-dev-server": "^3.1.4",

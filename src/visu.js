@@ -1,7 +1,7 @@
 import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
-//import 'jquery-ui-bundle/jquery-ui.css';
+import 'jquery-ui-bundle/jquery-ui.css';
 import {normalizedata, setCan2Param, synchronizeSlider, getAllUrlParams, calculMaxTime, log, cuttingString, displayTooltipOnCan } from './Fonctions auxiliaires.js';
 import {newValue,prevPressed,nextPressed} from './buttonPrevNext.js';
 import drawClassNameList from './drawClassNameList.js'
@@ -241,9 +241,6 @@ function mainVisu(json) {
 }
 
 function init() {
-
-
-
   var div2 = document.createElement('div');
   div2.appendChild(can);
   div2.appendChild(can2);
@@ -253,11 +250,7 @@ function init() {
 
   setCan2Param(can,can2,ctx2);
 
-
-
-
   var labelCan = $('#labelCan');
-
 
   const urlParams = getAllUrlParams();
   if (urlParams.file) {
