@@ -1,23 +1,24 @@
-import { Example, TrainingSet, XmmProcessor } from "mano-js/common";
+import { Example } from "mano-js/common";
 import { ProcessedSensors } from "mano-js/client";
-import rapidMixAdapters from "rapid-mix-adapters";
+import { HierarchicalHMMPredictor } from 'xmm-js';
 
 const $error = document.querySelector("#error");
 const $label = document.querySelector("#label");
+const $fortraining = document.querySelector("#fortraining");
 const $result = document.querySelector("#result");
 const $recordBtn = document.querySelector("#recording-control");
 
 const socket = new WebSocket(`ws://${window.location.hostname}:8000`);
+
+const xmm = {
+  predictor: null,
+};
 
 // globals
 let state = "idle";
 let example = null;
 
 const processedSensors = new ProcessedSensors();
-const trainingSet = new TrainingSet();
-const xmmProcessor = new XmmProcessor({
-  url: `http://${window.location.hostname}:3000/train`
-});
 
 /**
  * Initialize and start sensors
@@ -29,51 +30,32 @@ processedSensors.init().then(() => processedSensors.start());
  * as a callback of the processed sensors.
  */
 function record(label) {
-  // disable decoding
   processedSensors.removeListener(decode);
-  // start recording
-  // example = new mano.Example();
   example = new Example();
   example.setLabel(label);
 
   processedSensors.addListener(example.addElement);
 }
 
-/**
- * Function that retrieve the `RapidMix JSON` representation of the recorded
- * `mano.Example` and add it to the `mano.TrainingSet`. The `RapidMix JSON`
- * represenation of the `mano.TrainingSet` is then retrieved and passed to
- * the train method of the `mano.XmmProcessor` that return a `Promise` that
- * resolves when the training is finished and the model is updated.
- * The `train` method creates a HTTP POST request to the url passed as argument
- * to the constructor of the `mano.XmmProcessor`, where the actual training is
- * made.
- */
 function train() {
   processedSensors.removeListener(example.addElement);
 
   const rapidMixJSONExample = example.toJSON();
-  trainingSet.addExample(rapidMixJSONExample);
-
-  const rapidMixJSONTrainingSet = trainingSet.toJSON();
-  socket.send(JSON.stringify(rapidMixJSONTrainingSet));
-  // const promise = xmmProcessor.train(rapidMixJSONTrainingSet);
-
-  // promise
-  //   .then(res => {
-  //     // (re)enable decoding
-  //     processedSensors.addListener(decode);
-  //   })
-  //   .catch(err => console.error(err.stack));
-  //
-  // return promise;
+  const phraseData = Object.assign({}, rapidMixJSONExample.payload, {
+    type: 'example/add',
+    active: $fortraining.checked,
+  });
+  socket.send(JSON.stringify(phraseData));
 }
 
 socket.onmessage = function(event) {
   const message = JSON.parse(event.data);
   if (message.type !== 'model') { return; }
-  const model = message.data;
-  xmmProcessor.setModel(rapidMixAdapters.xmmToRapidMixModel(model));
+
+  const hmmParams = message.data;
+  xmm.predictor = HierarchicalHMMPredictor(hmmParams, 1);
+  xmm.predictor.reset();
+
   processedSensors.addListener(decode);
 
   state = "idle";
@@ -86,9 +68,8 @@ socket.onmessage = function(event) {
  * according to the examples previously provided.
  */
 function decode(data) {
-  const results = xmmProcessor.run(data);
-  // feedback of the likeliest recognised label
-  const likeliest = results.likeliest;
+  xmm.predictor.predict(data.slice(0, 8));
+  const likeliest = xmm.predictor.results.likeliest;
   $result.textContent = likeliest;
 }
 
