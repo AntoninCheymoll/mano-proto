@@ -39,3 +39,4 @@ node_modules/
 
 dist/*.bundle.js
 dist/*.json
+src/visu1.js

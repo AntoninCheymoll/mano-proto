@@ -2,9 +2,14 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 
-export default function onMouseOnGraph(e,can,res){
-  let x = event.pageX- $("canvas").position().left;
-  let y = event.pageY- $("canvas").position().top;
+import {drawSecondCan} from './drawSecondCan.js';
+
+export default function onMouseOnGraph(e,can,res,drawRect){
+
+
+
+  let x = event.pageX- $("#divMilieu").position().left;
+  let y = event.pageY- $("#divMilieu").position().top;
 
   let graphSize = 800/res.trainingSet.phrases.length;
 
@@ -117,6 +122,8 @@ export default function onMouseOnGraph(e,can,res){
       $("#tooltipCan").css('visibility', 'visible');
       $("#labelCan").text("Modèle: " + labelMin +"; Valeur: " + (Math.round((phrase.likelihoods[tpsSouris][labelMin])*100))/100 )
 
+
+      drawRect(phrase.label,labelMin)
       return [phrase.label,labelMin]
     }
 

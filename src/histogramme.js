@@ -21,7 +21,17 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
   ctx.fillStyle = "rgba(255,128,0,0.2)";
   ctx.fillRect(0, 0 , can.width,can.height);
 
+  //tracé de la ligne blanche verticale
+  ctx.strokeStyle = "rgb(255,255,255)"
+  ctx.lineWidth = 3
 
+  ctx.beginPath();
+  ctx.moveTo(51 ,0);
+  ctx.lineTo( 51 ,can.height)
+  ctx.stroke();
+
+
+  ctx.lineWidth = 1
   ctx.fillStyle = "rgb(0,0,0)";
   ctx.font ="15px Arial";
 
@@ -75,13 +85,14 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
     ctx.strokeStyle = "rgb(255,255,255)";
     ctx.lineWidth=histoSize*8/100;
     ctx.beginPath();
-    ctx.moveTo(0,histoSize*3/100 + (index+1)*histoSize + classNameSize  );
-    ctx.lineTo(can.width ,histoSize*3/100 + (index+1)*histoSize + classNameSize);
+    ctx.moveTo(0,histoSize*3/100 + (index)*histoSize + classNameSize  );
+    ctx.lineTo(can.width ,histoSize*3/100 + (index)*histoSize + classNameSize);
     ctx.stroke();
 
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.strokeStyle = "rgb(0,0,0)";
     ctx.lineWidth = 1;
+
     //barre verticale (curseur)
     ctx.beginPath();
 
@@ -100,23 +111,23 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
     //nom de la classe
 
     if(res.trainingSet.phrases.length<10){
+      ctx.fillStyle = "rgb(0,128,255)";
 
-      ctx.fillStyle = "rgb(0,0,160)";
       ctx.font ="15px Arial";
 
-      ctx.fillText(0 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
+      ctx.fillText(ph.length-1 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
 
-      ctx.fillStyle = "rgb(0,128,255)";
-      ctx.fillText(ph.length-1,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
+      ctx.fillStyle = "rgb(0,0,160)";
+      ctx.fillText(0,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
     }else if(res.trainingSet.phrases.length<20){
-
+      ctx.fillStyle = "rgb(0,128,255)";
       ctx.fillStyle = "rgb(0,0,160)";
       let tamp = (res.trainingSet.phrases.length*(-1) - 10)/10*5 + 10
       ctx.font = tamp + "px Arial";
 
-      ctx.fillText(0 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
-      ctx.fillStyle = "rgb(0,128,255)";
-      ctx.fillText(ph.length-1,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
+      ctx.fillText(ph.length-1 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
+      ctx.fillStyle = "rgb(0,0,160)";
+      ctx.fillText(0,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
 
     }
 
@@ -131,15 +142,15 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
     if(ph.length>tps5){
       ctx.strokeStyle = "rgb(" + 0 + "," + (tps5*128)/(ph.length-1) +"," + (160+ tps5*95/(ph.length-1)) +")";
-      ctx.moveTo(15, histoSize*16/100 + index*histoSize  + histoSize*69/100*tps5/(ph.length-1) + classNameSize);
-      ctx.lineTo(31, histoSize*16/100 + index*histoSize  + histoSize*69/100*tps5/(ph.length-1) + classNameSize);
+      ctx.moveTo(15, histoSize*85/100 + index*histoSize  - histoSize*69/100*tps5/(ph.length-1) + classNameSize);
+      ctx.lineTo(31, histoSize*85/100 + index*histoSize  - histoSize*69/100*tps5/(ph.length-1) + classNameSize);
 
     }else{
 
       ctx.strokeStyle = "rgb(0,128,255)";
 
-      ctx.moveTo(15, histoSize*85/100 + index*histoSize + classNameSize );
-      ctx.lineTo(31, histoSize*85/100 + index*histoSize + classNameSize);
+      ctx.moveTo(15, histoSize*16/100 + index*histoSize + classNameSize );
+      ctx.lineTo(31, histoSize*16/100 + index*histoSize + classNameSize);
 
     }
 
@@ -199,7 +210,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
         ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
 
-        //recuperation des positions de tous les rectangles
+        // recuperation des positions de tous les rectangles
         rectList.push({x:(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
                        y:histoSize*16/100 + index*histoSize  + classNameSize,
                        w:histoWidth,
@@ -219,6 +230,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
             ctx.stroke()
           }
         }
+
         //si on affiche pas la valeure on doit le mettre dans le tooltipHM
         if(res.trainingSet.phrases.length>20){
 
@@ -266,23 +278,29 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
         //dessin du rectangle
 
         ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+
+
+
+
         rectList.push({x:(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
-                       y:histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
+                       y:histoSize*16/100 + index*histoSize + classNameSize,
                        w:histoWidth,
-                       h:likelihood*histoSize*75/100,
+                       h:histoSize*75/100,
                        class:ph.label,
                        model:classLabel
                      })
+
         if(selectedRectHisto  ){
 
           if((selectedRectHisto.class == ph.label && selectedRectHisto.model == classLabel) || (selectedRectHisto.model == ph.label && selectedRectHisto.class == classLabel) ){
-
+              ctx.beginPath();
              ctx.strokeStyle="rgb(0,100,50)"
              ctx.rect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
              ctx.lineWidth = 3
              ctx.stroke()
            }
         }
+
 
 
 

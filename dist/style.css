@@ -48,10 +48,43 @@
 }
 
 
-.seuil0 {
-  color:#600;
+.seuil0B {
+  color:#DDD;
+
 }
 
-.seuil {
+.seuil0R {
   color:#FAA;
 }
+
+.seuilR {
+  color:#822;
+}
+
+.seuilB {
+  color:#000  ;
+
+}
+
+.canvas2{
+  position: absolute;
+
+}
+
+#tabs .ui-tabs-active {
+  background: #008833;
+  border: #003e00;
+}
+
+/* .drawingClassName {
+  position: absolute;
+  background: black;
+}
+
+.triangle{
+  width: 0;
+      height: 0;
+      border: solid 30px;
+      border-color: transparent transparent black transparent;
+
+} */

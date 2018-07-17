@@ -6,9 +6,11 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
-
+import drawClassNameList from './drawClassNameList.js'
 
 export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs,isDraging) {
+
+
 
   //taille d un graphe unique
   let graphSize = 800/res.trainingSet.phrases.length;
@@ -18,6 +20,9 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
 
   can.width = '800';
   can.height = '800';
+
+
+
 
 
   ctx.fillStyle = "rgba(255,128,0,0.2)";
@@ -53,17 +58,8 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
       let proportion = dictProp[classeName];
 
 
-      //console.log('classGraphe: '+ classeName);
       ctx.font = "15px Arial";
       ctx.fillStyle="rgb(0,0,100)"
-
-
-      //affichage du nom de la classe
-      //ctx.fillText(classeName , 500 ,graphSize*5/100 + 15 + i*graphSize);
-      //log("",ctx.measureText(classeName) )
-       ctx.fillText(classeName , can.width -20 -ctx.measureText(classeName).width ,graphSize*5/100 + 15 + i*graphSize);
-
-
 
       ctx.strokeStyle="rgb(0,0,0)"
 
@@ -150,7 +146,6 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
             //si c est la ligne symetriaue de celle sur laquelle est la souris on la trace a la fin pour la faire ressortir
             stckClassParall = classe2
 
-
           }else{
 
             if(tps3< classe.length){
@@ -175,9 +170,6 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
             //console.log('taille' + data.length);
             //console.log(data);
 
-
-
-
             //trace de la courbe
 
 
@@ -190,19 +182,51 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
               ctx.lineWidth = 2;
 
               if(tps3< classe.length){
+                      ctx.fillStyle = "rgba(0,160,80,0.3)"
                       ctx.strokeStyle="rgb(0,160,80)"
                 }else{
                         ctx.strokeStyle="rgb(0,100,50)"
+                        ctx.fillStyle = "rgba(0,100,50,0.3)"
                 }
 
+                //si le graphe est selectionné l affichage est different
+                let isclosed
+                if(tps3!=0){isclosed = false; }else{isclosed=true}
+                for (let j=1; j<data.length; j++){
+                  ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+
+                  //si on atteint le curseur de temps ou la fin on rempli la forme
+                  if(!isclosed && (tps3==j || j ==data.length -1)){
+
+                    //on trace la forme a partir ducurseur de temps
+                    ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100);
+                    ctx.lineTo(10,  i*graphSize + graphSize*97/100);
+                    ctx.closePath();
+                    ctx.stroke();
+
+
+                    ctx.fill();
+
+                    //on recmmence le tracé d une nouvelle ligne
+                    ctx.beginPath();
+                    ctx.moveTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+
+                    isclosed = true
+                  }
+
+                }
+
+            }else{
+
+              for (let j=1; j<data.length; j++){
+                ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+
+              }
             }
 
 
 
-              for (let j=1; j<data.length; j++){
 
-                ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
-              }
 
               //console.log(ctx.strokeStyle);
             ctx.stroke();
@@ -250,7 +274,10 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
 
     if(tps3< classe.length){
             ctx.strokeStyle="rgb(150,0,0)"
+            ctx.fillStyle="rgba(150,0,0,0.3)"
+
       }else{
+              ctx.fillStyle="rgba(150,80,80,0.3)"
               ctx.strokeStyle="rgb(150,80,80)"
       }
 
@@ -261,11 +288,6 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
         data.push(classe.likelihoods[x][stckClassSym.label]);
 
       }
-      //console.log('taille' + data.length);
-      //console.log(data);
-
-
-
 
 
       ctx.beginPath();
@@ -275,12 +297,44 @@ export default function graphs(can, res,ctx,tps3,selectedGraph,colorSliderGraphs
       if(selectedGraph && selectedGraph[0]==stckClassSym.label && selectedGraph[1]==classe.label){
 
         ctx.lineWidth = 2;
-      }
+
+        //si le graphe est selectionné l affichage est different
+        let isclosed
+        if(tps3!=0){isclosed = false; }else{isclosed=true}
+
+        for (let j=1; j<data.length; j++){
+          ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+
+          //si on atteint le curseur de temps ou la fin on rempli la forme
+          if(!isclosed && (tps3==j || j ==data.length -1)){
+
+            //on trace la forme a partir ducurseur de temps
+            ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100);
+            ctx.lineTo(10,  i*graphSize + graphSize*97/100);
+            ctx.closePath();
+            ctx.stroke();
+
+
+            ctx.fill();
+
+            //on recmmence le tracé d une nouvelle ligne
+            ctx.beginPath();
+            ctx.moveTo(10+j*(((can.width-10)*proportion)/(data.length-1)),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+
+            isclosed = true
+          }
+
+        }
+
+
+
+      }else{
 
         for (let j=1; j<data.length; j++){
 
           ctx.lineTo(10+j*(((can.width-10)*proportion)/(data.length-1)),i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
         }
+      }
 
         //console.log(ctx.strokeStyle);
       ctx.stroke();

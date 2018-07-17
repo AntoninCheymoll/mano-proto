@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <title>Visu Chaines de Markov</title>
 
-  <link rel="stylesheet" href="style.css"/>
+
   <script src="visu.bundle.js">
   </script>
 
   <link rel="stylesheet" href="../node_modules/jquery-ui-bundle/jquery-ui.css"/>
-
+  <link rel="stylesheet" href="style.css"/>
 
 
 
@@ -70,12 +70,15 @@
     Moyenne de reconnaissance:
     <label id= "recoMean"></label>
     <br>
-      Temps étudié: <id="pasDeTempsGraphs0" class = "pasDeTemps0">0</label> &nbsp;
+      Temps: <id="pasDeTempsGraphs0" class = "pasDeTemps0">0</label> &nbsp;
        <div class = "slider" id="sliderGraphs" style="display:inline-block;width:200px;">
-         <div id="handleGraphs" class="ui-slider-handle" style="width:1.6em;color:#FFF;background:#00A">0</div>
+         <div id="handleGraphs" class="ui-slider-handle handleTime" style="width:1.6em;color:#FFF;background:#00A">0</div>
     </div>
       &nbsp; &nbsp;
     <label id= "pasDeTempsGraphs" class = "pasDeTemps"></label>
+    &nbsp;
+    <button class = "prevButton"><<<</button>
+    <button class = "nextButton">>>></button>
     <br>
   </div>
 
@@ -91,34 +94,40 @@
 
   <div id="Histo" hidden >
 
-      Temps étudié: <id="pasDeTempsHisto0" class = "pasDeTemps0">0</label> &nbsp;
+      Temps: <id="pasDeTempsHisto0" class = "pasDeTemps0">0</label> &nbsp;
       <div class = "slider" id="sliderHisto" style="display:inline-block;width:200px;">
-        <div id="handleHisto" class="ui-slider-handle" style="width:1.6em;color:#FFF;background:#00A">0</div>
+        <div id="handleHisto" class="ui-slider-handle handleTime" style="width:1.6em;color:#FFF;background:#00A">0</div>
       </div>
       &nbsp; &nbsp;
     <label id= "pasDeTempsHisto" class = "pasDeTemps"></label>
+    &nbsp;
+    <button class = "prevButton"><<<</button>
+    <button class = "nextButton">>>></button>
   </div>
 
 
 <div id="HM" hidden >
 
-        Temps étudié: <id="pasDeTempsHM0" class = "pasDeTemps0">0</label> &nbsp;
+        Temps: <id="pasDeTempsHM0" class = "pasDeTemps0">0</label> &nbsp;
 
         <div class = "slider" id="sliderHMtps" style="display:inline-block;width:200px;">
-          <div id="handleHM" class="ui-slider-handle" style="width:1.6em;color:#FFF;background:#00A">0</div>
+          <div id="handleHM" class="ui-slider-handle handleTime" style="width:1.6em;color:#FFF;background:#00A">0</div>
         </div>
 
         &nbsp;   &nbsp;   <label id= "pasDeTempsHM" class = "pasDeTemps"></label>
+        &nbsp;
+        <button class = "prevButton"><<<</button>
+        <button class = "nextButton">>>></button>
 
         <br><br>
         <span class="tooltipable">Seuil :<div class="tooltip" >Seuil en dessous duquel on ignore les valeures</div>
         </span>&nbsp; &nbsp;
 
-        <id="seuilHM0" class = "seuil0">0</label> &nbsp;
+        <id="seuilHM0B" class = "seuil0B">>0</label> <label style="color:black;background:white">/ </label><id="seuilHM0R" class = "seuil0R"><1</label> &nbsp;  &nbsp;
           <div id="sliderHMmeanMin"  style="display:inline-block;width:200px;">
-            <div id="handleSeuilHM" class="ui-slider-handle" style="width:2em;color:#FFF;background:#600">0</div>
+            <div id="handleSeuilHM" class="ui-slider-handle" style="width:2em;color:#FFF;background:#faa">0</div>
           </div> &nbsp; &nbsp; &nbsp;
-        <label id= "meanMinHM" class = "seuil"  >1</label>
+        <id="seuilHMB" class = "seuilB">>1</label> <label style="color:black;">/ </label><id="seuilHMR" class = "seuilR"><0</label>&nbsp;
 
 
 

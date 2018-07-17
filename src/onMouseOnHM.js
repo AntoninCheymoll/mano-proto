@@ -8,8 +8,8 @@ import 'jquery-ui-bundle';
 
 export default function onMouseOnHM(e,can,res){
 
-        let x = event.pageX- $("canvas").position().left;
-        let y = event.pageY- $("canvas").position().top;
+        let x = event.pageX- $("#divMilieu").position().left;
+        let y = event.pageY- $("#divMilieu").position().top;
 
         let rectW = can.width/(res.model.models.length+1);
         let rectH = can.height/(res.trainingSet.phrases.length+1);
@@ -22,8 +22,6 @@ export default function onMouseOnHM(e,can,res){
         }else{
           return [-1,-1]
         }
-
-
 }
 
 
