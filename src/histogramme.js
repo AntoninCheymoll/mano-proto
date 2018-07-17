@@ -7,14 +7,16 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
   can.width = '800';
   can.height = '800';
 
+  const numClasses = Object.keys(res.model.classes).length;
+
   //tableau qui stockera la liste des rectangle pour la surbrillance en vert lorsqu on pqsse le curseur
   let rectList = []
 
   //calcul de la taille d une serie d histogramme en fct du nombre de classe
-   let histoSize = (800-30)/res.trainingSet.phrases.length;
+   let histoSize = (800-30)/res.phrases.length;
 
    // calcul de la largeur d'un batton
-   let histoWidth = (800-50)/(res.model.models.length)*3/4
+   let histoWidth = (800-50)/(numClasses)*3/4
 
   let classNameSize = 30
 
@@ -37,21 +39,21 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
   let cpt = 0;
 
-  for(let modelName of res.model.models){
+  for(let modelName of Object.keys(res.model.classes)){
 
     //ecriture des noms de classe
-    let txt = cuttingString((800-50)/(res.model.models.length)-2, ctx, modelName.label)//texte coupe si trop long
+    let txt = cuttingString((800-50)/(numClasses)-2, ctx, modelName)//texte coupe si trop long
 
-    if(txt != modelName.label){
+    if(txt != modelName){
 
-       tooltipHisto.push([50  + cpt*(800-50)/(res.model.models.length) +((800-50)/(res.model.models.length) -ctx.measureText(txt).width)/2,
-             20-15,ctx.measureText(txt).width,15,modelName.label])
+       tooltipHisto.push([50  + cpt*(800-50)/(numClasses) +((800-50)/(numClasses) -ctx.measureText(txt).width)/2,
+             20-15,ctx.measureText(txt).width,15,modelName])
 
 
     }
 
     ctx.fillText(txt,
-      50  + cpt*(800-50)/(res.model.models.length) +((800-50)/(res.model.models.length) -ctx.measureText(txt).width)/2,
+      50  + cpt*(800-50)/(numClasses) +((800-50)/(numClasses) -ctx.measureText(txt).width)/2,
       20)
 
 
@@ -70,7 +72,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
   //numero de classe etudie
   let index =0;
 
-  for(let ph of res.trainingSet.phrases){
+  for(let ph of res.phrases){
 
 
     //ligne horizontale
@@ -110,7 +112,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
     //nom de la classe
 
-    if(res.trainingSet.phrases.length<10){
+    if(res.phrases.length<10){
       ctx.fillStyle = "rgb(0,128,255)";
 
       ctx.font ="15px Arial";
@@ -119,10 +121,10 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
       ctx.fillStyle = "rgb(0,0,160)";
       ctx.fillText(0,35, histoSize*85/100 + Math.min(15/2, histoSize*6/100-2) + index*histoSize + classNameSize);
-    }else if(res.trainingSet.phrases.length<20){
+    }else if(res.phrases.length<20){
       ctx.fillStyle = "rgb(0,128,255)";
       ctx.fillStyle = "rgb(0,0,160)";
-      let tamp = (res.trainingSet.phrases.length*(-1) - 10)/10*5 + 10
+      let tamp = (res.phrases.length*(-1) - 10)/10*5 + 10
       ctx.font = tamp + "px Arial";
 
       ctx.fillText(ph.length-1 ,35, histoSize*16/100 + 15/2  + index*histoSize + classNameSize);
@@ -165,9 +167,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
 
     //pour chaque classe (/pour chaque classe)
-    for(let i = 0; i<res.model.models.length;i++){
-      //recuperation du nom
-      let classLabel = res.model.models[i].label;
+    Object.keys(res.model.classes).forEach((classLabel, i) => {
       //console.log(classLabel);
       ctx.fillStyle = "rgb(0,0,0)";
       ctx.font ="13px Arial";
@@ -181,7 +181,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
       // let meanLikelihood = 0;
       //
       // for(let i =0; i<ph.length;i++){
-      //     meanLikelihood += ph.likelihoods[i][classLabel]
+      //     meanLikelihood += ph.instantNormalizedLikelihoods[i][classLabel]
       // }
       // meanLikelihood = meanLikelihood/ph.length;
       // meanLikelihood = meanLikelihood*100;
@@ -192,7 +192,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
       //si on a pas atteint la fin de la phrase
       if(ph.length>tps5){
         //la valeur correspondante
-        let likelihood = ph.likelihoods[tps5][classLabel]
+        let likelihood = ph.instantNormalizedLikelihoods[tps5][classLabel]
 
         //troncature
         likelihood = likelihood*100;
@@ -208,10 +208,10 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
         //dessin du rectangle
 
-        ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+        ctx.fillRect((i)*(800-50)/(numClasses) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
 
         // recuperation des positions de tous les rectangles
-        rectList.push({x:(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+        rectList.push({x:(i)*(800-50)/(numClasses) +50 + histoWidth/3/2,
                        y:histoSize*16/100 + index*histoSize  + classNameSize,
                        w:histoWidth,
                        h:histoSize*75/100,
@@ -225,16 +225,16 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
             ctx.strokeStyle="rgb(0,160,80)"
             ctx.beginPath();
-            ctx.rect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+            ctx.rect((i)*(800-50)/(numClasses) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
             ctx.lineWidth = 3
             ctx.stroke()
           }
         }
 
         //si on affiche pas la valeure on doit le mettre dans le tooltipHM
-        if(res.trainingSet.phrases.length>20){
+        if(res.phrases.length>20){
 
-            tooltipHisto.push([(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+            tooltipHisto.push([(i)*(800-50)/(numClasses) +50 + histoWidth/3/2,
                                histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
                                histoWidth,
                                likelihood*histoSize*75/100,
@@ -244,16 +244,16 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
         ctx.fillStyle = "rgb(0,0,0)";
 
-        if(res.trainingSet.phrases.length<10){
+        if(res.phrases.length<10){
           ctx.font ="15px Arial";
-          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(res.model.models.length) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
-        }else if(res.trainingSet.phrases.length<20){
+          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(numClasses) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
+        }else if(res.phrases.length<20){
 
-          let tamp = (res.trainingSet.phrases.length*(-1) - 10)/10*5 + 10
+          let tamp = (res.phrases.length*(-1) - 10)/10*5 + 10
           ctx.font = tamp + "px Arial";
 
 
-          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(res.model.models.length) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
+          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(numClasses) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
 
 
          }
@@ -261,7 +261,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
       }else{//si on est apres la fin de la phrase on affiche la derniere valeure
 
         //la valeur correspondante
-        let likelihood = ph.likelihoods[ph.length-1][classLabel]
+        let likelihood = ph.instantNormalizedLikelihoods[ph.length-1][classLabel]
 
         //troncature
         likelihood = likelihood*100;
@@ -277,12 +277,12 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
         //dessin du rectangle
 
-        ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+        ctx.fillRect((i)*(800-50)/(numClasses) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
 
 
 
 
-        rectList.push({x:(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+        rectList.push({x:(i)*(800-50)/(numClasses) +50 + histoWidth/3/2,
                        y:histoSize*16/100 + index*histoSize + classNameSize,
                        w:histoWidth,
                        h:histoSize*75/100,
@@ -295,7 +295,7 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
           if((selectedRectHisto.class == ph.label && selectedRectHisto.model == classLabel) || (selectedRectHisto.model == ph.label && selectedRectHisto.class == classLabel) ){
               ctx.beginPath();
              ctx.strokeStyle="rgb(0,100,50)"
-             ctx.rect((i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
+             ctx.rect((i)*(800-50)/(numClasses) +50 + histoWidth/3/2, histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize, histoWidth, likelihood*histoSize*75/100)
              ctx.lineWidth = 3
              ctx.stroke()
            }
@@ -305,16 +305,16 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
 
 
-        ctx.fillRect((i)*(800-50)/(res.model.models.length) +50 +  histoWidth/3/2,
+        ctx.fillRect((i)*(800-50)/(numClasses) +50 +  histoWidth/3/2,
                       histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
                       histoWidth,
                       likelihood*histoSize*75/100)
 
         //si on affiche pas la valeure on doit le mettre dans le tooltipHM
 
-        if(res.trainingSet.phrases.length>20){
+        if(res.phrases.length>20){
 
-            tooltipHisto.push([(i)*(800-50)/(res.model.models.length) +50 + histoWidth/3/2,
+            tooltipHisto.push([(i)*(800-50)/(numClasses) +50 + histoWidth/3/2,
                                histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize,
                                histoWidth,
                                likelihood*histoSize*75/100,
@@ -325,25 +325,23 @@ export default function histogramme(can, res,ctx, tps5, tooltipHisto, selectedRe
 
 
         ctx.fillStyle = "rgb(0,0,0)";
-        if(res.trainingSet.phrases.length<10){
+        if(res.phrases.length<10){
           ctx.font ="15px Arial";
-          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(res.model.models.length) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
+          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(numClasses) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
 
 
-        }else if(res.trainingSet.phrases.length<20){
+        }else if(res.phrases.length<20){
 
-          let tamp = (res.trainingSet.phrases.length*(-1) - 10)/10*5 + 10
+          let tamp = (res.phrases.length*(-1) - 10)/10*5 + 10
           ctx.font = tamp + "px Arial";
 
 
-          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(res.model.models.length) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
+          ctx.fillText(likelihood ,(i + 0.5)*(800 - 50)/(numClasses) +50 -ctx.measureText(likelihood).width/2, -2 +  histoSize*16/100 + index*histoSize + (1-likelihood)*histoSize*75/100 + classNameSize);
 
 
          }
       }
-    }
-
-
+    });
     index++;
   }
   return rectList;

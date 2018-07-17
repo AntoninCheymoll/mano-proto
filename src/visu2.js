@@ -18,7 +18,7 @@ export default function visu2(can, res,ctx) {
       // let ctx = can.getContext("2d")
 
 
-      for(let ph of res.trainingSet.phrases){
+      for(let ph of res.phrases){
         for(let labelNum of res.model.models){
           let classeName= labelNum.label
         //  console.log(classeName);
@@ -49,7 +49,7 @@ export default function visu2(can, res,ctx) {
 
           }
 
-          b= b + 255/(res.trainingSet.phrases.length-1);
+          b= b + 255/(res.phrases.length-1);
       }
 
 

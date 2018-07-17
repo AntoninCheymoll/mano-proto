@@ -4,36 +4,37 @@
   "description": "Visualisation prototype for mano-js",
   "main": "dist/visu.bundle.js",
   "scripts": {
-    "server": "babel-node server.js",
+    "server": "NODE_ENV=development babel-node server.js",
     "build": "webpack",
-    "dev": "webpack-dev-server --host 0.0.0.0"
+    "dev": "NODE_ENV=development nodemon --exec babel-node server.js --watch ./server.js ./training.js"
   },
   "author": "Antonin Cheymol, Jules Francoise, Fred Vernier",
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "chartist": "^0.11.0",
     "cors": "^2.8.4",
     "css-loader": "^0.28.11",
-    "d3": "^5.4.0",
     "express": "^4.16.3",
     "jquery": "^3.3.1",
     "jquery-ui": "^1.12.1",
     "jquery-ui-bundle": "^1.12.1-migrate",
     "mano-js": "github:ircam-rnd/mano-js",
-    "rapid-mix-adapters": "github:Ircam-RnD/rapid-mix-adapters",
     "style-loader": "^0.21.0",
+    "webpack": "^4.16.1",
+    "webpack-dev-middleware": "^3.1.3",
+    "webpack-hot-middleware": "^2.22.3",
     "ws": "^5.2.0",
-    "xmm-client": "github:Ircam-RnD/xmm-client",
-    "xmm-node": "github:ircam-rnd/xmm-node"
+    "xmm-js": "github:JulesFrancoise/xmmjs"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
-    "webpack": "^4.9.1",
-    "webpack-cli": "^2.1.4",
-    "webpack-dev-server": "^3.1.4"
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^13.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "nodemon": "^1.18.1",
+    "url-loader": "^1.0.1"
   }
 }

@@ -1,5 +1,3 @@
-
-
 import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
@@ -11,10 +9,11 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
   can.height = 800;
 
   let phrases = [];
+  const numClasses = Object.keys(res.model.classes).length;
 
   //recuperation des phrases non finiess au temps tps6
 
-  for(let ph of res.trainingSet.phrases){
+  for(let ph of res.phrases){
       if(ph.length > tps6){
         phrases.push(ph);
       }
@@ -34,8 +33,8 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
   //calcul de la longueur d un carré
   //let squaresizeH = 800/(phrases.length+1);
-  let squaresizeH = 800/(res.trainingSet.phrases.length+1)
-  let squaresizeW = 800/(res.model.models.length+1)
+  let squaresizeH = 800/(res.phrases.length+1)
+  let squaresizeW = 800/(numClasses+1)
 
 
 
@@ -45,7 +44,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
   ctx.fillRect(0, 0, squaresizeH, squaresizeW);
 
 
-  for(let model of res.trainingSet.phrases){
+  for(let model of res.phrases){
 
 
     //dessin de la grille et des carrés
@@ -98,12 +97,12 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
   //ecriture des noms des classes haut
 
   let cptModel = 0;
-  for(let mod of res.model.models ){
+  for(let label of Object.keys(res.model.classes) ){
 
     cptModel++;
 
     //decoupage du label a chaque espace
-    var labelList = mod.label.split(" ");
+    var labelList = label.split(" ");
 
 
     //calcul taille texte
@@ -160,7 +159,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
           // ctx.rect(1,squaresizeH*numligne +1,squaresizeW-2, squaresizeH-2)
           // ctx.stroke()
 
-          tooltipHM.push([squaresizeW*cptModel, 0, squaresizeW, squaresizeH,mod.label])
+          tooltipHM.push([squaresizeW*cptModel, 0, squaresizeW, squaresizeH,label])
     }
 
   }
@@ -175,7 +174,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
   //numero de la ligne concernee
   let numligne = 0;
-  for(let phrase of res.trainingSet.phrases){ //ligne
+  for(let phrase of res.phrases){ //ligne
 
 
     numligne++;
@@ -192,7 +191,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
 
     // let phrase;
-    // for(let ph of res.trainingSet.phrases){
+    // for(let ph of res.phrases){
     //     if (ph.label == model1.label){
     //       phrase = ph;
     //       break;
@@ -204,7 +203,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
     let placeRestante = squaresizeH; //place qui restera dans le carré apres dessin de la "jauge" pour 2crire le nom des classes
 
     //cqs ou il y a tres peu de classe (plus de place dans les carres)
-    if(res.trainingSet.phrases.length<=10){
+    if(res.phrases.length<=10){
 
       placeRestante -= squaresizeH*11/100 + 5 //5 = l espace entre le nom de classe et la jauge
 
@@ -252,7 +251,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
       ctx.stroke();
 
     //cas ou il y a beaucoup de valeurs
-    }else if(res.trainingSet.phrases.length>20){
+    }else if(res.phrases.length>20){
 
         placeRestante -= 12 + 1 //1 = l espace entre le nom de classe et la jauge
 
@@ -341,21 +340,21 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
     //num de la colonne concernee
     let numcol =0;
 
-    for(let model2 of res.model.models){ //colonne
+    for(let label2 of Object.keys(res.model.classes)){ //colonne
           numcol++;
           let valMod1Mod2
           if(isNotFinished){
 
-            valMod1Mod2 = phrase.likelihoods[tps6][model2.label];
+            valMod1Mod2 = phrase.instantNormalizedLikelihoods[tps6][label2];
           }else{
 
-            valMod1Mod2 = phrase.likelihoods[phrase.length-1][model2.label];
+            valMod1Mod2 = phrase.instantNormalizedLikelihoods[phrase.length-1][label2];
 
           }
 
-          // console.log('model2:'+model2.label);
+          // console.log('model2:'+label2);
           // for(let i =0; i<phrase.length;i++){
-          //     meanMod1Mod2 += phrase.likelihoods[i][model2.label]
+          //     meanMod1Mod2 += phrase.instantNormalizedLikelihoods[i][label2]
           // }
           // meanMod1Mod2 = meanMod1Mod2/phrase.length;
           // console.log('mean '+meanMod1Mod2);
@@ -363,11 +362,11 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
           //affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
 
-          if((valMod1Mod2*100>val6 && phrase.label != model2.label) || (valMod1Mod2*100<=(100-val6) && phrase.label == model2.label)){
+          if((valMod1Mod2*100>val6 && phrase.label != label2) || (valMod1Mod2*100<=(100-val6) && phrase.label == label2)){
 
 
             //calcul de la couleur du carré, rouge ou noir, plus ou moins clair
-            if(phrase.label == model2.label){
+            if(phrase.label == label2){
               // ctx.fillStyle = "rgb(105,0,0)"
               //ctx.fillStyle = "rgb(255,220,220)"
               ctx.fillStyle = "rgb("+ (105 + valMod1Mod2*(255-105))+"," + (valMod1Mod2*(220))+ "," +  ( valMod1Mod2*(220))  +")";
@@ -384,7 +383,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
 
             //la couleur du texte depend de la couleur dessous pour etre la plus lisibl possible
             //si on est sur fond rouge le texte est toujours clair
-            if(phrase.label==model2.label){
+            if(phrase.label==label2){
                 if(isNotFinished){ctx.fillStyle = "rgb(255,255,255)";}else{ctx.fillStyle = "rgb(155,155,155)";}
             }else{
               if(valMod1Mod2>0.5){
@@ -400,7 +399,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
             valMod1Mod2 /=100
 
 
-            if(res.model.models.length<20){
+            if(numClasses<20){
               ctx.font ="15px Arial";
             }else{
               ctx.font ="10px Arial";
@@ -444,7 +443,7 @@ export default function heatmap(can, res,ctx,val6,tps6,numLinClicked,numColClick
     ctx.rect(numLinClicked*squaresizeW, numColClicked*squaresizeH ,squaresizeW, squaresizeH)
     ctx.stroke();
 
-    drawSecondCan(ctx2, can2, res, tps6, res.trainingSet.phrases[numLinClicked-1].label,res.model.models[numColClicked-1].label,colorSliderGraphs ,timeMax)
+    drawSecondCan(ctx2, can2, res, tps6, res.phrases[numLinClicked-1].label,res.model.models[numColClicked-1].label,colorSliderGraphs ,timeMax)
 
 
   }

@@ -3,15 +3,15 @@ import jquery from 'jquery';
 import 'jquery-ui-bundle';
 
 
-export default function drawClassNameList(can,ctx,res,numVis){
-  let height = can.height/res.trainingSet.phrases.length;
+export default function drawClassNameList(can, ctx, res, numVis){
+  let height = can.height/res.phrases.length;
 
   if (numVis==1) {
 
 
 
     let i=0;
-    for(let ph of res.trainingSet.phrases){
+    for(let ph of res.phrases){
 
 
   $("#divMilieu").append($('<svg style="left:800px;top:'+ i*height +'px;position:absolute"><polygon points="50,'+(height/10 )+
@@ -52,7 +52,7 @@ export default function drawClassNameList(can,ctx,res,numVis){
 //$("#divMilieu").append($('<label style="left:800px;top:60px;position:absolute;">Antonin</label>'))
 //$("#divMilieu").append($('<label style="left:800px;top:120px;position:absolute;">Fred</label>'))
   //  let i=0;
-  //  for(let ph of res.trainingSet.phrases){
+  //  for(let ph of res.phrases){
   //
   //   let textZone = document.createElement('div');
   //   $(textZone).append($('<svg height="210" width="500"><polygon points="-100,0 100,0 80,120" style="fill:lime;stroke:purple;stroke-width:1" /></svg>'))

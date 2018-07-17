@@ -2,7 +2,7 @@ import  $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 
-export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSliderGraphs){
+export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSliderGraphs,maxTime){
 
 
     can.width = '800';
@@ -10,7 +10,7 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
 
     let dictProp = {};
 
-    for(let ph of res.trainingSet.phrases){
+    for(let ph of res.phrases){
       if(ph.label==className || ph.label == modelName){
         dictProp[ph.label]=ph.length
       }
@@ -21,7 +21,7 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
 
     let maxSize = dictProp[modelName]
     if(dictProp[className]>maxSize){maxSize = dictProp[className]}
-      console.log(maxSize);
+
 
 
     dictProp[className] = dictProp[className]/maxSize
@@ -91,9 +91,8 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
 
       ctx.beginPath();
 
-
-      ctx.moveTo(10 + 790*tps3/(maxSize-1),graphSize*15/100+ i*graphSize);
-      ctx.lineTo(10 + 790*tps3/(maxSize-1), graphSize +  i*graphSize);
+      ctx.moveTo(10 + 790*tps3/(maxTime-1),graphSize*15/100+ i*graphSize);
+      ctx.lineTo(10 + 790*tps3/(maxTime-1), graphSize +  i*graphSize);
 
       ctx.stroke();
 
@@ -106,22 +105,18 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
       let isfilled = false;
       let stckdata = {}
 
+      for(let ph of res.phrases){
+
+        if(ph.label==className){
+          ctx.strokeStyle="rgb(150,0,0)"
+
+        }else{
+          ctx.strokeStyle="rgb(0,160,80   )"
+        }
 
 
-      for(let ph of res.trainingSet.phrases){
-
+        //console.log(ph.label);
         if((ph.label==className) || (ph.label == modelName)){
-
-          if(ph.label==className){
-
-
-            ctx.strokeStyle="rgb(150,0,0)"
-
-          }else{
-            ctx.strokeStyle="rgb(0,160,80   )"
-
-
-          }
 
           let data = []
 
@@ -133,22 +128,17 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
 
           ctx.beginPath();
           ctx.moveTo(10, i*graphSize + graphSize*97/100 - data[0]*graphSize*82/100);
-
           for (let j=1; j<data.length; j++){
-            ctx.lineTo(10+j*((790*dictProp[ph.label]/(data.length-1))),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+            ctx.lineTo(10+j*((800*dictProp[ph.label]/(data.length-1))),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
 
             if(!premier && !isfilled && (j==data.length-1|| j==stckdata.lgth-1  || j == tps3 )){
 
+              ctx.stroke()
 
-               ctx.stroke()
-
-            //ctx.arc(10+(j)*((790*stckdata.prop/(stckdata.lgth-1))),  i*graphSize + graphSize*97/100 - stckdata.data[j]*graphSize*82/100,10,0,2*Math.PI);
-
-               ctx.lineTo(10+j*((790*dictProp[ph.label]/(data.length-1))),  i*graphSize + graphSize*97/100 - stckdata.data[j]*graphSize*82/100);
+              ctx.moveTo(10+(j)*((800/(data.length-1))),  i*graphSize + graphSize*97/100 - stckdata.data[j]*graphSize*82/100);
 
               for (let cpt=j-1; cpt>=0; cpt--){
-
-               ctx.lineTo(10+cpt*((790*stckdata.prop/(stckdata.lgth-1))),  i*graphSize + graphSize*97/100 - stckdata.data[cpt]*graphSize*82/100);
+               ctx.lineTo(10+cpt*((800/(data.length-1))),  i*graphSize + graphSize*97/100 - stckdata.data[cpt]*graphSize*82/100);
             }
 
 
@@ -156,10 +146,10 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
             ctx.fillStyle="rgba(150,0,0,0.3)"
             ctx.fill()
 
-             isfilled = true
+            isfilled = true
 
-             ctx.beginPath();
-             ctx.moveTo(10+j*((790*dictProp[ph.label]/(data.length-1))),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
+            ctx.beginPath();
+            ctx.moveTo(10+j*((800*dictProp[ph.label]/(data.length-1))),  i*graphSize + graphSize*97/100 - data[j]*graphSize*82/100);
 
           }
 
@@ -167,14 +157,25 @@ export function drawSecondCan(ctx, can, res,tps3, className, modelName, colorSli
         }
 
           ctx.stroke()
-          ctx.closePath()
 
 
           if(premier){
             stckdata.data=data
             stckdata.lgth=ph.length
-            stckdata.prop = dictProp[ph.label]
           }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
           premier = false
         }
