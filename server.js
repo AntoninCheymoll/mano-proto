@@ -10,14 +10,11 @@ import webpackHotMiddleware from 'webpack-hot-middleware';
 import train from './training';
 
 import config from './webpack.config';
-let phrases = [];
 
-function createTrainingSet(phrases) {
-  phrases.filter(x => x.active);
-}
+const phrases = [];
 
 function broadcastModel(wss, hmmParams) {
-  wss.clients.forEach(function each(client) {
+  wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({
         type: 'model',
@@ -27,12 +24,12 @@ function broadcastModel(wss, hmmParams) {
   });
 }
 
-function broadcastPhrases(wss, phrases) {
-  wss.clients.forEach(function each(client) {
+function broadcastPhrases(wss, p) {
+  wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify({
         type: 'phrases',
-        data: phrases,
+        data: p,
       }));
     }
   });
@@ -41,9 +38,9 @@ function broadcastPhrases(wss, phrases) {
 function createWebsocketServer() {
   const wss = new WebSocket.Server({ port: 8000 });
 
-  wss.on('connection', function connection(ws) {
+  wss.on('connection', (ws) => {
     console.log('Client connected');
-    ws.on('message', function incoming(message) {
+    ws.on('message', (message) => {
       try {
         const data = JSON.parse(message);
         if (!data.type) throw new Error('no type is available');
@@ -68,7 +65,7 @@ function createWebsocketServer() {
   return wss;
 }
 
-function createHttpServer(wss) {
+function createHttpServer() {
   const app = express();
   app.use(cors());
   app.use(bodyParser.json({ limit: '50mb' }));
@@ -82,10 +79,12 @@ function createHttpServer(wss) {
     }));
     app.use(webpackHotMiddleware(compiler, {
       log: console.log,
-      path: '/__webpack_hmr', heartbeat: 10 * 1000
+      path: '/__webpack_hmr',
+      heartbeat: 10 * 1000,
     }));
   }
-  app.listen(3000, () => console.log("Example app listening on port 3000!"));
+  app.listen(3000, () => console.log('Example app listening on port 3000!'));
 }
 
-createHttpServer(createWebsocketServer());
+createWebsocketServer();
+createHttpServer();

@@ -1,12 +1,12 @@
-import { Example } from "mano-js/common";
-import { ProcessedSensors } from "mano-js/client";
+import { Example } from 'mano-js/common';
+import { ProcessedSensors } from 'mano-js/client';
 import { HierarchicalHMMPredictor } from 'xmm-js';
 
-const $error = document.querySelector("#error");
-const $label = document.querySelector("#label");
-const $fortraining = document.querySelector("#fortraining");
-const $result = document.querySelector("#result");
-const $recordBtn = document.querySelector("#recording-control");
+const $error = document.querySelector('#error');
+const $label = document.querySelector('#label');
+const $fortraining = document.querySelector('#fortraining');
+const $result = document.querySelector('#result');
+const $recordBtn = document.querySelector('#recording-control');
 
 const socket = new WebSocket(`ws://${window.location.hostname}:8000`);
 
@@ -15,7 +15,7 @@ const xmm = {
 };
 
 // globals
-let state = "idle";
+let state = 'idle';
 let example = null;
 
 const processedSensors = new ProcessedSensors();
@@ -24,6 +24,16 @@ const processedSensors = new ProcessedSensors();
  * Initialize and start sensors
  */
 processedSensors.init().then(() => processedSensors.start());
+
+/**
+ * Function that decode the stream created by the `mano.ProcessedSensors`
+ * according to the examples previously provided.
+ */
+function decode(data) {
+  xmm.predictor.predict(data.slice(0, 8));
+  const { likeliest } = xmm.predictor.results;
+  $result.textContent = likeliest;
+}
 
 /**
  * Function that creates a new `mano.Example` and add its `addElement` method
@@ -51,7 +61,7 @@ function train() {
   socket.send(JSON.stringify(phraseData));
 }
 
-socket.onmessage = function(event) {
+socket.onmessage = (event) => {
   const message = JSON.parse(event.data);
   if (message.type !== 'model') { return; }
 
@@ -61,46 +71,40 @@ socket.onmessage = function(event) {
 
   processedSensors.addListener(decode);
 
-  state = "idle";
-  $label.value = "";
-  $recordBtn.textContent = "Record";
+  state = 'idle';
+  $label.value = '';
+  $recordBtn.textContent = 'Record';
 };
-
-/**
- * Function that decode the stream created by the `mano.ProcessedSensors`
- * according to the examples previously provided.
- */
-function decode(data) {
-  xmm.predictor.predict(data.slice(0, 8));
-  const likeliest = xmm.predictor.results.likeliest;
-  $result.textContent = likeliest;
-}
 
 /**
  * Handle application logic
  */
-$recordBtn.addEventListener("click", () => {
-  $error.textContent = "";
+$recordBtn.addEventListener('click', () => {
+  $error.textContent = '';
 
   switch (state) {
-    case "idle":
+    case 'idle': {
       const label = $label.value;
 
-      if (label === "") {
-        const error = "Invalid label";
+      if (label === '') {
+        const error = 'Invalid label';
         $error.textContent = error;
       } else {
-        state = "recording";
-        $recordBtn.textContent = "Stop";
+        state = 'recording';
+        $recordBtn.textContent = 'Stop';
 
         record(label);
       }
       break;
-    case "recording":
-      state = "training";
-      $recordBtn.textContent = "Training";
+    }
+    case 'recording': {
+      state = 'training';
+      $recordBtn.textContent = 'Training';
 
       train();
+      break;
+    }
+    default:
       break;
   }
 });
