@@ -1,27 +1,20 @@
-import  $ from 'jquery';
-import jquery from 'jquery';
+import $ from 'jquery';
 import 'jquery-ui-bundle';
 
 
+export default function onMouseOnHM(e, can, res) {
+  const x = e.pageX - $('#divMilieu').position().left;
+  const y = e.pageY - $('#divMilieu').position().top;
+
+  const rectW = can.width / (Object.keys(res.model.classes).length + 1);
+  const rectH = can.height / (res.phrases.length + 1);
 
 
-
-export default function onMouseOnHM(e,can,res){
-
-        let x = e.pageX- $("#divMilieu").position().left;
-        let y = e.pageY- $("#divMilieu").position().top;
-
-        let rectW = can.width/(Object.keys(res.model.classes).length+1);
-        let rectH = can.height/(res.phrases.length+1);
-
-
-        //si le curseur n est pas sur les noms
-        if(x>rectW && y>rectH){
-
-          return [Math.trunc((x)/(rectW)), Math.trunc((y)/(rectH))]
-        }else{
-          return [-1,-1]
-        }
+  // si le curseur n est pas sur les noms
+  if (x > rectW && y > rectH) {
+    return [Math.trunc((x) / (rectW)), Math.trunc((y) / (rectH))];
+  }
+  return [-1, -1];
 }
 
 

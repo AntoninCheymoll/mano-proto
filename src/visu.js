@@ -12,7 +12,7 @@ import {
 } from './Fonctions auxiliaires';
 import { newValue, prevPressed, nextPressed } from './buttonPrevNext';
 import drawClassNameList from './drawClassNameList';
-import { drawSecondCan } from './drawSecondCan';
+import drawSecondCan from './drawSecondCan';
 
 import graphs from './graphs';
 import histogramme from './histogramme';
@@ -24,7 +24,6 @@ import onMouseOnHisto from './onMouseOnHisto';
 
 const can = document.createElement('canvas');
 const can2 = document.createElement('canvas');
-
 
 const ctx = can.getContext('2d');
 const ctx2 = can2.getContext('2d');
@@ -179,13 +178,11 @@ function mainVisu(json) {
   $('.prevButton').forEach((bt) => {
     bt.disabled = true;
   });
-
-  for (const bt of $('.nextButton')) {
+  ('nextButton').forEach((bt) => {
     bt.disabled = true;
-  }
+  });
 
-
-  for (const prevBtt of $('.prevButton')) {
+  ('prevButton').forEach((prevBtt) => {
     prevBtt.onclick = function () {
       const result = prevPressed(momentMemory, currentMoment, timeMax);
       momentMemory = result[0];
@@ -193,16 +190,17 @@ function mainVisu(json) {
       tps = result[2];
       draw();
     };
-  }
+  });
 
-  for (const nextBtt of $('.nextButton')) {
+  ('nextButton').forEach((nextBtt) => {
     nextBtt.onclick = function () {
       const result = nextPressed(momentMemory, currentMoment, timeMax);
       momentMemory = result[0];
       currentMoment = result[1];
       tps = result[2];
     };
-  }
+  });
+
   drawClassNameList(can, ctx, res, numVis);
 
   const tooltipCan = $('#tooltipCan');
@@ -214,13 +212,13 @@ function mainVisu(json) {
     selectedGraph = [];
 
 
-    if (mouseOverCan && numVis == 3) {
+    if (mouseOverCan && numVis === 3) {
       displayTooltipOnCan(tooltipHM, e);
 
       const result = onMouseOnHM(e, can, res);
       numColClickedHM = result[0];
       numLinClickedHM = result[1];
-    } else if (mouseOverCan && numVis == 2) {
+    } else if (mouseOverCan && numVis === 2) {
       displayTooltipOnCan(tooltipHisto, e);
 
       const drawRect = function (rc, rm) {
@@ -228,7 +226,7 @@ function mainVisu(json) {
       };
 
       selectedRectHisto = onMouseOnHisto(e, rectList, drawRect);
-    } else if (mouseOverCan && numVis == 1) {
+    } else if (mouseOverCan && numVis === 1) {
       const drawRect = function (rc, rm) {
         drawSecondCan(ctx2, can2, res, tps, rc, rm, colorSliderGraphs, timeMax);
       };

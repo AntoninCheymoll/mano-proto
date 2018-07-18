@@ -5,12 +5,12 @@ import 'jquery-ui-bundle';
 // affichage des elements tooltipable dans le can
 
 export function normalizedata(res) {
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i += 1) {
     let max = Number.MIN_SAFE_INTEGER;
     let min = Number.MAX_SAFE_INTEGER;
 
     $(res.phrases).forEach((ph) => {
-      for (let y = 0; y < ph.length; y++) {
+      for (let y = 0; y < ph.length; y += 1) {
         const val = ph.data[i + y * 8];
         if (val < min) {
           min = val;
@@ -22,8 +22,8 @@ export function normalizedata(res) {
     });
 
 
-    for (let nb = 0; nb < res.phrases.length; nb++) {
-      for (let y = 0; y < res.phrases[nb].length; y++) {
+    for (let nb = 0; nb < res.phrases.length; nb += 1) {
+      for (let y = 0; y < res.phrases[nb].length; y += 1) {
         res.phrases[nb].data[i + y * 8] = (res.phrases[nb].data[i + y * 8] - min) / (max - min);
       }
     }
@@ -36,17 +36,16 @@ export function normalizedata(res) {
 export function displayTooltipOnCan(tab, e) {
   const x = e.pageX - $('#divMilieu').position().left;
   const y = e.pageY - $('#divMilieu').position().top;
-
-  for (const elem of tab) {
+  (tab).forEach((elem) => {
     if (x > elem[0] && x < elem[0] + elem[2] && y > elem[1] && y < elem[1] + elem[3]) {
-      let mouseX = e.clientX,
-        mouseY = e.clientY;
+      const mouseX = e.clientX;
+      const mouseY = e.clientY;
 
       $('#tooltipCan').css({ top: `${mouseY + 20}px`, left: `${mouseX + 20}px` });
       $('#tooltipCan').css('visibility', 'visible');
       $('#labelCan').text(elem[4]);
     }
-  }
+  });
 }
 
 
@@ -67,12 +66,12 @@ export function getAllUrlParams(url) {
     // split our query string into its component parts
     const arr = queryString.split('&');
 
-    for (let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr.length; i += 1) {
       // separate the keys and the values
       const a = arr[i].split('=');
 
       // in case params look like: list[]=thing1&list[]=thing2
-      var paramNum = undefined;
+      let paramNum;
       let paramName = a[0].replace(/\[\d*\]/, (v) => {
         paramNum = v.slice(1, -1);
         return '';
@@ -95,15 +94,11 @@ export function getAllUrlParams(url) {
         if (typeof paramNum === 'undefined') {
           // put the value on the end of the array
           obj[paramName].push(paramValue);
-        }
-        // if array index number specified...
-        else {
+        } else { // if array index number specified...
           // put the value at that index number
           obj[paramName][paramNum] = paramValue;
         }
-      }
-      // if param name doesn't exist yet, set it
-      else {
+      } else { // if param name doesn't exist yet, set it
         obj[paramName] = paramValue;
       }
     }
@@ -112,7 +107,8 @@ export function getAllUrlParams(url) {
   return obj;
 }
 
-// permet de supprimer les lettres qui vont depasser d un string et d'ajouter des "..." a la fin si besoin
+// permet de supprimer les lettres qui vont depasser
+// d un string et d'ajouter des "..." a la fin si besoin
 export function cuttingString(max, ctx, string) {
   if (ctx.measureText(string).width <= max) {
     return string;
@@ -126,13 +122,14 @@ export function cuttingString(max, ctx, string) {
 }
 
 
-// temps maximum des phrases , le nombre retourné est celui de la valeure de la derniere phrase (0 si la longueur est 1)
+// temps maximum des phrases , le nombre retourné est celui
+// de la valeure de la derniere phrase (0 si la longueur est 1)
 
 export function calculMaxTime(res) {
   let max = 0;
-  for (const ph of res.phrases) {
+  (res.phrases).forEach((ph) => {
     max = Math.max(max, ph.length);
-  }
+  });
 
   return max - 1;
 }

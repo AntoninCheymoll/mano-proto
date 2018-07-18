@@ -1,4 +1,4 @@
-
+import $ from 'jquery';
 // variable de la visu4
 // var val4  = 0;
 
@@ -53,25 +53,31 @@ export default function heatmapMoyen(can, res, ctx, val4) {
 
     ctx.font = '15px Arial';
     $(labelList).forEach((mot) => {
-      ctx.fillText(mot, squaresizeH / 10, 17 * labelWordNum + squaresizeH + i * squaresizeH + squaresizeH / 2);
-      ctx.fillText(mot, squaresizeH + i * squaresizeH + squaresizeH / 10, 17 * labelWordNum + squaresizeH / 2);
-      labelWordNum++;
+      ctx.fillText(mot, squaresizeH / 10,
+        17 * labelWordNum + squaresizeH + i * squaresizeH + squaresizeH / 2);
+      ctx.fillText(mot, squaresizeH + i * squaresizeH + squaresizeH / 10,
+        17 * labelWordNum + squaresizeH / 2);
+      labelWordNum += 1;
     });
 
 
-    i++;
+    i += 1;
   });
 
   let numligne = 0;
-  for (const model1 of res.model.models) { // ligne
+  (res.model.classes).forEach((model1) => {
     numligne++;
     let phrase;
-    for (const ph of res.phrases) {
-      if (ph.label == model1.label) {
+
+
+    (res.phrases).forEach((ph) => {
+
+      if (ph.label === model1.label) {
         phrase = ph;
-        break;
+        
+        break; // eslint-disable-line
       }
-    }
+    });
 
     // console.log('phrase: '+phrase.label);
 
@@ -120,5 +126,5 @@ export default function heatmapMoyen(can, res, ctx, val4) {
       //
       // }
     }
-  }
+  });
 }
