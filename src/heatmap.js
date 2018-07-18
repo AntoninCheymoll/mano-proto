@@ -1,5 +1,4 @@
 import  $ from 'jquery';
-import jquery from 'jquery';
 import 'jquery-ui-bundle';
 import { getAllUrlParams, calculMaxTime, log, cuttingString } from './Fonctions auxiliaires.js';
 import {drawSecondCan} from './drawSecondCan.js';

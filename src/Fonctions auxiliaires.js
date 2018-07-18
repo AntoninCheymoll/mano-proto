@@ -1,96 +1,85 @@
-import  $ from 'jquery';
-import jquery from 'jquery';
+import $ from 'jquery';
 import 'jquery-ui-bundle';
 
 
-//affichage des elements tooltipable dans le can
+// affichage des elements tooltipable dans le can
 
-export function normalizedata(res){
+export function normalizedata(res) {
+  for (let i = 0; i < 8; i++) {
+    let max = Number.MIN_SAFE_INTEGER;
+    let min = Number.MAX_SAFE_INTEGER;
 
-    for(let i =0; i<8;i++){
-
-        let max = Number.MIN_SAFE_INTEGER
-        let min = Number.MAX_SAFE_INTEGER
-
-
-        for(let ph of res.phrases){
-          for(let y = 0;y<ph.length; y++){
-            let val = ph.data[i+y*8]
-              if(val<min){
-                min =val
-              }
-              if(val>max){
-                max =val
-              }
-          }
-
+    $(res.phrases).forEach((ph) => {
+      for (let y = 0; y < ph.length; y++) {
+        const val = ph.data[i + y * 8];
+        if (val < min) {
+          min = val;
         }
-
-
-
-        for(let nb = 0; nb<res.phrases.length;nb++){
-          for(let y = 0;y<res.phrases[nb].length; y++){
-              res.phrases[nb].data[i+y*8] = (res.phrases[nb].data[i+y*8]-min)/(max-min)
-          }
+        if (val > max) {
+          max = val;
         }
+      }
+    });
+
+
+    for (let nb = 0; nb < res.phrases.length; nb++) {
+      for (let y = 0; y < res.phrases[nb].length; y++) {
+        res.phrases[nb].data[i + y * 8] = (res.phrases[nb].data[i + y * 8] - min) / (max - min);
+      }
     }
+  }
 
-    return res
+  return res;
 }
 
 
-export function displayTooltipOnCan(tab,e){
+export function displayTooltipOnCan(tab, e) {
+  const x = e.pageX - $('#divMilieu').position().left;
+  const y = e.pageY - $('#divMilieu').position().top;
 
-  let x = e.pageX- $("#divMilieu").position().left;
-  let y = e.pageY- $("#divMilieu").position().top;
+  for (const elem of tab) {
+    if (x > elem[0] && x < elem[0] + elem[2] && y > elem[1] && y < elem[1] + elem[3]) {
+      let mouseX = e.clientX,
+        mouseY = e.clientY;
 
-  for(let elem of tab){
-
-
-    if(x>elem[0] && x<elem[0]+elem[2] && y>elem[1] && y<elem[1]+elem[3]){
-      var mouseX = e.clientX,
-          mouseY = e.clientY;
-
-      $("#tooltipCan").css( {top: (mouseY + 20) + 'px', left: (mouseX + 20) + 'px'});
-      $("#tooltipCan").css('visibility', 'visible');
-      $("#labelCan").text(elem[4])
+      $('#tooltipCan').css({ top: `${mouseY + 20}px`, left: `${mouseX + 20}px` });
+      $('#tooltipCan').css('visibility', 'visible');
+      $('#labelCan').text(elem[4]);
     }
   }
 }
 
 
-//parse l'url
+// parse l'url
 
 export function getAllUrlParams(url) {
-
   // get query string from url (optional) or window
-  var queryString = url ? url.split('?')[1] : window.location.search.slice(1);
+  let queryString = url ? url.split('?')[1] : window.location.search.slice(1);
 
   // we'll store the parameters here
-  var obj = {};
+  const obj = {};
 
   // if query string exists
   if (queryString) {
-
     // stuff after # is not part of query string, so get rid of it
     queryString = queryString.split('#')[0];
 
     // split our query string into its component parts
-    var arr = queryString.split('&');
+    const arr = queryString.split('&');
 
-    for (var i=0; i<arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
       // separate the keys and the values
-      var a = arr[i].split('=');
+      const a = arr[i].split('=');
 
       // in case params look like: list[]=thing1&list[]=thing2
       var paramNum = undefined;
-      var paramName = a[0].replace(/\[\d*\]/, function(v) {
-        paramNum = v.slice(1,-1);
+      let paramName = a[0].replace(/\[\d*\]/, (v) => {
+        paramNum = v.slice(1, -1);
         return '';
       });
 
       // set parameter value (use 'true' if empty)
-      var paramValue = typeof(a[1])==='undefined' ? true : a[1];
+      let paramValue = typeof (a[1]) === 'undefined' ? true : a[1];
 
       // (optional) keep case consistent
       paramName = paramName.toLowerCase();
@@ -123,62 +112,61 @@ export function getAllUrlParams(url) {
   return obj;
 }
 
-//permet de supprimer les lettres qui vont depasser d un string et d'ajouter des "..." a la fin si besoin
-export  function cuttingString(max, ctx, string){
-  if(ctx.measureText(string).width<=max){
-      return string;
+// permet de supprimer les lettres qui vont depasser d un string et d'ajouter des "..." a la fin si besoin
+export function cuttingString(max, ctx, string) {
+  if (ctx.measureText(string).width <= max) {
+    return string;
   }
 
-  while(ctx.measureText(string).width>max -ctx.measureText("..").width ){
-     string = string.substring(0,string.length-1)
-   }
+  while (ctx.measureText(string).width > max - ctx.measureText('..').width) {
+    string = string.substring(0, string.length - 1);
+  }
 
- return string + "..";
+  return `${string}..`;
 }
 
 
-//temps maximum des phrases , le nombre retourné est celui de la valeure de la derniere phrase (0 si la longueur est 1)
+// temps maximum des phrases , le nombre retourné est celui de la valeure de la derniere phrase (0 si la longueur est 1)
 
-export function calculMaxTime(res){
+export function calculMaxTime(res) {
   let max = 0;
-  for(let ph of res.phrases){
-      max = Math.max(max,ph.length);
+  for (const ph of res.phrases) {
+    max = Math.max(max, ph.length);
   }
 
-  return max-1;
+  return max - 1;
 }
 
 
-export function log(cle, affich){
-  if(window.location.href.includes(cle)){
-    console.log(affich)
+export function log(cle, affich) {
+  if (window.location.href.includes(cle)) {
+    console.log(affich);
   }
 }
 
-//synchronise les valeures des sliders
-export function synchronizeSlider(value,timeMax){
-  $( ".slider" ).slider( "value", value );
-  $(".handleTime").text(value)
-  $(".handleTime").css("background","rgb(" + 0 + "," + (value*128)/timeMax +"," + (160+ value*95/timeMax) +")");
+// synchronise les valeures des sliders
+export function synchronizeSlider(value, timeMax) {
+  $('.slider').slider('value', value);
+  $('.handleTime').text(value);
+  $('.handleTime').css('background', `rgb(${0},${(value * 128) / timeMax},${160 + value * 95 / timeMax})`);
 }
 
 // set les parametres du deuxieme canvas
-export function setCan2Param(can,can2,ctx2){
-  can2.className = "canvas2"
+export function setCan2Param(can, can2, ctx2) {
+  can2.className = 'canvas2';
 
   can2.width = '800';
   can2.height = '800';
 
 
-  ctx2.fillStyle = "rgba(255,128,0,0.2)";
-  ctx2.fillRect(0, 0 , can2.width,can2.height);
+  ctx2.fillStyle = 'rgba(255,128,0,0.2)';
+  ctx2.fillRect(0, 0, can2.width, can2.height);
 
-  $(".canvas2").css("left",can.getBoundingClientRect().left +800 + 200)
-
+  $('.canvas2').css('left', can.getBoundingClientRect().left + 800 + 200);
 }
 
 
-//uncheck les boutons des in dex (visu1) autres aue celui aui vient d etre selectionné
+// uncheck les boutons des in dex (visu1) autres aue celui aui vient d etre selectionné
 // function clearButtonInd(i){
 //   for(let j of $(".cb")){
 //

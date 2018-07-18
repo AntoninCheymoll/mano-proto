@@ -1,62 +1,53 @@
-import  $ from 'jquery';
-import jquery from 'jquery';
 import 'jquery-ui-bundle';
 
-import {  synchronizeSlider} from './Fonctions auxiliaires.js';
+import { synchronizeSlider } from './Fonctions auxiliaires';
 
 
-export function newValue(value, momentMemory,currentMoment){
-  momentMemory = momentMemory.slice(0,currentMoment+1)
-  momentMemory.push(value)
-  currentMoment = momentMemory.length-1
+export function newValue(value, momentMemory, currentMoment) {
+  momentMemory = momentMemory.slice(0, currentMoment + 1);
+  momentMemory.push(value);
+  currentMoment = momentMemory.length - 1;
 
-  for(let bt of $(".prevButton")){
-    bt.disabled=false;
-  }
+  ('.prevButton').forEach((bt) => {
+    bt.disabled = false;
+  });
 
-  return[momentMemory,currentMoment]
+  return [momentMemory, currentMoment];
 }
 
-export function prevPressed(momentMemory, currentMoment , timeMax){
-
-  if(momentMemory.length>0){
-    for(let bt of $(".nextButton")){
-      bt.disabled=false;
-    }
+export function prevPressed(momentMemory, currentMoment, timeMax) {
+  if (momentMemory.length > 0) {
+    ('.nextButton').forEach((bt) => {
+      bt.disabled = false;
+    });
   }
 
-  if(currentMoment>0){
-    currentMoment--
-    if(currentMoment==0){
-
-      for(let bt of $(".prevButton")){
-        bt.disabled=true;
-      }
-
+  if (currentMoment > 0) {
+    currentMoment -= 1;
+    if (currentMoment === 0) {
+      ('.prevButton').forEach((bt) => {
+        bt.disabled = true;
+      });
     }
-
   }
-  synchronizeSlider(momentMemory[currentMoment],timeMax)
+  synchronizeSlider(momentMemory[currentMoment], timeMax);
 
-  return[momentMemory,currentMoment,momentMemory[currentMoment]]
+  return [momentMemory, currentMoment, momentMemory[currentMoment]];
 }
 
-export function nextPressed(momentMemory, currentMoment , timeMax){
-
-  
-
-  if(momentMemory.length-1 > currentMoment){
-    currentMoment++;
+export function nextPressed(momentMemory, currentMoment, timeMax) {
+  if (momentMemory.length - 1 > currentMoment) {
+    currentMoment += 1;
   }
-  if(currentMoment==momentMemory.length-1){
-    for(let bt of $(".nextButton")){
-      bt.disabled=true;
-    }
+  if (currentMoment === momentMemory.length - 1) {
+    ('.nextButton').forEach((bt) => {
+      bt.disabled = true;
+    });
   }
 
 
-  synchronizeSlider(momentMemory[currentMoment],timeMax)
+  synchronizeSlider(momentMemory[currentMoment], timeMax);
 
 
-  return[momentMemory,currentMoment,momentMemory[currentMoment]]
+  return [momentMemory, currentMoment, momentMemory[currentMoment]];
 }

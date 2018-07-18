@@ -1,4 +1,4 @@
-import  $ from 'jquery';
+import $ from 'jquery';
 import jquery from 'jquery';
 import 'jquery-ui-bundle';
 // import { log } from './Fonctions auxiliaires.js';
