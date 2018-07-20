@@ -9,7 +9,7 @@ export default function drawSecondCan(
 
   const dictProp = {};
 
-  $(res.phrases).forEach((ph) => {
+  $(res.phrases).each((_, ph) => {
     if (ph.label === className || ph.label === modelName) {
       dictProp[ph.label] = ph.length;
     }
@@ -94,7 +94,7 @@ export default function drawSecondCan(
     let isfilled = false;
     const stckdata = {};
 
-    $(res.phrases).forEach((ph) => {
+    $(res.phrases).each((_, ph) => {
       if (ph.label === className) {
         ctx.strokeStyle = 'rgb(150,0,0)';
       } else {

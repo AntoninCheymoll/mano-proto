@@ -9,7 +9,7 @@ export function normalizedata(res) {
     let max = Number.MIN_SAFE_INTEGER;
     let min = Number.MAX_SAFE_INTEGER;
 
-    $(res.phrases).forEach((ph) => {
+    res.phrases.forEach((ph) => {
       for (let y = 0; y < ph.length; y += 1) {
         const val = ph.data[i + y * 8];
         if (val < min) {

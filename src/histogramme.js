@@ -37,7 +37,7 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
   ctx.font = '15px Arial';
 
   let cpt = 0;
-  (res.model.classes).forEach((modelName) => {
+  Object.keys(res.model.classes).forEach((modelName) => {
     // ecriture des noms de classe
     const txt = cuttingString((800 - 50)
     / (numClasses) - 2, ctx, modelName);// texte coupe si trop long

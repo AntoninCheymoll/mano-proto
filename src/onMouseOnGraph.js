@@ -47,7 +47,7 @@ export default function onMouseOnGraph(e, can, res, drawRect) {
     // initialisation du tableau de distance
     const dict = [];
 
-    (res.model.classes).forEach((label) => {
+    Object.keys(res.model.classes).forEach((label) => {
       dict[label] = 100;
     });
 
@@ -56,7 +56,7 @@ export default function onMouseOnGraph(e, can, res, drawRect) {
 
     for (let i = Math.max(0, tpsSouris - 2);
       i <= Math.min(phrase.length - 1, tpsSouris + 2); i += 1) {
-      (res.model.classes).forEach((label) => {
+      Object.keys(res.model.classes).forEach((label) => {
         if (dict[label] > Math.sqrt((tpsSouris - i) * graphSizeW / phrase.length
          * (tpsSouris - i) * graphSizeW / phrase.length + (y - (graphSize * 97 / 100
             - phrase.instantNormalizedLikelihoods[i][label] * graphSize * 82 / 100))
@@ -124,7 +124,7 @@ export default function onMouseOnGraph(e, can, res, drawRect) {
 
     let min = 16;
     let labelMin = null;
-    (res.model.classes).forEach((label) => {
+    Object.keys(res.model.classes).forEach((label) => {
       if (min > dict[label]) {
         min = dict[label];
         labelMin = label;
