@@ -175,15 +175,9 @@ function mainVisu(json) {
   // for (const bt of $('.prevButton')) {
   //   bt.disabled = true;
   // }
-  $('.prevButton').forEach((bt) => {
+  $('.prevButton').each((_, bt) => {
     bt.disabled = true;
-  });
-  ('nextButton').forEach((bt) => {
-    bt.disabled = true;
-  });
-
-  ('prevButton').forEach((prevBtt) => {
-    prevBtt.onclick = function () {
+    bt.onclick = () => {
       const result = prevPressed(momentMemory, currentMoment, timeMax);
       momentMemory = result[0];
       currentMoment = result[1];
@@ -191,9 +185,9 @@ function mainVisu(json) {
       draw();
     };
   });
-
-  ('nextButton').forEach((nextBtt) => {
-    nextBtt.onclick = function () {
+  $('.nextButton').each((_, bt) => {
+    bt.disabled = true;
+    bt.onclick = () => {
       const result = nextPressed(momentMemory, currentMoment, timeMax);
       momentMemory = result[0];
       currentMoment = result[1];
@@ -205,7 +199,7 @@ function mainVisu(json) {
 
   const tooltipCan = $('#tooltipCan');
 
-  document.body.onmousemove = function (e) {
+  document.body.onmousemove = (e) => {
     tooltipCan.css('visibility', 'hidden');
     numColClickedHM = -1;
     numLinClickedHM = -1;
@@ -221,13 +215,13 @@ function mainVisu(json) {
     } else if (mouseOverCan && numVis === 2) {
       displayTooltipOnCan(tooltipHisto, e);
 
-      const drawRect = function (rc, rm) {
+      const drawRect = (rc, rm) => {
         drawSecondCan(ctx2, can2, res, tps, rc, rm, colorSliderGraphs, timeMax);
       };
 
       selectedRectHisto = onMouseOnHisto(e, rectList, drawRect);
     } else if (mouseOverCan && numVis === 1) {
-      const drawRect = function (rc, rm) {
+      const drawRect = (rc, rm) => {
         drawSecondCan(ctx2, can2, res, tps, rc, rm, colorSliderGraphs, timeMax);
       };
 
@@ -262,7 +256,7 @@ function init() {
 
   // Receive Model data by websocket
   const socket = new WebSocket(`ws://${window.location.hostname}:8000`);
-  const jsonData = {};
+  const jsonData = { model: {}, phrases: [] };
   socket.onmessage = (event) => {
     const message = JSON.parse(event.data);
     if (['model', 'phrases'].includes(message.type)) {

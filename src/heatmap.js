@@ -90,7 +90,7 @@ export default function heatmap(can, res, ctx, val6, tps6,
   // ecriture des noms des classes haut
 
   let cptModel = 0;
-  (res.model.classes).forEach((label) => {
+  Object.keys(res.model.classes).forEach((label) => {
     cptModel += 1;
 
     // decoupage du label a chaque espace
@@ -316,7 +316,7 @@ export default function heatmap(can, res, ctx, val6, tps6,
 
     // num de la colonne concernee
     let numcol = 0;
-    (res.model.classes).forEach((label2) => {
+    Object.keys(res.model.classes).forEach((label2) => {
       // colonne
       numcol += 1;
       let valMod1Mod2;

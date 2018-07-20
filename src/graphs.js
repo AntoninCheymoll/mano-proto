@@ -21,19 +21,19 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
   // recherche de la phrase la plus longue pour les proportions
   const dictProp = {};
   let maxTime = 0;
-  (res.phrases).forEach((ph) => {
+  res.phrases.forEach((ph) => {
     dictProp[ph.label] = ph.length;
     maxTime = Math.max(maxTime, ph.length);
   });
 
 
   // assignation a chaque phrases leur longueur par rapport a la longueur max
-  ('.nextButton').forEach((ph) => {
+  res.phrases.forEach((ph) => {
     dictProp[ph.label] /= maxTime;
   });
 
   // pour chaque classe
-  (res.phrases).forEach((classe) => {
+  res.phrases.forEach((classe) => {
     // assignation du nom de la classe et recuperation de la proportion de
     // la classe etudiee
     const classeName = classe.label;
@@ -113,7 +113,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
     let stckClassParall;
 
     // parcour de chaque classe dans le graphe
-    (res.model.classes).forEach((classe2) => {
+    Object.keys(res.model.classes).forEach((classe2) => {
       // console.log('classeInGraphe ' +classe.label);
       // si on a afaire a la classe correspondante a celle
       // du graphe on la dessinera plus tard en rouge
@@ -306,7 +306,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
   // calcul de la reconnaissance moyenne
   // troncature de la reconnaissance moyenne
   // console.log("recomean: " + recoMean);
-  recoMean /= res.model.classes.length;
+  recoMean /= Object.keys(res.model.classes).length;
   recoMean *= 100;
   recoMean = Math.round(recoMean);
   recoMean /= 100;

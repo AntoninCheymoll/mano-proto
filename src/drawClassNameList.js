@@ -7,7 +7,7 @@ export default function drawClassNameList(can, ctx, res, numVis) {
 
   if (numVis === 1) {
     let i = 0;
-    $(res.phrases).forEach((ph) => {
+    $(res.phrases).each((_, ph) => {
       $('#divMilieu').append($(`<svg style="left:800px;top:${i * height}px;position:absolute"><polygon points="50,${height / 10
       } 150,${height / 10
       } 150,${height * 30 / 100

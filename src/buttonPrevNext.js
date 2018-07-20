@@ -1,3 +1,4 @@
+import $ from 'jquery';
 import 'jquery-ui-bundle';
 
 import { synchronizeSlider } from './Fonctions auxiliaires';
@@ -8,7 +9,7 @@ export function newValue(value, momentMemory, currentMoment) {
   momentMemory.push(value);
   currentMoment = momentMemory.length - 1;
 
-  ('.prevButton').forEach((bt) => {
+  $('.prevButton').each((_, bt) => {
     bt.disabled = false;
   });
 
@@ -17,7 +18,7 @@ export function newValue(value, momentMemory, currentMoment) {
 
 export function prevPressed(momentMemory, currentMoment, timeMax) {
   if (momentMemory.length > 0) {
-    ('.nextButton').forEach((bt) => {
+    $('.nextButton').each((_, bt) => {
       bt.disabled = false;
     });
   }
@@ -25,7 +26,7 @@ export function prevPressed(momentMemory, currentMoment, timeMax) {
   if (currentMoment > 0) {
     currentMoment -= 1;
     if (currentMoment === 0) {
-      ('.prevButton').forEach((bt) => {
+      $('.prevButton').each((_, bt) => {
         bt.disabled = true;
       });
     }
@@ -40,7 +41,7 @@ export function nextPressed(momentMemory, currentMoment, timeMax) {
     currentMoment += 1;
   }
   if (currentMoment === momentMemory.length - 1) {
-    ('.nextButton').forEach((bt) => {
+    $('.nextButton').each((_, bt) => {
       bt.disabled = true;
     });
   }
