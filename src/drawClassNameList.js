@@ -17,8 +17,8 @@ export default function drawClassNameList(can, ctx, res, numVis) {
       } 155,${height * 70 / 100
       } 150,${height * 70 / 100
       } 150,${height * 90 / 100
-      } 50,${height * 90 / 10
-        
+      } 50,${height * 90 / 100
+
       } 50,${height * 75 / 100
       } 40,${height * 75 / 100
       } 40,${height * 55 / 100

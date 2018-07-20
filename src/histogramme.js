@@ -37,6 +37,7 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
   ctx.font = '15px Arial';
 
   let cpt = 0;
+
   Object.keys(res.model.classes).forEach((modelName) => {
     // ecriture des noms de classe
     const txt = cuttingString((800 - 50)
@@ -214,6 +215,7 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
           model: classLabel,
         });
 
+
         if (selectedRectHisto) {
           if ((selectedRectHisto.class === ph.label && selectedRectHisto.model === classLabel)
           || (selectedRectHisto.model === ph.label && selectedRectHisto.class === classLabel)) {
@@ -222,7 +224,8 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
             ctx.rect((i) * (800 - 50) / (numClasses) + 50 + histoWidth / 3 / 2,
               histoSize * 16 / 100 + index * histoSize + (1 - likelihood) * histoSize * 75 / 100
             + classNameSize, histoWidth, likelihood * histoSize * 75 / 100);
-            ctx.lineWidth = 3;
+
+            ctx.lineWidth = 4;
             ctx.stroke();
           }
         }

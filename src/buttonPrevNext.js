@@ -46,6 +46,9 @@ export function nextPressed(momentMemory, currentMoment, timeMax) {
     });
   }
 
+  $('.prevButton').each((_, bt) => {
+    bt.disabled = false;
+  });
 
   synchronizeSlider(momentMemory[currentMoment], timeMax);
 

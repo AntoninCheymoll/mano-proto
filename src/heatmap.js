@@ -336,9 +336,10 @@ export default function heatmap(can, res, ctx, val6, tps6,
 
       // affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
 
-      if ((valMod1Mod2 * 100 > val6 && phrase.label != label2) || (valMod1Mod2 * 100 <= (100 - val6) && phrase.label == label2)) {
+      if ((valMod1Mod2 * 100 > val6 && phrase.label !== label2)
+      || (valMod1Mod2 * 100 <= (100 - val6) && phrase.label === label2)) {
         // calcul de la couleur du carré, rouge ou noir, plus ou moins clair
-        if (phrase.label == label2) {
+        if (phrase.label === label2) {
           // ctx.fillStyle = "rgb(105,0,0)"
           // ctx.fillStyle = "rgb(255,220,220)"
           ctx.fillStyle = `rgb(${105 + valMod1Mod2 * (255 - 105)},${valMod1Mod2 * (220)},${valMod1Mod2 * (220)})`;
@@ -411,6 +412,6 @@ export default function heatmap(can, res, ctx, val6, tps6,
     ctx.stroke();
 
     drawSecondCan(ctx2, can2, res, tps6, res.phrases[numLinClicked - 1].label,
-      res.model.models[numColClicked - 1].label, colorSliderGraphs, timeMax);
+      res.model.classes[numColClicked - 1], colorSliderGraphs, timeMax);
   }
 }

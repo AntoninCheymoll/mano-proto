@@ -57,7 +57,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
     ctx.stroke();
 
     // battons de temps
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     for (let j = 0; j < 10; j += 1) {
       ctx.strokeStyle = `rgb(0,${128 * j / 9},${160 + 95 * j / 9})`;
       ctx.beginPath();
@@ -216,14 +216,14 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
       const data = [];
 
       for (let x = 0; x < classe.length; x += 1) {
-        data.push(classe.instantNormalizedLikelihoods[x][stckClassParall.label]);
+        data.push(classe.instantNormalizedLikelihoods[x][stckClassParall]);
       }
 
 
       ctx.beginPath();
       ctx.moveTo(10, i * graphSize + graphSize * 97 / 100 - data[0] * graphSize * 82 / 100);
 
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
 
 
       for (let j = 1; j < data.length; j += 1) {
@@ -259,7 +259,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
 
     // si c est la ligne sur laquelle est la souris
     if (selectedGraph && selectedGraph[0] === stckClassSym && selectedGraph[1] === classe.label) {
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
 
       // si le graphe est selectionné l affichage est different
       let isclosed;

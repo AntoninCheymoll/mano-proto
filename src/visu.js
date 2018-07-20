@@ -78,10 +78,11 @@ function mainVisu(json) {
   res = json;
 
   res = normalizedata(res);
-  res.phrases.sort((a, b) => a.label.localeCompare(b.label));
+  // res.phrases.sort((a, b) => a.label.localeCompare(b.label));
+  // res.model.classe.sort((a, b) => a.label.localeCompare(b.label));
 
-  console.log('data');
-  // log('data', res);
+
+  log('data', res);
   draw();
 
   timeMax = calculMaxTime(res);
@@ -192,6 +193,7 @@ function mainVisu(json) {
       momentMemory = result[0];
       currentMoment = result[1];
       tps = result[2];
+      draw();
     };
   });
 
