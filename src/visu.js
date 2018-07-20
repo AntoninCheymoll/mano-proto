@@ -28,7 +28,6 @@ const can2 = document.createElement('canvas');
 const ctx = can.getContext('2d');
 const ctx2 = can2.getContext('2d');
 
-
 let mouseOverCan = false;
 
 // fichier json
@@ -81,7 +80,8 @@ function mainVisu(json) {
   res = normalizedata(res);
   res.phrases.sort((a, b) => a.label.localeCompare(b.label));
 
-  log('data', res);
+  console.log('data');
+  // log('data', res);
   draw();
 
   timeMax = calculMaxTime(res);

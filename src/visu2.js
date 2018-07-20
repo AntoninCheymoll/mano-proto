@@ -40,7 +40,8 @@
 //           ctx.beginPath();
 //           ctx.moveTo(10, (can.height-10)-data[0]*(can.height-20));
 //             for (let i=1; i<data.length; i++)
-//               ctx.lineTo(10+i*((can.width-10)/(data.length-1)), can.height -10 -data[i]*(can.height-20));
+//               ctx.lineTo(10+i*((can.width-10)/(data.length-1)),
+//                can.height -10 -data[i]*(can.height-20));
 //
 //
 //

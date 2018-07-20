@@ -134,7 +134,6 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
 
     // dessin de la barre de pas de temps sur le curseur en bleu
 
-
     ctx.beginPath();
 
     ctx.lineWidth = 2;
