@@ -3,6 +3,23 @@ import 'jquery-ui-bundle';
 // import { log } from './Fonctions auxiliaires.js';
 
 export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGraphs, isDraging) {
+  // calcul du nombre de phrase active
+  let nbactifs = 0;
+  res.phrases.forEach((ph) => {
+    if (ph.active) {
+      nbactifs += 1;
+    }
+  });
+
+
+  if (selectedGraph && selectedGraph[0]) {
+    const underscorePos2 = selectedGraph[0].indexOf('_');
+
+    if (underscorePos2 > 0) {
+      selectedGraph.phequivalent = selectedGraph[0].substring(0, underscorePos2);
+    }
+  }
+
   // taille d un graphe unique
   const graphSize = 800 / res.phrases.length;
   let recoMean = 0;
@@ -11,7 +28,11 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
   can.height = '800';
 
   ctx.fillStyle = 'rgba(255,128,0,0.2)';
-  ctx.fillRect(0, 0, can.width, can.height);
+  ctx.fillRect(0, 0, can.width, (nbactifs / res.phrases.length) * can.height);
+
+  ctx.fillStyle = 'rgba(128,128,128,0.2)';
+  ctx.fillRect(0, graphSize * 7 / 100 + (nbactifs / res.phrases.length) * can.height, can.width,
+    (res.phrases.length - nbactifs / res.phrases.length) * can.height);
 
   ctx.textBaseline = 'Top';
   ctx.fillStyle = 'rgb(0,0,0)';
@@ -112,17 +133,28 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
     let stckClassSym;
     let stckClassParall;
 
+
     // parcour de chaque classe dans le graphe
     Object.keys(res.model.classes).forEach((classe2) => {
-      // console.log('classeInGraphe ' +classe.label);
       // si on a afaire a la classe correspondante a celle
       // du graphe on la dessinera plus tard en rouge
-      if (classe2 === classeName) {
+
+      // recherche si la phrase est sensée etre associée à une autre (et donc reconnu)
+      // c'est le cas si elle est suivi d'un underscore
+      const underscorePos = classeName.indexOf('_');
+      let equivalent = classeName;
+
+      if (underscorePos > 0) {
+        equivalent = equivalent.substring(0, underscorePos);
+      }
+
+
+      if (classe2 === equivalent) {
         // l affichage de la classe symetriaue se fera apres dans une autre couleur
         // et a la fin pour que le trait soit au dessus des autres
         stckClassSym = classe2;
       } else if (selectedGraph && selectedGraph[1] === classe.label
-         && selectedGraph[0] === classe2) {
+         && (selectedGraph[0] === classe2 || selectedGraph.phequivalent === classe2)) {
         // si c est la ligne symetriaue de celle sur laquelle
         // est la souris on la trace a la fin pour la faire ressortir
         stckClassParall = classe2;
@@ -207,7 +239,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
 
     if (stckClassParall) {
       if (tps3 < classe.length) {
-        ctx.strokeStyle = 'rgb(0,160,80   )';
+        ctx.strokeStyle = 'rgb(0,160,80)';
       } else {
         ctx.strokeStyle = 'rgb(0,100,50)';
       }
@@ -258,7 +290,9 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
     ctx.moveTo(10, i * graphSize + graphSize * 97 / 100 - data[0] * graphSize * 82 / 100);
 
     // si c est la ligne sur laquelle est la souris
-    if (selectedGraph && selectedGraph[0] === stckClassSym && selectedGraph[1] === classe.label) {
+
+
+    if (selectedGraph && selectedGraph[1] === stckClassSym && selectedGraph[0] === classe.label) {
       ctx.lineWidth = 3;
 
       // si le graphe est selectionné l affichage est different
