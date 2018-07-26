@@ -130,7 +130,7 @@ export default function drawClassNameList(can, ctx, res, numVis) {
     " style="fill:black;" /></svg>`));
 
 
-    let txt = `<select class ='classname' id=test2${i} style="color:yellow;left:${(i + 0.2) * modelSize}px;top:${tabs.top + window.scrollY + tabs.height + 10}px;position:absolute">`;
+    let txt = `<select class ='classname' id=test2${i} style="color:white; border-color:black; background-color:black;left:${(i + 0.2) * modelSize}px;top:${tabs.top + window.scrollY + tabs.height + 10}px;position:absolute">`;
     txt += `<option selected>${mod}</option>`;
 
     $(res.phrases).each((_, ph) => {

@@ -47,7 +47,6 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
   ctx.fillStyle = 'rgb(0,0,0)';
   ctx.font = '15px Arial';
 
-  let cpt = 0;
 
   // Object.keys(res.model.classes).forEach((modelName) => {
   //   // ecriture des noms de classe
