@@ -11,7 +11,7 @@ export function normalizedata(res) {
 
     res.phrases.forEach((ph) => {
       for (let y = 0; y < ph.length; y += 1) {
-        const val = ph.data[i + y * 8];
+        const val = ph.data[y][i];
         if (val < min) {
           min = val;
         }
@@ -24,7 +24,7 @@ export function normalizedata(res) {
 
     for (let nb = 0; nb < res.phrases.length; nb += 1) {
       for (let y = 0; y < res.phrases[nb].length; y += 1) {
-        res.phrases[nb].data[i + y * 8] = (res.phrases[nb].data[i + y * 8] - min) / (max - min);
+        res.phrases[nb].data[y][i] = (res.phrases[nb].data[y][i] - min) / (max - min);
       }
     }
   }

@@ -28,6 +28,8 @@ const can2 = document.createElement('canvas');
 const ctx = can.getContext('2d');
 const ctx2 = can2.getContext('2d');
 
+let secondCanParam = null;
+
 let mouseOverCan = false;
 
 // fichier json
@@ -80,7 +82,12 @@ function mainVisu(json) {
   res = normalizedata(res);
   // res.phrases.sort((a, b) => a.label.localeCompare(b.label));
   // res.model.classe.sort((a, b) => a.label.localeCompare(b.label));
-
+  res.phrases.sort((a) => {
+    if (a.active) {
+      return -1;
+    }
+    return 1;
+  });
 
   log('data', res);
   draw();
@@ -200,6 +207,20 @@ function mainVisu(json) {
   drawClassNameList(can, ctx, res, numVis);
 
   const tooltipCan = $('#tooltipCan');
+  can.onclick = () => {
+    if (secondCanParam) {
+      if (mouseOverCan && numVis === 1) {
+        drawSecondCan(ctx2, can2, res, tps, secondCanParam[0],
+          secondCanParam[1], colorSliderGraphs, timeMax);
+      } else if (mouseOverCan && numVis === 2) {
+        drawSecondCan(ctx2, can2, res, tps, secondCanParam[0],
+          secondCanParam[1], colorSliderGraphs, timeMax);
+      } else if (mouseOverCan && numVis === 3) {
+        drawSecondCan(ctx2, can2, res, tps, secondCanParam[0],
+          secondCanParam[1], colorSliderGraphs, timeMax);
+      }
+    }
+  };
 
   document.body.onmousemove = (e) => {
     tooltipCan.css('visibility', 'hidden');
@@ -214,20 +235,32 @@ function mainVisu(json) {
       const result = onMouseOnHM(e, can, res);
       numColClickedHM = result[0];
       numLinClickedHM = result[1];
+
+      if (result[0] > 0 && result[1] > 0) {
+        let model = null;
+        let cpt = 0;
+
+        Object.keys(res.model.classes).forEach((ph) => {
+          cpt += 1;
+          if (numColClickedHM === cpt) {
+            model = ph;
+          }
+        });
+        secondCanParam = [res.phrases[numLinClickedHM - 1].label, model];
+      } else {
+        secondCanParam = null;
+      }
     } else if (mouseOverCan && numVis === 2) {
       displayTooltipOnCan(tooltipHisto, e);
 
-      const drawRect = (rc, rm) => {
-        drawSecondCan(ctx2, can2, res, tps, rc, rm, colorSliderGraphs, timeMax);
-      };
 
-      selectedRectHisto = onMouseOnHisto(e, rectList, drawRect);
+      selectedRectHisto = onMouseOnHisto(e, rectList);
+      if (selectedRectHisto) {
+        secondCanParam = [selectedRectHisto.class, selectedRectHisto.model];
+      } else { selectedGraph = null; }
     } else if (mouseOverCan && numVis === 1) {
-      const drawRect = (rc, rm) => {
-        drawSecondCan(ctx2, can2, res, tps, rc, rm, colorSliderGraphs, timeMax);
-      };
-
-      selectedGraph = onMouseOnGraph(e, can, res, drawRect);
+      selectedGraph = onMouseOnGraph(e, can, res);
+      secondCanParam = selectedGraph;
     }
 
     draw();
@@ -244,7 +277,6 @@ function init() {
 
   setCan2Param(can, can2, ctx2);
 
-  // const labelCan = $('#labelCan');
 
   const urlParams = getAllUrlParams();
   if (urlParams.file) {

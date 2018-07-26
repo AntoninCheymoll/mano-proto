@@ -2,10 +2,18 @@ import $ from 'jquery';
 import 'jquery-ui-bundle';
 
 export default function drawSecondCan(
-  ctx, can, res, tps3, className, modelName, colorSliderGraphs, maxTime,
+  ctx, can, res, tps3, className, modelName, colorSliderGraphs,
 ) {
   can.width = '800';
   can.height = '800';
+
+  let maxTime = 0;
+
+  $(res.phrases).each((_, ph) => {
+    if ((ph.label === className) || (ph.label === modelName)) {
+      maxTime = Math.max(maxTime, ph.length);
+    }
+  });
 
   const dictProp = {};
 
@@ -91,7 +99,7 @@ export default function drawSecondCan(
 
     // console.log(data);
     let premier = true;
-    let isfilled = false;
+    let isfilled = tps3 === 0;
     const stckdata = {};
 
     $(res.phrases).each((_, ph) => {
@@ -108,24 +116,25 @@ export default function drawSecondCan(
 
         // recuperation dans un tableau des valeurs correspondantes
         for (let x = 0; x < ph.length; x += 1) {
-          data.push(ph.data[x * 8 + i]);
+          data.push(ph.data[x][i]);
         }
 
         ctx.beginPath();
         ctx.moveTo(10, i * graphSize + graphSize * 97 / 100 - data[0] * graphSize * 82 / 100);
         for (let j = 1; j < data.length; j += 1) {
-          ctx.lineTo(10 + j * ((800 * dictProp[ph.label] / (data.length - 1))),
+          ctx.lineTo(10 + j * ((790 * dictProp[ph.label] / (data.length - 1))),
             i * graphSize + graphSize * 97 / 100 - data[j] * graphSize * 82 / 100);
 
           if (!premier && !isfilled
             && (j === data.length - 1 || j === stckdata.lgth - 1 || j === tps3)) {
             ctx.stroke();
 
-            ctx.moveTo(10 + (j) * ((800 / (data.length - 1))),
+            ctx.lineTo(10 + (j) * ((790 / (data.length - 1))),
               i * graphSize + graphSize * 97 / 100 - stckdata.data[j] * graphSize * 82 / 100);
 
+
             for (let cpt = j - 1; cpt >= 0; cpt -= 1) {
-              ctx.lineTo(10 + cpt * ((800 / (data.length - 1))),
+              ctx.lineTo(10 + cpt * ((790 / (data.length - 1))),
                 i * graphSize + graphSize * 97 / 100 - stckdata.data[cpt] * graphSize * 82 / 100);
             }
 
@@ -137,7 +146,7 @@ export default function drawSecondCan(
             isfilled = true;
 
             ctx.beginPath();
-            ctx.moveTo(10 + j * ((800 * dictProp[ph.label] / (data.length - 1))),
+            ctx.moveTo(10 + j * ((790 * dictProp[ph.label] / (data.length - 1))),
               i * graphSize + graphSize * 97 / 100 - data[j] * graphSize * 82 / 100);
           }
         }

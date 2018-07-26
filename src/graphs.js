@@ -11,7 +11,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
     }
   });
 
-
+  // recherche du nom de la classe correspondant aux classes de test
   if (selectedGraph && selectedGraph[0]) {
     const underscorePos2 = selectedGraph[0].indexOf('_');
 
@@ -124,8 +124,9 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'rgb(0,0,0)';
 
-    if (tps3 < classe.length) {
+    if (tps3 < classe.length && classe.active) {
       // calcul utile au calcul de la reconnaissance Moyenne
+
       recoMean += classe.instantNormalizedLikelihoods[tps3][classeName];
     }
 
@@ -344,5 +345,6 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
   recoMean *= 100;
   recoMean = Math.round(recoMean);
   recoMean /= 100;
+
   $('#recoMean').text(recoMean);
 }

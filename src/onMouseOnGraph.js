@@ -2,7 +2,7 @@ import $ from 'jquery';
 import 'jquery-ui-bundle';
 
 
-export default function onMouseOnGraph(e, can, res, drawRect) {
+export default function onMouseOnGraph(e, can, res) {
   const x = e.pageX - $('#divMilieu').position().left;
   let y = e.pageY - $('#divMilieu').position().top;
 
@@ -139,7 +139,7 @@ export default function onMouseOnGraph(e, can, res, drawRect) {
       $('#labelCan').text(`Modèle: ${labelMin}; Valeur: ${(Math.round((phrase.instantNormalizedLikelihoods[tpsSouris][labelMin]) * 100)) / 100}`);
 
 
-      drawRect(phrase.label, labelMin);
+      //drawRect(phrase.label, labelMin);
       return [phrase.label, labelMin];
     }
   }

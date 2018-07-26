@@ -19,6 +19,14 @@ export default function heatmap(can, res, ctx, val6, tps6,
     }
   });
 
+  // calcul du nombre de phrase active
+  let nbactifs = 0;
+  res.phrases.forEach((ph) => {
+    if (ph.active) {
+      nbactifs += 1;
+    }
+  });
+
 
   // dessin du fond en degradé
   const grd = ctx.createLinearGradient(0, 0, 800 * 3 / 4, 800 * 3 / 4);
@@ -39,9 +47,9 @@ export default function heatmap(can, res, ctx, val6, tps6,
   let i = 0;// numero de la classe etudiee
   ctx.fillStyle = 'rgb(255,200,150)';
 
-  ctx.fillRect(0, 0, squaresizeH, squaresizeW);
+  ctx.fillRect(0, 0, squaresizeW, squaresizeH);
 
-  (res.phrases).forEach(() => {
+  (res.phrases).forEach((ph) => {
     // dessin de la grille et des carrés
 
     ctx.beginPath();
@@ -70,6 +78,10 @@ export default function heatmap(can, res, ctx, val6, tps6,
     // grd.addColorStop(0,"rgb(255,230,150,0.4)");
     // grd.addColorStop(1,"rgb(255,125,0,0.4)");
     // ctx.fillStyle = grd;
+
+    if (!ph.active) {
+      ctx.fillStyle = 'rgb(202,202,202)';
+    }
 
     ctx.fillRect(0, squaresizeH * i + squaresizeH, squaresizeW, squaresizeH);
 
@@ -155,10 +167,18 @@ export default function heatmap(can, res, ctx, val6, tps6,
   (res.phrases).forEach((phrase) => {
     numligne += 1;
 
+    let equivalentLabel = '';
+    if (phrase.active === false) {
+      const underscorePos = phrase.label.indexOf('_');
 
-    // classes finies grisées
+      if (underscorePos > 0) {
+        equivalentLabel = phrase.label.substring(0, underscorePos);
+      }
+    }
+
+    // classes finies bleutées
     if (!phrases.includes(phrase)) {
-      ctx.fillStyle = 'rgba(0,128,255,0.5)';
+      ctx.fillStyle = 'rgba(0,110,255,0.4)';
       ctx.fillRect(0, numligne * squaresizeH, squaresizeW, squaresizeH);
     }
 
@@ -336,10 +356,17 @@ export default function heatmap(can, res, ctx, val6, tps6,
 
       // affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
 
-      if ((valMod1Mod2 * 100 > val6 && phrase.label !== label2)
-      || (valMod1Mod2 * 100 <= (100 - val6) && phrase.label === label2)) {
+      if ((valMod1Mod2 * 100 <= (100 - val6) && (phrase.label === label2
+      || (equivalentLabel.length > 0 && equivalentLabel === label2)))
+      || (valMod1Mod2 * 100 > val6 && ((phrase.label !== label2 && equivalentLabel.length === 0)
+      || (equivalentLabel !== label2 && equivalentLabel.length > 0)))) {
+      // if ((valMod1Mod2 * 100 > val6 && (phrase.label !== label2
+      // && (equivalentLabel.length > 0 || equivalentLabel !== label2)))
+      // || (valMod1Mod2 * 100 <= (100 - val6)
+      // && (phrase.label === label2 ||
+      // (equivalentLabel.length > 0 || equivalentLabel === label2)))) {
         // calcul de la couleur du carré, rouge ou noir, plus ou moins clair
-        if (phrase.label === label2) {
+        if (phrase.label === label2 || label2 === equivalentLabel) {
           // ctx.fillStyle = "rgb(105,0,0)"
           // ctx.fillStyle = "rgb(255,220,220)"
           ctx.fillStyle = `rgb(${105 + valMod1Mod2 * (255 - 105)},${valMod1Mod2 * (220)},${valMod1Mod2 * (220)})`;
@@ -356,7 +383,7 @@ export default function heatmap(can, res, ctx, val6, tps6,
 
         // la couleur du texte depend de la couleur dessous pour etre la plus lisibl possible
         // si on est sur fond rouge le texte est toujours clair
-        if (phrase.label === label2) {
+        if (phrase.label === label2 || label2 === equivalentLabel) {
           if (isNotFinished) { ctx.fillStyle = 'rgb(255,255,255)'; } else { ctx.fillStyle = 'rgb(155,155,155)'; }
         } else if (valMod1Mod2 > 0.5) {
           if (isNotFinished) { ctx.fillStyle = 'rgb(255,255,255)'; } else { ctx.fillStyle = 'rgb(155,155,155)'; }
@@ -408,10 +435,9 @@ export default function heatmap(can, res, ctx, val6, tps6,
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.rect(numColClicked * squaresizeW, numLinClicked * squaresizeH, squaresizeW, squaresizeH);
-    ctx.rect(numLinClicked * squaresizeW, numColClicked * squaresizeH, squaresizeW, squaresizeH);
+    if (numLinClicked < nbactifs + 1) {
+      ctx.rect(numLinClicked * squaresizeW, numColClicked * squaresizeH, squaresizeW, squaresizeH);
+    }
     ctx.stroke();
-
-    drawSecondCan(ctx2, can2, res, tps6, res.phrases[numLinClicked - 1].label,
-      res.model.classes[numColClicked - 1], colorSliderGraphs, timeMax);
   }
 }
