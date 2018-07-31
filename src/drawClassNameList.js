@@ -1,8 +1,23 @@
 import $ from 'jquery';
 import 'jquery-ui-bundle';
 
+function activateExample(socket, phraseIndex) {
+  if (!socket) return;
+  socket.send(JSON.stringify({
+    type: 'example/activate',
+    index: phraseIndex,
+  }));
+}
 
-export default function drawClassNameList(can, ctx, res, numVis) {
+function deactivateExample(socket, phraseIndex) {
+  if (!socket) return;
+  socket.send(JSON.stringify({
+    type: 'example/deactivate',
+    index: phraseIndex,
+  }));
+}
+
+export default function drawClassNameList(can, ctx, res, numVis, socket) {
   let nbmodel = 0;
   Object.keys(res.model.classes).forEach(() => {
     nbmodel += 1;
@@ -129,22 +144,31 @@ export default function drawClassNameList(can, ctx, res, numVis) {
 
     " style="fill:black;" /></svg>`));
 
+    const phrasesOfLabel = res.phrases
+      .filter(p => p.label === mod);
+    console.log(mod, phrasesOfLabel);
 
-    let txt = `<select class ='classname' id=test2${i} style="color:white; border-color:black; background-color:black;left:${(i + 0.2) * modelSize}px;top:${tabs.top + window.scrollY + tabs.height + 10}px;position:absolute">`;
-    txt += `<option selected>${mod}</option>`;
 
-    $(res.phrases).each((_, ph) => {
-      const underscorePos = ph.label.indexOf('_');
-      // console.log(ph.label.substring(0, underscorePos));
-      if (!ph.active && mod === ph.label.substring(0, underscorePos)) {
-        txt += `<option >${ph.label}</option>`;
-      }
+    let txt = `<select multiple class ='classname' id=test2${i} style="color:yellow;left:${(i + 0.2) * modelSize}px;top:${tabs.top + window.scrollY + tabs.height + 10}px;position:absolute">`;
+
+    phrasesOfLabel.forEach((ph) => {
+      txt += `<option ${ph.active && 'selected'} data-${ph.index}>${ph.label}: ${ph.index}</option>`;
     });
     txt += '</select>';
     const x = $(txt);
 
-    x.on('change', function () {
-      console.log(`le modele ${$(this).find(':selected').text()} à été séléctionné`);
+    x.on('change', (e) => {
+      const selection = $(e.target).find(':selected')
+        .map((_, elt) => parseInt(elt.label.split(': ')[1], 10))
+        .toArray();
+      phrasesOfLabel.forEach((p) => {
+        if (selection.includes(p.index)) {
+          if (!p.active) activateExample(socket, p.index);
+        } else if (p.active) {
+          deactivateExample(socket, p.index);
+        }
+      });
+      console.log('modeles séléctionnés:', selection);
     });
 
 

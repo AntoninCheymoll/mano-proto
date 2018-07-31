@@ -2,7 +2,7 @@ import {
   TrainingSet,
   trainMulticlassHMM,
   HierarchicalHMMPredictor,
-} from 'xmm-js';
+} from 'xmm';
 import { writeFileSync } from 'fs';
 
 /**

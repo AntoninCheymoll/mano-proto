@@ -1,6 +1,6 @@
 import { Example } from 'mano-js/common';
 import { ProcessedSensors } from 'mano-js/client';
-import { HierarchicalHMMPredictor } from 'xmm-js';
+import { HierarchicalHMMPredictor } from 'xmm';
 
 const $error = document.querySelector('#error');
 const $label = document.querySelector('#label');

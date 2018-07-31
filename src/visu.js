@@ -64,6 +64,9 @@ let numLinClickedHM = -1;
 let numColClickedHM = -1;
 const tooltipHM = [];
 
+// websocket (communication avec le serveur d'entrainement)
+let socket = null;
+
 // dessin du canevas en fonction du numero de visu demandé
 function draw() {
   if (numVis === 1) {
@@ -82,6 +85,9 @@ function mainVisu(json) {
   res = normalizedata(res);
   // res.phrases.sort((a, b) => a.label.localeCompare(b.label));
   // res.model.classe.sort((a, b) => a.label.localeCompare(b.label));
+  res.phrases.forEach((x, i) => {
+    x.index = i;
+  });
   res.phrases.sort((a) => {
     if (a.active) {
       return -1;
@@ -204,7 +210,7 @@ function mainVisu(json) {
     };
   });
 
-  drawClassNameList(can, ctx, res, numVis);
+  drawClassNameList(can, ctx, res, numVis, socket);
 
   const tooltipCan = $('#tooltipCan');
   can.onclick = () => {
@@ -285,19 +291,14 @@ function init() {
       url: `/${urlParams.file}.json`,
       dataType: 'json',
       context: document.body,
-    }).done(mainVisu);
+    }).done((data) => {
+      socket.send(JSON.stringify({
+        type: 'file/load',
+        filename: urlParams.file,
+      }));
+      mainVisu(data);
+    });
   }
-
-  // Receive Model data by websocket
-  const socket = new WebSocket(`ws://${window.location.hostname}:8000`);
-  const jsonData = { model: {}, phrases: [] };
-  socket.onmessage = (event) => {
-    const message = JSON.parse(event.data);
-    if (['model', 'phrases'].includes(message.type)) {
-      jsonData[message.type] = message.data;
-      mainVisu(jsonData);
-    }
-  };
 
   $('#meanMinHM').text(1);
 
@@ -335,4 +336,24 @@ function init() {
   });
 }
 
-window.onload = init;
+function preinit() {
+  // Receive Model data by websocket
+  const ws = new WebSocket(`ws://${window.location.hostname}:8000`);
+  const jsonData = { model: {}, phrases: [] };
+  ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    console.log('Received a new model!', message);
+    if (['model', 'phrases'].includes(message.type)) {
+      jsonData[message.type] = message.data;
+      mainVisu(jsonData);
+    }
+  };
+  ws.onopen = (event) => {
+    socket = event.target;
+    init();
+    // activateExample(2);
+    // deactivateExample(0);
+  };
+}
+
+window.onload = preinit;

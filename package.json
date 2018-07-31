@@ -24,7 +24,7 @@
     "webpack-dev-middleware": "^3.1.3",
     "webpack-hot-middleware": "^2.22.3",
     "ws": "^5.2.0",
-    "xmm-js": "github:JulesFrancoise/xmmjs"
+    "xmm": "github:JulesFrancoise/xmmjs"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

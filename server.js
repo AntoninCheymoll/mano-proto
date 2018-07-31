@@ -6,12 +6,13 @@ import WebSocket from 'ws';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
+import { readFileSync } from 'fs';
 
 import train from './training';
 
 import config from './webpack.config';
 
-const phrases = [];
+let phrases = [];
 
 function broadcastModel(wss, hmmParams) {
   wss.clients.forEach((client) => {
@@ -44,8 +45,26 @@ function createWebsocketServer() {
       try {
         const data = JSON.parse(message);
         if (!data.type) throw new Error('no type is available');
+        let shouldTrain = true;
         if (data.type === 'example/add') {
           phrases.push(data);
+        } else if (data.type === 'example/activate') {
+          phrases[data.index].active = true;
+        } else if (data.type === 'example/deactivate') {
+          phrases[data.index].active = false;
+        } else if (data.type === 'file/load') {
+          console.log(`Loading file: "${data.filename}"`);
+          const fileJson = readFileSync(`./dist/${data.filename}.json`, 'utf8');
+          const fileData = JSON.parse(fileJson);
+          phrases = fileData.phrases; // eslint-disable-line prefer-destructuring
+          broadcastModel(wss, fileData.model);
+          broadcastPhrases(wss, fileData.phrases);
+        } else {
+          console.log('message type', data.type);
+          console.log('data', data);
+          shouldTrain = false;
+        }
+        if (shouldTrain) {
           try {
             const res = train(phrases);
             broadcastModel(wss, res.model);
@@ -53,12 +72,9 @@ function createWebsocketServer() {
           } catch (e) {
             console.log(e);
           }
-        } else {
-          console.log('message type', data.type);
-          console.log('data', data);
         }
       } catch (e) {
-        console.log('Received: %s', message);
+        console.log('Error: ', e);
       }
     });
   });
