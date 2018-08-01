@@ -42,7 +42,6 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
   ctx.lineTo(51, can.height);
   ctx.stroke();
 
-
   ctx.lineWidth = 1;
   ctx.fillStyle = 'rgb(0,0,0)';
   ctx.font = '15px Arial';
@@ -81,16 +80,6 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
   let index = 0;
 
   (res.phrases).forEach((ph) => {
-    let equivalentLabel = '';
-    if (ph.active === false) {
-      const underscorePos = ph.label.indexOf('_');
-
-      if (underscorePos > 0) {
-        equivalentLabel = ph.label.substring(0, underscorePos);
-      }
-    }
-
-
     // ligne horizontale
     ctx.strokeStyle = 'rgb(0,0,0)';
     ctx.lineWidth = 1;
@@ -213,7 +202,7 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
         likelihood /= 100;
 
         // couleur differente pour la classe symetrique
-        if (classLabel === ph.label || (classLabel === equivalentLabel)) {
+        if (classLabel === ph.label || (classLabel === ph.label)) {
           ctx.fillStyle = 'rgb(150,0,0)';
         } else {
           ctx.fillStyle = 'rgb(0,0,0)';
@@ -233,6 +222,8 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
           h: histoSize * 75 / 100,
           class: ph.label,
           model: classLabel,
+          classIndex: ph.index,
+          modelIndex: i,
         });
 
 
@@ -243,7 +234,7 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
             ctx.beginPath();
             ctx.rect((i) * (800 - 50) / (numClasses) + 50 + histoWidth / 3 / 2,
               histoSize * 16 / 100 + index * histoSize + (1 - likelihood) * histoSize * 75 / 100,
-               histoWidth, likelihood * histoSize * 75 / 100);
+              histoWidth, likelihood * histoSize * 75 / 100);
 
             ctx.lineWidth = 4;
             ctx.stroke();
@@ -287,7 +278,7 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
         likelihood /= 100;
 
         // couleur differente pour la classe symetrique
-        if (classLabel === ph.label || classLabel === equivalentLabel) {
+        if (classLabel === ph.label || classLabel === ph.label) {
           ctx.fillStyle = 'rgb(150,80,80)';
         } else {
           ctx.fillStyle = 'rgb(70,70,70)';
@@ -308,6 +299,8 @@ export default function histogramme(can, res, ctx, tps5, tooltipHisto, selectedR
           h: histoSize * 75 / 100,
           class: ph.label,
           model: classLabel,
+          classIndex: ph.index,
+          modelIndex: i,
         });
 
         if (selectedRectHisto) {

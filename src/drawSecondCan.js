@@ -9,27 +9,27 @@ export default function drawSecondCan(
 
   let maxTime = 0;
 
-  $(res.phrases).each((_, ph) => {
-    if ((ph.label === className) || (ph.label === modelName)) {
+  $(res.phrases).each((x, ph) => {
+    if ((ph.index === className) || (ph.index === modelName)) {
       maxTime = Math.max(maxTime, ph.length);
     }
   });
 
   const dictProp = {};
 
-  $(res.phrases).each((_, ph) => {
-    if (ph.label === className || ph.label === modelName) {
-      dictProp[ph.label] = ph.length;
+  $(res.phrases).each((x, ph) => {
+    if (ph.index === className || ph.index === modelName) {
+      dictProp[ph.index] = ph.length - 1;
     }
   });
 
 
   let maxSize = dictProp[modelName];
+
   if (dictProp[className] > maxSize) { maxSize = dictProp[className]; }
 
-
   dictProp[className] /= maxSize;
-  if (modelName !== className) { dictProp[modelName] /= maxSize; }
+  if (className !== modelName) { dictProp[modelName] /= maxSize; }
 
 
   // taille d un graphe unique
@@ -103,15 +103,15 @@ export default function drawSecondCan(
     const stckdata = {};
 
     $(res.phrases).each((_, ph) => {
-      if (ph.label === className) {
+      if (ph.index === className) {
         ctx.strokeStyle = 'rgb(150,0,0)';
       } else {
-        ctx.strokeStyle = 'rgb(0,160,80   )';
+        ctx.strokeStyle = 'rgb(0,160,80)';
       }
 
 
       // console.log(ph.label);
-      if ((ph.label === className) || (ph.label === modelName)) {
+      if ((ph.index === className) || (ph.index === modelName)) {
         const data = [];
 
         // recuperation dans un tableau des valeurs correspondantes
@@ -119,22 +119,26 @@ export default function drawSecondCan(
           data.push(ph.data[x][i]);
         }
 
+
         ctx.beginPath();
         ctx.moveTo(10, i * graphSize + graphSize * 97 / 100 - data[0] * graphSize * 82 / 100);
         for (let j = 1; j < data.length; j += 1) {
-          ctx.lineTo(10 + j * ((790 * dictProp[ph.label] / (data.length - 1))),
+          ctx.lineTo(10 + j * ((790 * dictProp[ph.index] / (data.length - 1))),
             i * graphSize + graphSize * 97 / 100 - data[j] * graphSize * 82 / 100);
 
+          // if (i === 0 && j === 78) {
+          //   console.log(((dictProp)));
+          // }
           if (!premier && !isfilled
             && (j === data.length - 1 || j === stckdata.lgth - 1 || j === tps3)) {
             ctx.stroke();
 
-            ctx.lineTo(10 + (j) * ((790 / (data.length - 1))),
+            ctx.lineTo(10 + (j) * ((790 * stckdata.proportion / (stckdata.lgth - 1))),
               i * graphSize + graphSize * 97 / 100 - stckdata.data[j] * graphSize * 82 / 100);
 
 
             for (let cpt = j - 1; cpt >= 0; cpt -= 1) {
-              ctx.lineTo(10 + cpt * ((790 / (data.length - 1))),
+              ctx.lineTo(10 + cpt * ((790 * stckdata.proportion / (stckdata.lgth - 1))),
                 i * graphSize + graphSize * 97 / 100 - stckdata.data[cpt] * graphSize * 82 / 100);
             }
 
@@ -146,7 +150,7 @@ export default function drawSecondCan(
             isfilled = true;
 
             ctx.beginPath();
-            ctx.moveTo(10 + j * ((790 * dictProp[ph.label] / (data.length - 1))),
+            ctx.moveTo(10 + j * ((790 * dictProp[ph.index] / (data.length - 1))),
               i * graphSize + graphSize * 97 / 100 - data[j] * graphSize * 82 / 100);
           }
         }
@@ -157,6 +161,7 @@ export default function drawSecondCan(
         if (premier) {
           stckdata.data = data;
           stckdata.lgth = ph.length;
+          stckdata.proportion = dictProp[ph.index];
         }
 
 

@@ -42,23 +42,24 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
   // recherche de la phrase la plus longue pour les proportions
   const dictProp = {};
   let maxTime = 0;
-  res.phrases.forEach((ph) => {
-    dictProp[ph.label] = ph.length;
+  res.phrases.forEach((ph, num) => {
+    dictProp[num] = ph.length;
     maxTime = Math.max(maxTime, ph.length);
   });
 
 
   // assignation a chaque phrases leur longueur par rapport a la longueur max
-  res.phrases.forEach((ph) => {
-    dictProp[ph.label] /= maxTime;
+  res.phrases.forEach((ph, num) => {
+    dictProp[num] /= maxTime;
   });
 
+
   // pour chaque classe
-  res.phrases.forEach((classe) => {
+  res.phrases.forEach((classe, num) => {
     // assignation du nom de la classe et recuperation de la proportion de
     // la classe etudiee
     const classeName = classe.label;
-    const proportion = dictProp[classeName];
+    const proportion = dictProp[num];
 
     ctx.font = '15px Arial';
     ctx.fillStyle = 'rgb(0,0,100)';
@@ -142,15 +143,9 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
 
       // recherche si la phrase est sensée etre associée à une autre (et donc reconnu)
       // c'est le cas si elle est suivi d'un underscore
-      const underscorePos = classeName.indexOf('_');
-      let equivalent = classeName;
-
-      if (underscorePos > 0) {
-        equivalent = equivalent.substring(0, underscorePos);
-      }
 
 
-      if (classe2 === equivalent) {
+      if (classe2 === classeName) {
         // l affichage de la classe symetriaue se fera apres dans une autre couleur
         // et a la fin pour que le trait soit au dessus des autres
         stckClassSym = classe2;
@@ -173,6 +168,7 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
         for (let x = 0; x < classe.length; x += 1) {
           data.push(classe.instantNormalizedLikelihoods[x][classe2]);
         }
+
 
         // log("", classe)
         // console.log('taille' + data.length);
@@ -227,6 +223,8 @@ export default function graphs(can, res, ctx, tps3, selectedGraph, colorSliderGr
           for (let j = 1; j < data.length; j += 1) {
             ctx.lineTo(10 + j * (((can.width - 10) * proportion) / (data.length - 1)),
               i * graphSize + graphSize * 97 / 100 - data[j] * graphSize * 82 / 100);
+
+            // ctx.arc(100,75,50,0,2*Math.PI);
           }
         }
 

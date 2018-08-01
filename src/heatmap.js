@@ -167,14 +167,6 @@ export default function heatmap(can, res, ctx, val6, tps6,
   (res.phrases).forEach((phrase) => {
     numligne += 1;
 
-    let equivalentLabel = '';
-    if (phrase.active === false) {
-      const underscorePos = phrase.label.indexOf('_');
-
-      if (underscorePos > 0) {
-        equivalentLabel = phrase.label.substring(0, underscorePos);
-      }
-    }
 
     // classes finies bleutées
     if (!phrases.includes(phrase)) {
@@ -357,16 +349,16 @@ export default function heatmap(can, res, ctx, val6, tps6,
       // affichage de la heatmap seuleument si sa valeur n est pas en dessous du seuil a ignorer
 
       if ((valMod1Mod2 * 100 <= (100 - val6) && (phrase.label === label2
-      || (equivalentLabel.length > 0 && equivalentLabel === label2)))
-      || (valMod1Mod2 * 100 > val6 && ((phrase.label !== label2 && equivalentLabel.length === 0)
-      || (equivalentLabel !== label2 && equivalentLabel.length > 0)))) {
+      || (phrase.label === label2)))
+      || (valMod1Mod2 * 100 > val6 && ((phrase.label !== label2)
+      || (phrase.label !== label2)))) {
       // if ((valMod1Mod2 * 100 > val6 && (phrase.label !== label2
       // && (equivalentLabel.length > 0 || equivalentLabel !== label2)))
       // || (valMod1Mod2 * 100 <= (100 - val6)
       // && (phrase.label === label2 ||
       // (equivalentLabel.length > 0 || equivalentLabel === label2)))) {
         // calcul de la couleur du carré, rouge ou noir, plus ou moins clair
-        if (phrase.label === label2 || label2 === equivalentLabel) {
+        if (phrase.label === label2 || label2 === phrase.label) {
           // ctx.fillStyle = "rgb(105,0,0)"
           // ctx.fillStyle = "rgb(255,220,220)"
           ctx.fillStyle = `rgb(${105 + valMod1Mod2 * (255 - 105)},${valMod1Mod2 * (220)},${valMod1Mod2 * (220)})`;
@@ -383,7 +375,7 @@ export default function heatmap(can, res, ctx, val6, tps6,
 
         // la couleur du texte depend de la couleur dessous pour etre la plus lisibl possible
         // si on est sur fond rouge le texte est toujours clair
-        if (phrase.label === label2 || label2 === equivalentLabel) {
+        if (phrase.label === label2 || label2 === phrase.label) {
           if (isNotFinished) { ctx.fillStyle = 'rgb(255,255,255)'; } else { ctx.fillStyle = 'rgb(155,155,155)'; }
         } else if (valMod1Mod2 > 0.5) {
           if (isNotFinished) { ctx.fillStyle = 'rgb(255,255,255)'; } else { ctx.fillStyle = 'rgb(155,155,155)'; }

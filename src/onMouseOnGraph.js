@@ -124,8 +124,10 @@ export default function onMouseOnGraph(e, can, res) {
 
     let min = 16;
     let labelMin = null;
-    Object.keys(res.model.classes).forEach((label) => {
+    let modelindex = null;
+    Object.keys(res.model.classes).forEach((label, num) => {
       if (min > dict[label]) {
+        modelindex = num;
         min = dict[label];
         labelMin = label;
       }
@@ -139,8 +141,8 @@ export default function onMouseOnGraph(e, can, res) {
       $('#labelCan').text(`Modèle: ${labelMin}; Valeur: ${(Math.round((phrase.instantNormalizedLikelihoods[tpsSouris][labelMin]) * 100)) / 100}`);
 
 
-      //drawRect(phrase.label, labelMin);
-      return [phrase.label, labelMin];
+      // drawRect(phrase.label, labelMin);
+      return [[phrase.label, labelMin], [phrase.index, modelindex]];
     }
   }
 

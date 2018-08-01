@@ -80,13 +80,13 @@ export default function drawClassNameList(can, ctx, res, numVis, socket) {
     let i = 0;
 
     $(res.phrases).each((_, ph) => {
-      $('#divMilieu').append($(`<svg class ='classname' style="left:800px;top:${i * height}px;position:absolute"><ellipse cx="100" cy="${height / 2}" rx="75" ry="${height * 3 / 8}"
+      $('#divMilieu').append($(`<svg class ='classname' style="left:800px;top:${(i + 1) * height}px;position:absolute"><ellipse cx="100" cy="${height / 2}" rx="75" ry="${height * 3 / 8}"
       style="fill:#0D7;stroke:black;stroke-width:2" /></svg>`));
 
-      $('#divMilieu').append($(`<svg class ='classname' style="left:800px;top:${(i) * height}px;position:absolute"><ellipse cx="40" cy="${height * 3 / 4}" rx="25" ry="${height * 3 / 24}"
+      $('#divMilieu').append($(`<svg class ='classname' style="left:800px;top:${(i + 1) * height}px;position:absolute"><ellipse cx="40" cy="${height * 3 / 4}" rx="25" ry="${height * 3 / 24}"
       style="fill:#0D7;stroke:black;stroke-width:2" /></svg>`));
 
-      const x = $(`<label id=test${i} class ='classname' style="color:#05D;left:865px;top:${(i) * height + height / 2 - 8}px;position:absolute">${ph.label}</label>`);
+      const x = $(`<label id=test${i} class ='classname' style="color:#05D;left:865px;top:${(i + 1) * height + height / 2 - 8}px;position:absolute">${ph.label}</label>`);
       $('#divMilieu').append(x);
 
       let charDeleted = 0;
@@ -146,10 +146,8 @@ export default function drawClassNameList(can, ctx, res, numVis, socket) {
 
     const phrasesOfLabel = res.phrases
       .filter(p => p.label === mod);
-    console.log(mod, phrasesOfLabel);
 
-
-    let txt = `<select multiple class ='classname' id=test2${i} style="color:yellow;left:${(i + 0.2) * modelSize}px;top:${tabs.top + window.scrollY + tabs.height + 10}px;position:absolute">`;
+    let txt = `<select multiple size="2" class ='classname' id=test2${i} style="color:black;left:${(i + 0.2) * modelSize}px;top:${tabs.top + window.scrollY + tabs.height + 10}px;position:absolute">`;
 
     phrasesOfLabel.forEach((ph) => {
       txt += `<option ${ph.active && 'selected'} data-${ph.index}>${ph.label}: ${ph.index}</option>`;
@@ -168,7 +166,6 @@ export default function drawClassNameList(can, ctx, res, numVis, socket) {
           deactivateExample(socket, p.index);
         }
       });
-      console.log('modeles séléctionnés:', selection);
     });
 
 

@@ -243,16 +243,7 @@ function mainVisu(json) {
       numLinClickedHM = result[1];
 
       if (result[0] > 0 && result[1] > 0) {
-        let model = null;
-        let cpt = 0;
-
-        Object.keys(res.model.classes).forEach((ph) => {
-          cpt += 1;
-          if (numColClickedHM === cpt) {
-            model = ph;
-          }
-        });
-        secondCanParam = [res.phrases[numLinClickedHM - 1].label, model];
+        secondCanParam = [res.phrases[numLinClickedHM - 1].index, numColClickedHM - 1];
       } else {
         secondCanParam = null;
       }
@@ -262,11 +253,17 @@ function mainVisu(json) {
 
       selectedRectHisto = onMouseOnHisto(e, rectList);
       if (selectedRectHisto) {
-        secondCanParam = [selectedRectHisto.class, selectedRectHisto.model];
+        secondCanParam = [selectedRectHisto.classIndex, selectedRectHisto.modelIndex];
       } else { selectedGraph = null; }
     } else if (mouseOverCan && numVis === 1) {
-      selectedGraph = onMouseOnGraph(e, can, res);
-      secondCanParam = selectedGraph;
+      const result = onMouseOnGraph(e, can, res);
+      if (result) {
+        selectedGraph = result[0];
+        secondCanParam = result[1];
+      } else {
+        selectedGraph = null;
+        secondCanParam = null;
+      }
     }
 
     draw();
